@@ -7,279 +7,344 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0F1923;--card:#162331;--bdr:#1E3448;--red:#CC3333;--blue:#2B5876;--txt:#D4E0ED;--muted:#6A8090;--green:#27AE60;--gold:#F0C040}
-body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;font-size:14px}
+:root{--ui-bg:#0F1923;--ui-card:#162331;--ui-border:#1E3448;--ui-accent:#CC3333;--ui-accent2:#2B5876;--ui-text:#D4E0ED;--ui-muted:#6A8090;--ui-green:#27AE60;--ui-gold:#F0C040}
+body{background:var(--ui-bg);color:var(--ui-text);font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh}
 .app{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
 @media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{max-height:none}}
-.sidebar{background:var(--card);border-right:1px solid var(--bdr);padding:16px;overflow-y:auto;max-height:100vh}
+.sidebar{background:var(--ui-card);border-right:1px solid var(--ui-border);padding:16px;overflow-y:auto;max-height:100vh}
 .main{padding:20px;overflow-y:auto;max-height:100vh}
-.logo{font-family:'Oswald';font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid var(--red);margin-bottom:14px}
-.sec{margin-bottom:16px}
-.sec-t{font-family:'Oswald';font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
-label{display:block;font-size:11px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
-input[type="text"],input[type="url"],input[type="number"]{width:100%;padding:7px 9px;background:#0D1520;border:1px solid var(--bdr);border-radius:4px;color:var(--txt);font-size:12px;font-family:'Barlow';margin-bottom:6px;outline:none}
-input:focus{border-color:var(--blue)}
-.cr{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.cr label{margin:0;flex:1;font-size:10px}
-.cr input[type="color"]{width:28px;height:20px;border:1px solid var(--bdr);border-radius:2px;cursor:pointer;background:none;padding:0}
-.cr input[type="text"]{width:72px;margin:0;padding:3px 5px;font-size:10px;font-family:monospace}
-.btn{padding:7px 12px;border:none;border-radius:4px;cursor:pointer;font-family:'Oswald';font-size:12px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:.5px;transition:all .15s}
+.logo{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid var(--ui-accent);margin-bottom:14px}
+.section{margin-bottom:16px}
+.section-title{font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;color:var(--ui-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+label{display:block;font-size:11px;color:var(--ui-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+input[type="text"],input[type="url"],input[type="number"],select{width:100%;padding:7px 9px;background:#0D1520;border:1px solid var(--ui-border);border-radius:4px;color:var(--ui-text);font-size:12px;font-family:'Barlow',sans-serif;margin-bottom:6px;outline:none}
+input:focus,select:focus{border-color:var(--ui-accent2)}
+.color-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.color-row label{margin:0;flex:1;font-size:10px}
+.color-row input[type="color"]{width:28px;height:20px;border:1px solid var(--ui-border);border-radius:2px;cursor:pointer;background:none;padding:0}
+.color-row input[type="text"]{width:72px;margin:0;padding:3px 5px;font-size:10px;font-family:monospace}
+.btn{padding:7px 12px;border:none;border-radius:4px;cursor:pointer;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:.5px;transition:all .15s}
 .btn:hover{filter:brightness(1.15)}.btn:active{transform:scale(.97)}
-.btn-r{background:var(--red)}.btn-b{background:var(--blue)}.btn-g{background:var(--green)}.btn-d{background:#333}
-.btn-s{padding:5px 8px;font-size:10px}.btn-f{width:100%}
-.row{display:flex;gap:6px;margin-bottom:6px}
-.lt{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--bdr)}
-.lb{flex:1;padding:7px;text-align:center;cursor:pointer;font-family:'Oswald';font-size:12px;font-weight:600;text-transform:uppercase;background:#0D1520;color:var(--muted);transition:all .2s;border:none}
-.lb.active{background:var(--red);color:#fff}
-.og{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
-.ob{padding:10px 8px;border:1px solid var(--bdr);border-radius:4px;background:var(--card);cursor:pointer;transition:all .2s;text-align:center}
-.ob:hover{border-color:var(--red);background:#1A2C3C}
-.ob .oi{font-size:20px;margin-bottom:2px}
-.ob .ol{font-family:'Oswald';font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
-.dr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.dr label{margin:0;white-space:nowrap}.dr input{width:50px;margin:0;text-align:center}
-.dc{background:var(--card);border:1px solid var(--bdr);border-radius:6px;padding:14px;margin-bottom:14px}
-.dct{font-family:'Oswald';font-size:15px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
-.mh{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px;background:#0D1520;border-radius:6px;margin-bottom:14px;flex-wrap:wrap}
-.mt{text-align:center;min-width:160px}
-.mn{font-family:'Oswald';font-size:16px;font-weight:600;color:#fff;text-transform:uppercase}
-.ms{font-family:'Oswald';font-size:44px;font-weight:700;color:#fff}
-.msep{font-size:32px;color:var(--muted)}
-.mst{font-size:12px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
-.pt{width:100%;border-collapse:collapse;font-size:11px}
-.pt th{background:var(--blue);color:#fff;padding:4px 5px;text-align:center;font-family:'Oswald';font-weight:500;font-size:10px;text-transform:uppercase;position:sticky;top:0}
-.pt th:nth-child(2){text-align:left}
-.pt td{padding:3px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}
-.pt td:nth-child(2){text-align:left}
-.pt tr:nth-child(odd){background:rgba(255,255,255,.02)}.pt tr:nth-child(even){background:rgba(0,0,0,.15)}
-.vp{color:var(--green);font-weight:700}.vn{color:var(--red);font-weight:700}
-.sb{padding:6px 10px;border-radius:4px;margin-bottom:10px;font-size:11px;display:none}
-.sb.ok{display:block;background:rgba(39,174,96,.15);color:var(--green);border:1px solid rgba(39,174,96,.3)}
-.sb.err{display:block;background:rgba(204,51,51,.15);color:var(--red);border:1px solid rgba(204,51,51,.3)}
-.sb.ld{display:block;background:rgba(43,88,118,.15);color:var(--blue);border:1px solid rgba(43,88,118,.3)}
-.cb{display:inline-block;padding:3px 8px;border-radius:3px;font-size:10px;margin-bottom:8px}
-.cb.ok{background:rgba(39,174,96,.15);color:var(--green)}.cb.err{background:rgba(204,51,51,.15);color:var(--red)}
-.ou{background:#0D1520;border:1px solid var(--bdr);border-radius:4px;padding:6px 8px;font-size:11px;font-family:monospace;color:var(--green);word-break:break-all;margin-bottom:8px;cursor:pointer}
-.ou:hover{background:#141e2e}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+.btn-accent{background:var(--ui-accent)}.btn-blue{background:var(--ui-accent2)}.btn-green{background:var(--ui-green)}.btn-dark{background:#333}
+.btn-sm{padding:5px 8px;font-size:10px}.btn-full{width:100%}
+.row{display:flex;gap:6px;margin-bottom:6px}.row>*{flex:1}
+.lang-toggle{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--ui-border)}
+.lang-btn{flex:1;padding:7px;text-align:center;cursor:pointer;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;background:#0D1520;color:var(--ui-muted);transition:all .2s;border:none}
+.lang-btn.active{background:var(--ui-accent);color:#fff}
+.overlay-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
+.overlay-btn{padding:10px 8px;border:1px solid var(--ui-border);border-radius:4px;background:var(--ui-card);cursor:pointer;transition:all .2s;text-align:center}
+.overlay-btn:hover{border-color:var(--ui-accent);background:#1A2C3C}
+.overlay-btn .ob-icon{font-size:20px;margin-bottom:2px}
+.overlay-btn .ob-label{font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ui-text)}
+.dur-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.dur-row label{margin:0;white-space:nowrap}.dur-row input{width:50px;margin:0;text-align:center}
+.data-card{background:var(--ui-card);border:1px solid var(--ui-border);border-radius:6px;padding:14px;margin-bottom:14px}
+.data-card-title{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--ui-border)}
+.match-header{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px;background:#0D1520;border-radius:6px;margin-bottom:14px;flex-wrap:wrap}
+.mh-team{text-align:center;min-width:160px}
+.mh-team-name{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;color:#fff;text-transform:uppercase}
+.mh-score{font-family:'Oswald',sans-serif;font-size:44px;font-weight:700;color:#fff}
+.mh-sep{font-size:32px;color:var(--ui-muted)}
+.mh-status{font-size:12px;color:var(--ui-accent);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.ptable{width:100%;border-collapse:collapse;font-size:11px}
+.ptable th{background:var(--ui-accent2);color:#fff;padding:4px 5px;text-align:center;font-family:'Oswald',sans-serif;font-weight:500;font-size:10px;text-transform:uppercase;position:sticky;top:0}
+.ptable th:nth-child(2){text-align:left}
+.ptable td{padding:3px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}
+.ptable td:nth-child(2){text-align:left}
+.ptable tr:nth-child(odd){background:rgba(255,255,255,.02)}.ptable tr:nth-child(even){background:rgba(0,0,0,.15)}
+.val-pos{color:var(--ui-green);font-weight:700}.val-neg{color:var(--ui-accent);font-weight:700}
+.status-bar{padding:6px 10px;border-radius:4px;margin-bottom:10px;font-size:11px;display:none}
+.status-bar.ok{display:block;background:rgba(39,174,96,.15);color:var(--ui-green);border:1px solid rgba(39,174,96,.3)}
+.status-bar.err{display:block;background:rgba(204,51,51,.15);color:var(--ui-accent);border:1px solid rgba(204,51,51,.3)}
+.status-bar.loading{display:block;background:rgba(43,88,118,.15);color:var(--ui-accent2);border:1px solid rgba(43,88,118,.3)}
+.conn-badge{display:inline-block;padding:3px 8px;border-radius:3px;font-size:10px;margin-bottom:8px}
+.conn-badge.ok{background:rgba(39,174,96,.15);color:var(--ui-green)}.conn-badge.err{background:rgba(204,51,51,.15);color:var(--ui-accent)}
+.output-url{background:#0D1520;border:1px solid var(--ui-border);border-radius:4px;padding:6px 8px;font-size:11px;font-family:monospace;color:var(--ui-green);word-break:break-all;margin-bottom:8px;cursor:pointer}
+.output-url:hover{background:#141e2e}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--ui-bg)}::-webkit-scrollbar-thumb{background:var(--ui-border);border-radius:3px}
 </style>
 </head>
 <body>
 <div class="app">
 <div class="sidebar">
-  <div class="logo">🤾 Handball Overlay</div>
-  <div class="sec">
-    <div class="sec-t">Connection</div>
-    <div class="cb" id="connB">Connecting...</div>
-    <label>Output URL (paste into Yolobox):</label>
-    <div class="ou" id="outUrl" onclick="navigator.clipboard.writeText(this.dataset.url).then(()=>ss('Copied!','ok'))" title="Click to copy">Loading...</div>
+  <div class="logo">🤾 Handball Overlay Control</div>
+
+  <!-- Connection -->
+  <div class="section">
+    <div class="section-title">Connection</div>
+    <div class="conn-badge" id="connBadge">Connecting...</div>
+    <label>Output URL (paste this into Yolobox):</label>
+    <div class="output-url" id="outputUrl" onclick="copyOutputUrl()" title="Click to copy">Loading...</div>
   </div>
-  <div class="sec">
-    <div class="sec-t">Match Data</div>
-    <label>Match URL or ID from frhlive2.com</label>
-    <input type="text" id="mUrl" placeholder="https://frhlive2.com/indexut.html?utakmica=1651098 or just 1651098">
-    <button class="btn btn-r btn-f" onclick="scrape()">Scrape Match</button>
-    <div class="row" style="align-items:center;margin-top:4px">
-      <input type="checkbox" id="autoR" style="width:auto;margin:0">
-      <label style="margin:0;cursor:pointer;flex:3" onclick="document.getElementById('autoR').click()">Auto-refresh</label>
-      <input type="number" id="rSec" value="30" min="10" max="300" style="width:50px;margin:0;text-align:center">
-      <span style="color:var(--muted);font-size:11px">s</span>
+
+  <!-- Scrape -->
+  <div class="section">
+    <div class="section-title">Match Data</div>
+    <label>frhlive2.com or sportinfocentar2.com URL</label>
+    <input type="url" id="matchUrl" placeholder="https://frhlive2.com/indexut.html?utakmica=...">
+    <div class="row">
+      <button class="btn btn-accent btn-full" onclick="scrapeMatch()">Scrape Match</button>
+    </div>
+    <div class="row" style="align-items:center">
+      <input type="checkbox" id="autoRefresh" style="width:auto;margin:0"> 
+      <label style="margin:0;cursor:pointer;flex:3" onclick="document.getElementById('autoRefresh').click()">Auto-refresh every</label>
+      <input type="number" id="refreshSec" value="30" min="10" max="300" style="width:50px;margin:0;text-align:center">
+      <span style="color:var(--ui-muted);font-size:11px">s</span>
     </div>
   </div>
-  <div class="sec">
-    <div class="sec-t">Language</div>
-    <div class="lt">
-      <button class="lb active" data-lang="en" onclick="setLang('en')">English</button>
-      <button class="lb" data-lang="ro" onclick="setLang('ro')">Română</button>
+
+  <!-- Language -->
+  <div class="section">
+    <div class="section-title">Language / Limba</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">English</button>
+      <button class="lang-btn" data-lang="ro" onclick="setLang('ro')">Română</button>
     </div>
   </div>
-  <div class="sec">
-    <div class="sec-t">Show Overlay</div>
-    <div class="dr"><label>Duration (0=stay):</label><input type="number" id="dur" value="0" min="0" max="60"><span style="color:var(--muted);font-size:11px">s</span></div>
-    <div class="og">
-      <div class="ob" onclick="send('scorebug')"><div class="oi">📊</div><div class="ol">Scorebug</div></div>
-      <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Goal Flash</div></div>
-      <div class="ob" onclick="send('topscorers')"><div class="oi">🏆</div><div class="ol">Top Scorers</div></div>
-      <div class="ob" onclick="send('gkduel')"><div class="oi">🧤</div><div class="ol">GK Duel</div></div>
-      <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
-      <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Player of Match</div></div>
+
+  <!-- Overlay triggers -->
+  <div class="section">
+    <div class="section-title">Show Overlay</div>
+    <div class="dur-row">
+      <label>Duration (0=stay):</label>
+      <input type="number" id="duration" value="0" min="0" max="60">
+      <span style="color:var(--ui-muted);font-size:11px">sec</span>
     </div>
-    <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear Overlay</button>
+    <div class="overlay-grid">
+      <div class="overlay-btn" onclick="sendOverlay('scorebug')"><div class="ob-icon">📊</div><div class="ob-label">Scorebug</div></div>
+      <div class="overlay-btn" onclick="sendOverlay('goalflash')"><div class="ob-icon">⚽</div><div class="ob-label">Goal Flash</div></div>
+      <div class="overlay-btn" onclick="sendOverlay('topscorers')"><div class="ob-icon">🏆</div><div class="ob-label">Top Scorers</div></div>
+      <div class="overlay-btn" onclick="sendOverlay('gkduel')"><div class="ob-icon">🧤</div><div class="ob-label">GK Duel</div></div>
+      <div class="overlay-btn" onclick="sendOverlay('shooting')"><div class="ob-icon">🎯</div><div class="ob-label">Shooting</div></div>
+      <div class="overlay-btn" onclick="sendOverlay('potm')"><div class="ob-icon">⭐</div><div class="ob-label">Player of Match</div></div>
+    </div>
+    <button class="btn btn-dark btn-full" style="margin-top:6px" onclick="sendClear()">✕ Clear Overlay</button>
   </div>
-  <div class="sec">
-    <div class="sec-t">Colors</div>
-    <div id="cc" style="max-height:240px;overflow-y:auto;padding-right:4px"></div>
+
+  <!-- Colors -->
+  <div class="section">
+    <div class="section-title">Color Scheme</div>
+    <div id="colorControls" style="max-height:240px;overflow-y:auto;padding-right:4px"></div>
     <div class="row" style="margin-top:6px">
-      <button class="btn btn-b btn-s btn-f" onclick="sendColors()">Apply</button>
-      <button class="btn btn-d btn-s" onclick="resetC()">Reset</button>
+      <button class="btn btn-blue btn-sm btn-full" onclick="sendColors()">Apply</button>
+      <button class="btn btn-dark btn-sm" onclick="resetColors()">Reset</button>
     </div>
   </div>
 </div>
+
+<!-- MAIN -->
 <div class="main">
-  <div id="sBar" class="sb"></div>
-  <div id="prev" style="display:none">
-    <div class="mh" id="mHead"></div>
-    <div class="dc"><div class="dct" id="hT">Home</div><div style="max-height:280px;overflow-y:auto"><table class="pt" id="hTbl"></table></div></div>
-    <div class="dc" id="hgC" style="display:none"><div class="dct" id="hgT">Home GK</div><table class="pt" id="hgTbl"></table></div>
-    <div class="dc"><div class="dct" id="aT">Away</div><div style="max-height:280px;overflow-y:auto"><table class="pt" id="aTbl"></table></div></div>
-    <div class="dc" id="agC" style="display:none"><div class="dct" id="agT">Away GK</div><table class="pt" id="agTbl"></table></div>
+  <div id="statusBar" class="status-bar"></div>
+  <div id="matchPreview" style="display:none">
+    <div class="match-header" id="matchHeader"></div>
+    <div class="data-card"><div class="data-card-title" id="homeTitle">Home</div><div style="max-height:280px;overflow-y:auto"><table class="ptable" id="homeTable"></table></div></div>
+    <div class="data-card" id="homeGKCard" style="display:none"><div class="data-card-title" id="homeGKTitle">Home GK</div><table class="ptable" id="homeGKTable"></table></div>
+    <div class="data-card"><div class="data-card-title" id="awayTitle">Away</div><div style="max-height:280px;overflow-y:auto"><table class="ptable" id="awayTable"></table></div></div>
+    <div class="data-card" id="awayGKCard" style="display:none"><div class="data-card-title" id="awayGKTitle">Away GK</div><table class="ptable" id="awayGKTable"></table></div>
   </div>
-  <div id="empty" style="text-align:center;padding:60px 20px;color:var(--muted)">
+  <div id="emptyState" style="text-align:center;padding:60px 20px;color:var(--ui-muted)">
     <div style="font-size:52px;margin-bottom:12px">🤾</div>
-    <div style="font-family:'Oswald';font-size:20px;color:#fff;margin-bottom:6px">No Match Data</div>
-    <div style="max-width:400px;margin:0 auto;line-height:1.6">Paste a frhlive2.com URL or match ID and click <b>Scrape Match</b></div>
+    <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#fff;margin-bottom:6px">No Match Data</div>
+    <div style="max-width:400px;margin:0 auto;line-height:1.6">Paste a frhlive2.com match URL on the left and click <b>Scrape Match</b></div>
   </div>
 </div>
 </div>
+
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-overlay.firebaseapp.com",databaseURL:"https://handball-overlay-default-rtdb.europe-west1.firebasedatabase.app",projectId:"handball-overlay",storageBucket:"handball-overlay.firebasestorage.app",messagingSenderId:"926258764",appId:"1:926258764:web:4435158617393fa0a5c6e9"};
-const P=new URLSearchParams(location.search),ROOM=P.get('room')||'default';
-let db,ref,M=null,aT=null;
-try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('connB').textContent='✓ Connected';document.getElementById('connB').className='cb ok';const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;document.getElementById('outUrl').textContent=o;document.getElementById('outUrl').dataset.url=o}catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
+// ═══ FIREBASE CONFIG ═══
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "PASTE_YOUR_PROJECT",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "PASTE_YOUR_APP_ID"
+};
 
-function ss(m,t){const e=document.getElementById('sBar');e.textContent=m;e.className='sb '+t}
+const urlParams = new URLSearchParams(window.location.search);
+const ROOM = urlParams.get('room') || 'default';
 
-// ═══ SCRAPER — Direct API ═══
-function extractMatchId(input){
-  const s=input.trim();
-  if(/^\d+$/.test(s))return s;
-  const m=s.match(/utakmica=(\d+)/);
-  if(m)return m[1];
-  return null;
+let db, roomRef, MATCH = null, autoTimer = null;
+
+// ═══ INIT ═══
+try {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  roomRef = db.ref('rooms/' + ROOM);
+  document.getElementById('connBadge').textContent = '✓ Connected to Firebase';
+  document.getElementById('connBadge').className = 'conn-badge ok';
+  
+  // Build output URL
+  const base = window.location.href.replace('control.html','output.html');
+  const outUrl = base + (base.includes('?') ? '&' : '?') + 'room=' + ROOM;
+  document.getElementById('outputUrl').textContent = outUrl;
+  document.getElementById('outputUrl').dataset.url = outUrl;
+} catch(e) {
+  document.getElementById('connBadge').textContent = '✕ Firebase error: ' + e.message;
+  document.getElementById('connBadge').className = 'conn-badge err';
 }
 
-async function scrape(){
-  const raw=document.getElementById('mUrl').value;
-  const id=extractMatchId(raw);
-  if(!id){ss('Enter a valid match URL or ID','err');return}
-  ss('Scraping match '+id+'...','ld');
-  localStorage.setItem('hb_url',raw);
-  try{
-    const url='https://www.sportinfocentar2.com/coman/utakmice/'+id+'.js?'+Date.now();
-    const r=await fetch(url);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const txt=await r.text();
-    // Parse the JS object (it's not valid JSON, but close)
-    const fn=new Function('return('+txt+')');
-    const data=fn();
-    M=parseAPI(data);
-    if(!M){ss('Could not parse match data','err');return}
-    ref.child('match').set(M);
-    renderPreview();
-    ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name} (${M.time})`,'ok');
-    setupAuto();
-  }catch(e){ss('Error: '+e.message,'err')}
+function copyOutputUrl() {
+  const url = document.getElementById('outputUrl').dataset.url;
+  navigator.clipboard.writeText(url).then(() => {
+    setStatus('Output URL copied to clipboard!', 'ok');
+  });
 }
 
-function setupAuto(){
-  if(aT)clearInterval(aT);
-  if(document.getElementById('autoR').checked){
-    const s=parseInt(document.getElementById('rSec').value)||30;
-    aT=setInterval(scrape,s*1000);
+// ═══ SCRAPER ═══
+const CORS_PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://api.codetabs.com/v1/proxy?quest='
+];
+
+async function scrapeMatch() {
+  const url = document.getElementById('matchUrl').value.trim();
+  if (!url) { setStatus('Enter a match URL first', 'err'); return; }
+  
+  setStatus('Scraping match data...', 'loading');
+  localStorage.setItem('handball_match_url', url);
+
+  let html = null;
+
+  // Try each CORS proxy
+  for (const proxy of CORS_PROXIES) {
+    try {
+      const resp = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
+      if (resp.ok) { html = await resp.text(); break; }
+    } catch(e) { continue; }
+  }
+
+  if (!html) { setStatus('Could not fetch page. All proxies failed.', 'err'); return; }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  MATCH = parseMatchHTML(doc);
+
+  if (!MATCH) { setStatus('Could not parse match data from HTML', 'err'); return; }
+
+  // Send to Firebase
+  roomRef.child('match').set(MATCH);
+  renderPreview();
+  setStatus(`✓ ${MATCH.home.name} ${MATCH.home.score}:${MATCH.away.score} ${MATCH.away.name} — sent to overlay`, 'ok');
+
+  // Auto-refresh
+  setupAutoRefresh();
+}
+
+function setupAutoRefresh() {
+  if (autoTimer) clearInterval(autoTimer);
+  if (document.getElementById('autoRefresh').checked) {
+    const sec = parseInt(document.getElementById('refreshSec').value) || 30;
+    autoTimer = setInterval(scrapeMatch, sec * 1000);
   }
 }
-document.getElementById('autoR').addEventListener('change',setupAuto);
+document.getElementById('autoRefresh').addEventListener('change', setupAutoRefresh);
 
-function parseAPI(d){
-  if(!d.ut||!d.ut[0])return null;
-  const u=d.ut[0],ro=d.role?.[0],pl=d.sastavi||[];
-  const ekipa1=u.ekipa1,ekipa2=u.ekipa2;
-  const logoBase='https://www.sportinfocentar2.com/coman/logo/';
+function parseMatchHTML(doc) {
+  const blocks = doc.querySelectorAll('.ts-w-livescore-team-block');
+  if (blocks.length < 2) return null;
 
-  function parsePlayers(players,ekipaId,isGK){
-    return players.filter(p=>p.ekipa===ekipaId&&(isGK?(p.tipigraca===1):(p.tipigraca===0))).map(p=>{
-      const totalG=p.sutd||0,totalA=p.sutp||0;
-      return{
-        num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),
-        ga:totalA>0?`${totalG}/${totalA}`:'',
-        s7m:p.sutsedmeracp>0?`${p.sutsedmeracd}/${p.sutsedmeracp}`:'',
-        s9m:p.sutizvanap>0?`${p.sutizvanad}/${p.sutizvanap}`:'',
-        s6m:p.sutcrtap>0?`${p.sutcrtad}/${p.sutcrtap}`:'',
-        wng:p.sutkrilop>0?`${p.sutkrilod}/${p.sutkrilop}`:'',
-        fb:p.sutkontrap>0?`${p.sutkontrad}/${p.sutkontrap}`:'',
-        brk:p.sutprolazp>0?`${p.sutprolazd}/${p.sutprolazp}`:'',
-        ast:p.asistencija||'',
-        e7:p.izborenihsedmeraca||'',
-        trn:p.tehnickih||'',
-        stl:p.osvojenih||'',
-        sus:p.iskljucenja||'',
-        val:p.valigrac!=null?String(p.valigrac):'',
-        // GK fields
-        sav:p.obranep>0?`${p.obraned}/${p.obranep}`:'',
-        gs7m:p.obranesedmeracp>0?`${p.obranesedmeracd}/${p.obranesedmeracp}`:'',
-        gs9m:p.obraneizvanap>0?`${p.obraneizvanad}/${p.obraneizvanap}`:'',
-        gs6m:p.obranecrtap>0?`${p.obranecrtad}/${p.obranecrtap}`:'',
-        gwng:p.obranekrilop>0?`${p.obranekrilod}/${p.obranekrilop}`:'',
-        gfb:p.obranekontrap>0?`${p.obranekontrad}/${p.obranekontrap}`:'',
-        gval:p.valgolman!=null?String(p.valgolman):''
-      };
-    }).sort((a,b)=>a.num-b.num);
+  function parseTeam(block) {
+    const titleEl = block.querySelector('.ts-w-livescore-team__title strong');
+    const scoreEl = block.querySelector('.ts-w-livescore-team__score span');
+    const logoEl = block.querySelector('.ts-w-livescore-team__logo img');
+    const name = titleEl?.textContent.trim() || 'Team';
+    const score = parseInt(scoreEl?.textContent.trim()) || 0;
+    const logo = logoEl?.src || '';
+    const words = name.split(' ');
+    const shortName = words.length > 3 ? words.slice(-2).join(' ') : name;
+
+    const tables = block.querySelectorAll('table.ts-w-livescore-team');
+    const players = [], gk = [], seenP = new Set(), seenG = new Set();
+
+    if (tables[0]) {
+      tables[0].querySelectorAll('tbody tr').forEach(row => {
+        const nE = row.querySelector('.ts-w-livescore-team__player-number');
+        const naE = row.querySelector('.ts-w-livescore-team__player-name');
+        if (!nE || !naE) return;
+        const num = parseInt(nE.textContent.trim()), pn = naE.textContent.trim();
+        if (seenP.has(num + '_' + pn)) return; seenP.add(num + '_' + pn);
+        const c = row.querySelectorAll('td');
+        const p = {num, name: pn, ga:'',s7m:'',s9m:'',s6m:'',wng:'',fb:'',ast:'',e7:'',trn:'',stl:'',sus:'',val:''};
+        if (c.length >= 14) { p.ga=c[2]?.textContent.trim()||'';p.s7m=c[3]?.textContent.trim()||'';p.s9m=c[4]?.textContent.trim()||'';p.s6m=c[5]?.textContent.trim()||'';p.wng=c[6]?.textContent.trim()||'';p.fb=c[7]?.textContent.trim()||'';p.ast=c[8]?.textContent.trim()||'';p.e7=c[9]?.textContent.trim()||'';p.trn=c[10]?.textContent.trim()||'';p.stl=c[11]?.textContent.trim()||'';p.sus=c[12]?.textContent.trim()||'';p.val=c[13]?.textContent.trim()||''; }
+        players.push(p);
+      });
+    }
+    if (tables[1]) {
+      tables[1].querySelectorAll('tbody tr').forEach(row => {
+        const nE = row.querySelector('.ts-w-livescore-team__player-number');
+        const naE = row.querySelector('.ts-w-livescore-team__player-name');
+        if (!nE || !naE) return;
+        const num = parseInt(nE.textContent.trim()), gn = naE.textContent.trim();
+        if (seenG.has(num + '_' + gn)) return; seenG.add(num + '_' + gn);
+        const c = row.querySelectorAll('td');
+        const g = {num, name: gn, sav:'',s7m:'',s9m:'',s6m:'',wng:'',fb:'',val:''};
+        if (c.length >= 9) { g.sav=c[2]?.textContent.trim()||'';g.s7m=c[3]?.textContent.trim()||'';g.s9m=c[4]?.textContent.trim()||'';g.s6m=c[5]?.textContent.trim()||'';g.wng=c[6]?.textContent.trim()||'';g.fb=c[7]?.textContent.trim()||'';g.val=c[8]?.textContent.trim()||''; }
+        gk.push(g);
+      });
+    }
+    return {name, shortName, logo, score, players, gk};
   }
 
-  const homePlayers=parsePlayers(pl,ekipa1,false);
-  const awayPlayers=parsePlayers(pl,ekipa2,false);
-  const homeGK=parsePlayers(pl,ekipa1,true);
-  const awayGK=parsePlayers(pl,ekipa2,true);
-
-  // Status
-  let status='Live',time='';
-  if(ro){
-    const min=ro.minuta||0,sec=ro.sekundi||0;
-    time=`${min}:${String(sec).padStart(2,'0')}`;
-    if(ro.status===3&&min>=60)status='End';
-  }
-  if(u.trenutnistatus===3)status='End';
-
-  const shortName=(n)=>{const w=n.split(' ');return w.length>3?w.slice(-2).join(' '):n};
-
-  return{
-    home:{name:u.n1,shortName:shortName(u.n1),logo:logoBase+ekipa1+'.png',score:u.r1||0,players:homePlayers,gk:homeGK},
-    away:{name:u.n2,shortName:shortName(u.n2),logo:logoBase+ekipa2+'.png',score:u.r2||0,players:awayPlayers,gk:awayGK},
-    time,status,
-    htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
-    venue:u.mn||'',city:u.mm||'',
-    competition:u.nn||'',phase:ro?.faza||''
-  };
+  const home = parseTeam(blocks[0]), away = parseTeam(blocks[1]);
+  let status = 'Live'; const bt = doc.body?.textContent || '';
+  if (bt.includes('END') || bt.toLowerCase().includes('final')) status = 'End';
+  return {home, away, time: '', status};
 }
 
 // ═══ COMMANDS ═══
-function send(type){
-  if(!M){ss('No data. Scrape first!','err');return}
-  const dur=(parseInt(document.getElementById('dur').value)||0)*1000;
-  ref.child('command').set({type:'show',overlay:type,duration:dur,ts:Date.now()});
-  ss(`→ ${type}`,'ok');
+function sendOverlay(type) {
+  if (!MATCH) { setStatus('No match data. Scrape first!', 'err'); return; }
+  const dur = (parseInt(document.getElementById('duration').value) || 0) * 1000;
+  roomRef.child('command').set({type: 'show', overlay: type, duration: dur, ts: Date.now()});
+  setStatus(`→ Showing: ${type}${dur > 0 ? ' (' + dur/1000 + 's)' : ''}`, 'ok');
 }
-function sendClear(){ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
-function setLang(l){document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
+function sendClear() {
+  roomRef.child('command').set({type: 'clear', ts: Date.now()});
+  setStatus('→ Cleared', 'ok');
+}
+
+// ═══ LANGUAGE ═══
+function setLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  roomRef.child('lang').set(lang);
+}
 
 // ═══ COLORS ═══
-const DC={'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-dark':{l:'Accent dark',v:'#A02020'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'text-primary':{l:'Text',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Muted',v:'#6A8090'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
-let colors={};
-function initC(){colors={};for(const[k,v]of Object.entries(DC))colors[k]=v.v;renderC()}
-function renderC(){document.getElementById('cc').innerHTML=Object.entries(DC).map(([k,v])=>`<div class="cr"><label>${v.l}</label><input type="color" value="${colors[k]}" onchange="colors['${k}']=this.value;this.nextElementSibling.value=this.value"><input type="text" value="${colors[k]}" onchange="colors['${k}']=this.value;this.previousElementSibling.value=this.value"></div>`).join('')}
-function sendColors(){ref.child('colors').set(colors);localStorage.setItem('hb_c',JSON.stringify(colors));ss('Colors applied','ok')}
-function resetC(){initC();sendColors()}
+const DC = {'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-bright':{l:'Accent bright',v:'#E74C3C'},'accent-dark':{l:'Accent dark',v:'#A02020'},'teal':{l:'Stat cells',v:'#3A5A6A'},'teal-light':{l:'Stat light',v:'#4A7A8A'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'white':{l:'White',v:'#FFFFFF'},'text-primary':{l:'Text 1',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Text muted',v:'#6A8090'},'border':{l:'Borders',v:'#2A4A5A'},'row-even':{l:'Row even',v:'#1A3040'},'row-odd':{l:'Row odd',v:'#1E3A4C'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
+let colors = {};
+function initColors(){colors={};for(const[k,v]of Object.entries(DC))colors[k]=v.v;renderCC()}
+function renderCC(){document.getElementById('colorControls').innerHTML=Object.entries(DC).map(([k,v])=>`<div class="color-row"><label>${v.l}</label><input type="color" value="${colors[k]}" onchange="colors['${k}']=this.value;this.nextElementSibling.value=this.value"><input type="text" value="${colors[k]}" onchange="colors['${k}']=this.value;this.previousElementSibling.value=this.value"></div>`).join('')}
+function sendColors(){roomRef.child('colors').set(colors);localStorage.setItem('handball_colors',JSON.stringify(colors));setStatus('Colors sent to overlay','ok')}
+function resetColors(){initColors();sendColors()}
+
+// ═══ STATUS ═══
+function setStatus(m,t){const e=document.getElementById('statusBar');e.textContent=m;e.className='status-bar '+t}
 
 // ═══ PREVIEW ═══
 function renderPreview(){
-  if(!M)return;
-  document.getElementById('empty').style.display='none';
-  document.getElementById('prev').style.display='block';
-  document.getElementById('mHead').innerHTML=`<div class="mt"><img src="${M.home.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.home.name}</div></div><div style="text-align:center"><div class="ms">${M.home.score} <span class="msep">:</span> ${M.away.score}</div><div class="mst">${M.status} ${M.time}${M.htScore?' (HT: '+M.htScore+')':''}</div></div><div class="mt"><img src="${M.away.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.away.name}</div></div>`;
-  document.getElementById('hT').textContent=M.home.name;document.getElementById('aT').textContent=M.away.name;
-  rPT('hTbl',M.home.players);rPT('aTbl',M.away.players);
-  if(M.home.gk.length){document.getElementById('hgC').style.display='block';document.getElementById('hgT').textContent=M.home.name+' — GK';rGK('hgTbl',M.home.gk)}
-  if(M.away.gk.length){document.getElementById('agC').style.display='block';document.getElementById('agT').textContent=M.away.name+' — GK';rGK('agTbl',M.away.gk)}
+  if(!MATCH)return;
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('matchPreview').style.display='block';
+  document.getElementById('matchHeader').innerHTML=`<div class="mh-team">${MATCH.home.logo?`<img src="${MATCH.home.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'">`:''}<div class="mh-team-name">${MATCH.home.name}</div></div><div style="text-align:center"><div class="mh-score">${MATCH.home.score} <span class="mh-sep">:</span> ${MATCH.away.score}</div><div class="mh-status">${MATCH.status}</div></div><div class="mh-team">${MATCH.away.logo?`<img src="${MATCH.away.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'">`:''}<div class="mh-team-name">${MATCH.away.name}</div></div>`;
+  document.getElementById('homeTitle').textContent=MATCH.home.name;document.getElementById('awayTitle').textContent=MATCH.away.name;
+  rPT('homeTable',MATCH.home.players);rPT('awayTable',MATCH.away.players);
+  if(MATCH.home.gk.length){document.getElementById('homeGKCard').style.display='block';document.getElementById('homeGKTitle').textContent=MATCH.home.name+' — GK';rGK('homeGKTable',MATCH.home.gk)}
+  if(MATCH.away.gk.length){document.getElementById('awayGKCard').style.display='block';document.getElementById('awayGKTitle').textContent=MATCH.away.name+' — GK';rGK('awayGKTable',MATCH.away.gk)}
 }
-function rPT(id,pl){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Brk</th><th>Ast</th><th>Trn</th><th>Stl</th><th>2m</th><th>Val</th></tr></thead><tbody>'+pl.map(p=>{const vc=p.val?(parseFloat(p.val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}</td><td>${p.name}</td><td><b>${p.ga}</b></td><td>${p.s7m}</td><td>${p.s9m}</td><td>${p.s6m}</td><td>${p.wng}</td><td>${p.fb}</td><td>${p.brk}</td><td>${p.ast}</td><td>${p.trn}</td><td>${p.stl}</td><td>${p.sus}</td><td class="${vc}">${p.val}</td></tr>`}).join('')+'</tbody>'}
-function rGK(id,gks){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>Sav</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Val</th></tr></thead><tbody>'+gks.map(g=>{const vc=g.gval?(parseFloat(g.gval)>=0?'vp':'vn'):'';return`<tr><td>${g.num}</td><td>${g.name}</td><td><b>${g.sav}</b></td><td>${g.gs7m}</td><td>${g.gs9m}</td><td>${g.gs6m}</td><td>${g.gwng}</td><td>${g.gfb}</td><td class="${vc}">${g.gval}</td></tr>`}).join('')+'</tbody>'}
+function rPT(id,pl){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Ast</th><th>E7</th><th>Trn</th><th>Stl</th><th>2m</th><th>Val</th></tr></thead><tbody>'+pl.map(p=>{const vc=p.val?(parseFloat(p.val)>=0?'val-pos':'val-neg'):'';return`<tr><td>${p.num}</td><td>${p.name}</td><td><b>${p.ga}</b></td><td>${p.s7m}</td><td>${p.s9m}</td><td>${p.s6m}</td><td>${p.wng}</td><td>${p.fb}</td><td>${p.ast}</td><td>${p.e7}</td><td>${p.trn}</td><td>${p.stl}</td><td>${p.sus}</td><td class="${vc}">${p.val}</td></tr>`}).join('')+'</tbody>'}
+function rGK(id,gks){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>Sav</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Val</th></tr></thead><tbody>'+gks.map(g=>{const vc=g.val?(parseFloat(g.val)>=0?'val-pos':'val-neg'):'';return`<tr><td>${g.num}</td><td>${g.name}</td><td><b>${g.sav}</b></td><td>${g.s7m}</td><td>${g.s9m}</td><td>${g.s6m}</td><td>${g.wng}</td><td>${g.fb}</td><td class="${vc}">${g.val}</td></tr>`}).join('')+'</tbody>'}
 
 // ═══ INIT ═══
-initC();
-try{const sc=JSON.parse(localStorage.getItem('hb_c'));if(sc){colors={...colors,...sc};renderC()}}catch(e){}
-const sv=localStorage.getItem('hb_url');if(sv)document.getElementById('mUrl').value=sv;
+initColors();
+try{const sc=JSON.parse(localStorage.getItem('handball_colors'));if(sc){colors={...colors,...sc};renderCC()}}catch(e){}
+const savedUrl=localStorage.getItem('handball_match_url');if(savedUrl)document.getElementById('matchUrl').value=savedUrl;
 </script>
 </body>
 </html>
