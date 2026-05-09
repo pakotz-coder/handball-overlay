@@ -29,10 +29,10 @@ input:focus{border-color:var(--blue)}
 .lt{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--bdr)}
 .lb{flex:1;padding:7px;text-align:center;cursor:pointer;font-family:'Oswald';font-size:12px;font-weight:600;text-transform:uppercase;background:#0D1520;color:var(--muted);transition:all .2s;border:none}
 .lb.active{background:var(--red);color:#fff}
-.og{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
+.og{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:6px}
 .ob{padding:10px 8px;border:1px solid var(--bdr);border-radius:4px;background:var(--card);cursor:pointer;transition:all .2s;text-align:center}
 .ob:hover{border-color:var(--red);background:#1A2C3C}
-.ob .oi{font-size:20px;margin-bottom:2px}.ob .ol{font-family:'Oswald';font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.ob .oi{font-size:20px;margin-bottom:2px}.ob .ol{font-family:'Oswald';font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .dr{display:flex;align-items:center;gap:6px;margin-bottom:8px}.dr label{margin:0;white-space:nowrap}.dr input{width:50px;margin:0;text-align:center}
 .dc{background:var(--card);border:1px solid var(--bdr);border-radius:6px;padding:14px;margin-bottom:14px}
 .dct{font-family:'Oswald';font-size:15px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
@@ -65,10 +65,11 @@ input:focus{border-color:var(--blue)}
     <div class="og">
       <div class="ob" onclick="send('h2h')"><div class="oi">⚔️</div><div class="ol">Head to Head</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
+      <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
       <div class="ob" onclick="send('topscorers')"><div class="oi">🏆</div><div class="ol">Top Scorers</div></div>
       <div class="ob" onclick="send('gkduel')"><div class="oi">🧤</div><div class="ol">GK Duel</div></div>
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
-      <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Player of Match</div></div>
+      <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
       <div class="ob" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
       <div class="ob" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
     </div>
@@ -107,7 +108,7 @@ async function scrape(){
     const data=new Function('return('+await r.text()+')')();
     M=parseAPI(data);if(!M){ss('Parse error','err');return}
     ref.child('match').set(M);renderPreview();
-    ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name}`,'ok');setupAuto();
+    ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name} ${M.gender==='f'?'♀':'♂'}`,'ok');setupAuto();
   }catch(e){ss('Error: '+e.message,'err')}
 }
 function setupAuto(){if(aT)clearInterval(aT);if(document.getElementById('autoR').checked)aT=setInterval(scrape,(parseInt(document.getElementById('rSec').value)||30)*1000)}
@@ -117,6 +118,12 @@ function parseAPI(d){
   if(!d.ut?.[0])return null;
   const u=d.ut[0],ro=d.role?.[0],pl=d.sastavi||[],ev=d.dogadjaji||[];
   const ek1=u.ekipa1,ek2=u.ekipa2,lb='https://www.sportinfocentar2.com/coman/logo/';
+
+  // Gender detection from competition name
+  const nn=(u.nn||'').toLowerCase();
+  const femaleKeywords=['junioare','fete','feminin','feminine','cadete','junior f','women','girls','senioare'];
+  const gender=femaleKeywords.some(k=>nn.includes(k))?'f':'m';
+
   function isGK(p){return p.tipigraca==1||(p.obranep!=null&&p.obranep>0)}
   function pp(eid,gk){
     return pl.filter(p=>p.ekipa===eid&&(gk?isGK(p):!isGK(p))).map(p=>{
@@ -142,16 +149,26 @@ function parseAPI(d){
       }
     }).sort((a,b)=>a.num-b.num);
   }
-  // Last goal from events
+
+  // Last goal + score timeline from events
   let lastGoal=null;
-  for(const e of ev){
+  const goalEvents=[];
+  // Events are sorted newest-first, we reverse for timeline
+  for(let i=ev.length-1;i>=0;i--){
+    const e=ev[i];
     if(e.td===0&&e.ig&&(e.ish===0||e.ish===4)){
-      const team=e.e===1?u.n1:u.n2;
-      lastGoal={team,teamNum:e.e,num:e.pz||0,name:`${e.i} ${e.p}`.trim(),time:e.vr,r1:e.r1,r2:e.r2};
-      break;
+      goalEvents.push({team:e.e,time:e.vr,sk:e.sk,r1:e.r1,r2:e.r2,name:`${e.i} ${e.p}`.trim(),num:e.pz||0});
     }
   }
-  // Team totals
+  if(ev.length>0){
+    for(const e of ev){
+      if(e.td===0&&e.ig&&(e.ish===0||e.ish===4)){
+        lastGoal={team:e.e===1?u.n1:u.n2,teamNum:e.e,num:e.pz||0,name:`${e.i} ${e.p}`.trim(),time:e.vr,r1:e.r1,r2:e.r2};
+        break;
+      }
+    }
+  }
+
   function tot(players){let g=0,s=0,a=0,tn=0,st=0,su=0;players.forEach(p=>{if(p.ga){const x=p.ga.split('/');g+=parseInt(x[0])||0;s+=parseInt(x[1])||0}a+=p.ast||0;tn+=p.trn||0;st+=p.stl||0;su+=p.sus||0});return{goals:g,shots:s,eff:s>0?Math.round(g/s*100):0,ast:a,trn:tn,stl:st,sus:su}}
   function gkTot(gks){let sv=0,fc=0;gks.forEach(g=>{if(g.sav){const x=g.sav.split('/');sv+=parseInt(x[0])||0;fc+=parseInt(x[1])||0}});return{saves:sv,faced:fc,pct:fc>0?Math.round(sv/fc*100):0}}
   const hP=pp(ek1,false),aP=pp(ek2,false),hG=pp(ek1,true),aG=pp(ek2,true);
@@ -161,7 +178,7 @@ function parseAPI(d){
   if(u.trenutnistatus===3)status='End';
   return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+ek1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG)},
     away:{name:u.n2,shortName:sn(u.n2),logo:lb+ek2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG)},
-    time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',venue:u.mn||'',lastGoal};
+    time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',venue:u.mn||'',lastGoal,goalEvents,gender};
 }
 
 function send(t){if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
@@ -176,7 +193,8 @@ function resetC(){initC();sendColors()}
 
 function renderPreview(){
   if(!M)return;document.getElementById('empty').style.display='none';document.getElementById('prev').style.display='block';
-  document.getElementById('mHead').innerHTML=`<div class="mt"><img src="${M.home.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.home.name}</div></div><div style="text-align:center"><div class="ms">${M.home.score} <span class="msep">:</span> ${M.away.score}</div><div class="mst">${M.status} ${M.time}${M.htScore?' (HT: '+M.htScore+')':''}</div>${M.lastGoal?`<div style="font-size:11px;color:var(--gold);margin-top:4px">⚽ ${M.lastGoal.name} #${M.lastGoal.num} (${M.lastGoal.time}) → ${M.lastGoal.r1}:${M.lastGoal.r2}</div>`:''}</div><div class="mt"><img src="${M.away.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.away.name}</div></div>`;
+  const gIcon=M.gender==='f'?'♀':'♂';
+  document.getElementById('mHead').innerHTML=`<div class="mt"><img src="${M.home.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.home.name}</div></div><div style="text-align:center"><div class="ms">${M.home.score} <span class="msep">:</span> ${M.away.score}</div><div class="mst">${M.status} ${M.time}${M.htScore?' (HT: '+M.htScore+')':''}  ${gIcon}</div>${M.lastGoal?`<div style="font-size:11px;color:var(--gold);margin-top:4px">⚽ ${M.lastGoal.name} #${M.lastGoal.num} (${M.lastGoal.time}) → ${M.lastGoal.r1}:${M.lastGoal.r2}</div>`:''}</div><div class="mt"><img src="${M.away.logo}" style="width:40px;height:40px;margin-bottom:4px" onerror="this.style.display='none'"><div class="mn">${M.away.name}</div></div>`;
   document.getElementById('hT').textContent=M.home.name;document.getElementById('aT').textContent=M.away.name;
   rPT('hTbl',M.home.players);rPT('aTbl',M.away.players);
   if(M.home.gk.length){document.getElementById('hgC').style.display='block';document.getElementById('hgT').textContent=M.home.name+' — GK';rGK('hgTbl',M.home.gk)}
