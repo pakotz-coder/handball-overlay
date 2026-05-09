@@ -117,8 +117,9 @@ function parseAPI(d){
   if(!d.ut?.[0])return null;
   const u=d.ut[0],ro=d.role?.[0],pl=d.sastavi||[],ev=d.dogadjaji||[];
   const ek1=u.ekipa1,ek2=u.ekipa2,lb='https://www.sportinfocentar2.com/coman/logo/';
+  function isGK(p){return p.tipigraca==1||(p.obranep!=null&&p.obranep>0)}
   function pp(eid,gk){
-    return pl.filter(p=>p.ekipa===eid&&(gk?(p.tipigraca===1):(p.tipigraca===0))).map(p=>{
+    return pl.filter(p=>p.ekipa===eid&&(gk?isGK(p):!isGK(p))).map(p=>{
       const tG=p.sutd||0,tA=p.sutp||0;
       return{num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),
         ga:tA>0?`${tG}/${tA}`:'',
