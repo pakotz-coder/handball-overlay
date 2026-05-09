@@ -162,7 +162,7 @@ function rTS(){
 // ═══ GK DUEL — compact 2-column grid ═══
 function rGKD(){
   function gkCard(gk,side){
-    if(!gk||!gk.sav)return'';
+    if(!gk)return'';
     const sv=pga(gk.sav);const pct=sv.a>0?Math.round(sv.g/sv.a*100):0;
     const zones=[{k:'gs7m',l:'7m'},{k:'gs9m',l:'9m'},{k:'gs6m',l:'6m'},{k:'gwng',l:'Wng'},{k:'gfb',l:'FB'}];
     const activeZones=zones.filter(z=>gk[z.k]);
