@@ -17,18 +17,16 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .ac{animation:si .45s cubic-bezier(.22,1,.36,1) forwards}
 .ao{animation:fo .35s ease forwards}
 
-/* ═══ SHARED PANEL — wider, auto height ═══ */
 .sp{position:absolute;top:50%;left:50%;width:1400px;max-height:980px;background:var(--bg-dark);border-radius:12px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7)}
 .sph{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--accent),var(--accent-dark));padding:14px 36px}
 .spt{font-family:'Oswald';font-size:30px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:3px}
 .spu{font-family:'Barlow';font-size:20px;color:rgba(255,255,255,.8)}
-/* Team banner with score */
 .tb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 36px;background:var(--bg-panel);border-bottom:2px solid var(--border)}
 .tn{font-family:'Oswald';font-size:30px;font-weight:700;color:var(--text-primary);text-transform:uppercase}
 .tn.r{text-align:right}
 .ts{font-family:'Oswald';font-size:52px;font-weight:700;color:var(--white);text-align:center;background:var(--score-bg);border-radius:8px;padding:4px 32px;line-height:1.1}
 
-/* ═══ GOAL FLASH ═══ */
+/* GOAL FLASH */
 .gf{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;height:90px;border-radius:10px;overflow:hidden;box-shadow:0 6px 40px rgba(0,0,0,.6)}
 .gft{background:var(--accent);display:flex;align-items:center;padding:0 28px;font-family:'Oswald';font-size:32px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:3px}
 .gfp{background:var(--bg-dark);display:flex;align-items:center;gap:16px;padding:0 32px}
@@ -37,7 +35,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .gfd{font-family:'Barlow';font-size:20px;color:var(--text-secondary)}
 .gfsc{background:var(--score-bg);display:flex;align-items:center;padding:0 28px;font-family:'Oswald';font-size:44px;font-weight:700;color:var(--white)}
 
-/* ═══ TOP SCORERS — bigger rows ═══ */
+/* TOP SCORERS */
 .scs{padding:8px 36px 18px}
 .scl{font-family:'Oswald';font-size:20px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;padding:10px 0 6px}
 .scr{display:grid;grid-template-columns:50px 1fr 90px 70px;align-items:center;padding:12px 16px;border-radius:5px;margin-bottom:3px}
@@ -47,7 +45,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .scg{font-family:'Oswald';font-size:30px;font-weight:700;color:var(--gold);text-align:center}
 .sce{font-family:'Barlow';font-size:20px;color:var(--text-secondary);text-align:center}
 
-/* ═══ GK DUEL — compact 2-column grid, fits 3 per team ═══ */
+/* GK DUEL — 2-col compact */
 .gks{padding:10px 36px 14px}
 .gks-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .gks-col-label{font-family:'Oswald';font-size:20px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
@@ -55,27 +53,25 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .gkc2-pct{font-family:'Oswald';font-size:36px;font-weight:700;color:var(--green);min-width:70px;text-align:center}
 .gkc2-info{flex:1;min-width:0}
 .gkc2-name{font-family:'Oswald';font-size:20px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gkc2-det{font-family:'Barlow';font-size:16px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gkc2-det{font-family:'Barlow';font-size:16px;color:var(--text-secondary)}
 .gkc2-bars{flex:1.2;min-width:0}
 .gkb2{display:flex;align-items:center;gap:4px;margin-bottom:2px}
 .gkb2-l{font-family:'Barlow';font-size:14px;color:var(--text-muted);width:32px;text-align:right;flex-shrink:0}
 .gkb2-track{flex:1;height:14px;background:var(--row-even);border-radius:2px;overflow:hidden}
-.gkb2-fill{height:100%;border-radius:2px;min-width:1px;transition:width .6s ease}
-.gkb2-fill.h{background:var(--teal-light)}.gkb2-fill.a{background:var(--accent)}
+.gkb2-fill{height:100%;border-radius:2px;min-width:1px}.gkb2-fill.h{background:var(--teal-light)}.gkb2-fill.a{background:var(--accent)}
 .gkb2-v{font-family:'Barlow';font-size:13px;font-weight:700;color:var(--text-secondary);width:34px;flex-shrink:0}
 
-/* ═══ SHOOTING — compact side by side ═══ */
+/* SHOOTING */
 .shg{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:10px 36px 14px}
 .sht{background:var(--bg-panel);border-radius:8px;padding:14px 16px;border:1px solid var(--border)}
 .shtn{font-family:'Oswald';font-size:22px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--border)}
 .zr{display:grid;grid-template-columns:100px 1fr 110px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .zn{font-family:'Barlow Condensed';font-size:20px;font-weight:600;color:var(--text-secondary)}
 .zb{height:16px;background:var(--row-even);border-radius:3px;overflow:hidden}
-.zf{height:100%;border-radius:3px;min-width:2px;transition:width .6s ease}
-.zf.h{background:var(--bg-header-light)}.zf.a{background:var(--accent)}
+.zf{height:100%;border-radius:3px;min-width:2px}.zf.h{background:var(--bg-header-light)}.zf.a{background:var(--accent)}
 .zv{font-family:'Barlow Condensed';font-size:20px;font-weight:700;color:var(--text-primary);text-align:right}
 
-/* ═══ POTM ═══ */
+/* POTM */
 .pm{position:absolute;top:50%;left:50%;width:700px;background:var(--bg-dark);border-radius:12px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7);text-align:center}
 .pmh{background:linear-gradient(135deg,var(--gold),#D4A830);padding:18px}
 .pmht{font-family:'Oswald';font-size:26px;font-weight:700;color:var(--bg-dark);text-transform:uppercase;letter-spacing:4px}
@@ -88,7 +84,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .pmsv{font-family:'Oswald';font-size:38px;font-weight:700;color:var(--white)}
 .pmsl{font-family:'Barlow';font-size:16px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
 
-/* ═══ H2H — wider bars, bigger text ═══ */
+/* H2H */
 .h2h{padding:12px 36px 18px}
 .h2hr{display:grid;grid-template-columns:110px 1fr 140px 1fr 110px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .h2hv{font-family:'Oswald';font-size:34px;font-weight:700;color:var(--white);text-align:center}
@@ -97,10 +93,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .h2hfh{height:100%;background:linear-gradient(90deg,var(--bg-header),var(--teal-light));border-radius:4px 0 0 4px;float:left}
 .h2hfa{height:100%;background:linear-gradient(90deg,var(--accent-dark),var(--accent));border-radius:0 4px 4px 0;float:right}
 
-/* ═══ ROSTER — clear large table ═══ */
+/* ROSTER */
 .rost{padding:4px 36px 14px;overflow:hidden}
 .rost table{width:100%;border-collapse:collapse}
-.rost th{background:var(--bg-header);color:var(--white);padding:10px 8px;text-align:center;font-family:'Oswald';font-weight:600;font-size:18px;text-transform:uppercase;letter-spacing:.5px}
+.rost th{background:var(--bg-header);color:var(--white);padding:10px 8px;text-align:center;font-family:'Oswald';font-weight:600;font-size:18px;text-transform:uppercase}
 .rost th:nth-child(2){text-align:left}
 .rost td{padding:8px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Barlow Condensed';font-size:20px;color:var(--text-primary)}
 .rost td:nth-child(2){text-align:left;font-weight:600}
@@ -108,6 +104,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .rost .vp{color:var(--green);font-weight:700}.rost .vn{color:var(--accent);font-weight:700}
 .rost .bold{font-weight:700;color:var(--gold)}
 .rost .gk-tag{color:var(--gold);font-size:16px;font-weight:700}
+
+/* SCORE GRAPH */
+.graph-wrap{padding:14px 36px 20px}
+.graph-canvas{position:relative;width:100%;height:440px;background:var(--bg-panel);border-radius:8px;border:1px solid var(--border);overflow:hidden}
 
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
 #cs.ok{background:rgba(39,174,96,.2);color:#27AE60}
@@ -126,10 +126,11 @@ let db,ref,M=null,LANG='en',cT=null;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m',s9m:'9m',s6m:'6m',wing:'Wing',fb:'FB',brk:'Brk',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Eff.'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m',s9m:'9m',s6m:'6m',wing:'Ext',fb:'CA',brk:'Pătr',ast:'Pase Dec.',trn:'Pierderi',stl:'Recup.',sus:'Elim. 2min',savePct:'Proc. Parade',shotEff:'Efic. Arunc.'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m',s9m:'9m',s6m:'6m',wing:'Wing',fb:'FB',brk:'Brk',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Eff.'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m',s9m:'9m',s6m:'6m',wing:'Ext',fb:'CA',brk:'Pătr',ast:'Pase Dec.',trn:'Pierderi',stl:'Recup.',sus:'Elim. 2min',savePct:'Proc. Parade',shotEff:'Efic. Arunc.'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
+function tPotm(){const g=M?.gender||'m';return t('potm_'+g)}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
 function bestP(){const all=[...M.home.players.map(p=>({...p,team:M.home.shortName})),...M.away.players.map(p=>({...p,team:M.away.shortName}))];return all.filter(p=>p.val!==''&&p.val!=null).sort((a,b)=>parseFloat(b.val)-parseFloat(a.val))[0]}
@@ -142,7 +143,7 @@ function stL(){if(!M)return'';if(M.status==='End')return t('ft');if(M.time==='30
 
 function show(type,dur){
   if(!M)return;clr();
-  const fn={h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away')};
+  const fn={h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph};
   if(fn[type])fn[type]();
   if(dur&&dur>0){cT=setTimeout(()=>{$.firstChild?.classList.add('ao');setTimeout(clr,400)},dur)}
 }
@@ -159,23 +160,15 @@ function rTS(){
   const rows=arr=>arr.map(p=>`<div class="scr"><div class="scn">#${p.num}</div><div class="scnm">${p.name}</div><div class="scg">${p.g}/${p.a}</div><div class="sce">${p.e}%</div></div>`).join('');
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('topScorers')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div><div class="scs"><div class="scl">${M.home.shortName}</div>${rows(hT)}<div class="scl" style="margin-top:6px">${M.away.shortName}</div>${rows(aT)}</div></div>`}
 
-// ═══ GK DUEL — compact 2-column grid ═══
+// ═══ GK DUEL ═══
 function rGKD(){
   function gkCard(gk,side){
     if(!gk)return'';
     const sv=pga(gk.sav);const pct=sv.a>0?Math.round(sv.g/sv.a*100):0;
     const zones=[{k:'gs7m',l:'7m'},{k:'gs9m',l:'9m'},{k:'gs6m',l:'6m'},{k:'gwng',l:'Wng'},{k:'gfb',l:'FB'}];
     const activeZones=zones.filter(z=>gk[z.k]);
-    return`<div class="gkc2">
-      <div class="gkc2-pct">${pct}%</div>
-      <div class="gkc2-info"><div class="gkc2-name">#${gk.num} ${gk.name}</div><div class="gkc2-det">${sv.g}/${sv.a} ${t('sv')}</div></div>
-      ${activeZones.length?`<div class="gkc2-bars">${activeZones.map(z=>{const d=pga(gk[z.k]);const w=d.a>0?Math.round(d.g/d.a*100):0;return`<div class="gkb2"><div class="gkb2-l">${z.l}</div><div class="gkb2-track"><div class="gkb2-fill ${side}" style="width:${w}%"></div></div><div class="gkb2-v">${d.g}/${d.a}</div></div>`}).join('')}</div>`:''}
-    </div>`}
-  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('gkDuel')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div>
-    <div class="gks"><div class="gks-grid">
-      <div><div class="gks-col-label">${M.home.shortName}</div>${M.home.gk.map(g=>gkCard(g,'h')).join('')||'<div style="color:var(--text-muted);font-size:18px;padding:10px">N/A</div>'}</div>
-      <div><div class="gks-col-label">${M.away.shortName}</div>${M.away.gk.map(g=>gkCard(g,'a')).join('')||'<div style="color:var(--text-muted);font-size:18px;padding:10px">N/A</div>'}</div>
-    </div></div></div>`}
+    return`<div class="gkc2"><div class="gkc2-pct">${sv.a>0?pct+'%':'-'}</div><div class="gkc2-info"><div class="gkc2-name">#${gk.num} ${gk.name}</div><div class="gkc2-det">${sv.a>0?sv.g+'/'+sv.a+' '+t('sv'):'0 '+t('sh')}</div></div>${activeZones.length?`<div class="gkc2-bars">${activeZones.map(z=>{const d=pga(gk[z.k]);const w=d.a>0?Math.round(d.g/d.a*100):0;return`<div class="gkb2"><div class="gkb2-l">${z.l}</div><div class="gkb2-track"><div class="gkb2-fill ${side}" style="width:${w}%"></div></div><div class="gkb2-v">${d.g}/${d.a}</div></div>`}).join('')}</div>`:''}</div>`}
+  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('gkDuel')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div><div class="gks"><div class="gks-grid"><div><div class="gks-col-label">${M.home.shortName}</div>${M.home.gk.map(g=>gkCard(g,'h')).join('')||'<div style="color:var(--text-muted);font-size:18px;padding:10px">N/A</div>'}</div><div><div class="gks-col-label">${M.away.shortName}</div>${M.away.gk.map(g=>gkCard(g,'a')).join('')||'<div style="color:var(--text-muted);font-size:18px;padding:10px">N/A</div>'}</div></div></div></div>`}
 
 // ═══ SHOOTING ═══
 function rSH(){
@@ -184,15 +177,13 @@ function rSH(){
   const zR=(zones,side)=>zKeys.map(k=>{const d=zones[k]||{g:0,a:0,e:0};return`<div class="zr"><div class="zn">${t(k)}</div><div class="zb"><div class="zf ${side}" style="width:${d.e}%"></div></div><div class="zv">${d.g}/${d.a} · ${d.e}%</div></div>`}).join('');
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shooting')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div><div class="shg"><div class="sht"><div class="shtn">${M.home.shortName}</div>${zR(hZ,'h')}</div><div class="sht"><div class="shtn">${M.away.shortName}</div>${zR(aZ,'a')}</div></div></div>`}
 
-// ═══ POTM ═══
-function rPM(){const b=bestP();if(!b)return;const{g,a,e}=pga(b.ga);$.innerHTML=`<div class="pm ac"><div class="pmh"><div class="pmht">${t('potm')}</div></div><div class="pmb"><div class="pmnr">#${b.num}</div><div class="pmn">${b.name}</div><div class="pmt">${b.team}</div><div class="pms">${g>0?`<div class="pmsi"><div class="pmsv">${g}/${a}</div><div class="pmsl">${t('gl')}</div></div><div class="pmsi"><div class="pmsv">${e}%</div><div class="pmsl">${t('eff')}</div></div>`:''}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${b.val}</div><div class="pmsl">${t('rt')}</div></div></div></div></div>`}
+// ═══ POTM — gender-aware ═══
+function rPM(){const b=bestP();if(!b)return;const{g,a,e}=pga(b.ga);$.innerHTML=`<div class="pm ac"><div class="pmh"><div class="pmht">${tPotm()}</div></div><div class="pmb"><div class="pmnr">#${b.num}</div><div class="pmn">${b.name}</div><div class="pmt">${b.team}</div><div class="pms">${g>0?`<div class="pmsi"><div class="pmsv">${g}/${a}</div><div class="pmsl">${t('gl')}</div></div><div class="pmsi"><div class="pmsv">${e}%</div><div class="pmsl">${t('eff')}</div></div>`:''}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${b.val}</div><div class="pmsl">${t('rt')}</div></div></div></div></div>`}
 
-// ═══ HEAD TO HEAD ═══
+// ═══ H2H ═══
 function rH2H(){
   const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};
-  function row(label,hv,av,suffix=''){
-    const total=(hv+av)||1;const hp=Math.round(hv/total*100),ap=100-hp;
-    return`<div class="h2hr"><div class="h2hv">${hv}${suffix}</div><div class="h2hbar"><div class="h2hfh" style="width:${hp}%"></div></div><div class="h2hl">${label}</div><div class="h2hbar"><div class="h2hfa" style="width:${ap}%"></div></div><div class="h2hv">${av}${suffix}</div></div>`}
+  function row(label,hv,av,suffix=''){const total=(hv+av)||1;const hp=Math.round(hv/total*100),ap=100-hp;return`<div class="h2hr"><div class="h2hv">${hv}${suffix}</div><div class="h2hbar"><div class="h2hfh" style="width:${hp}%"></div></div><div class="h2hl">${label}</div><div class="h2hbar"><div class="h2hfa" style="width:${ap}%"></div></div><div class="h2hv">${av}${suffix}</div></div>`}
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('h2h')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${h.shortName}</div><div class="ts">${h.score} : ${a.score}</div><div class="tn r">${a.shortName}</div></div><div class="h2h">
     ${row(t('gl'),ht.goals||0,at.goals||0)}
     ${row(t('shotEff'),ht.eff||0,at.eff||0,'%')}
@@ -203,22 +194,94 @@ function rH2H(){
     ${row(t('sus'),ht.sus||0,at.sus||0)}
   </div></div>`}
 
-// ═══ FULL ROSTER ═══
+// ═══ ROSTER ═══
 function rRoster(side){
   const team=side==='home'?M.home:M.away;
   const allP=[...team.players,...team.gk].sort((a,b)=>a.num-b.num);
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('roster')}</div><div class="spu">${team.name}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div>
-    <div class="rost"><table>
-      <thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>2m</th><th>Val</th></tr></thead>
-      <tbody>${allP.map(p=>{
-        const isGK=p.sav&&p.sav!=='';
-        const ga=isGK?p.sav:p.ga;
-        const val=isGK?p.gval:p.val;
-        const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';
-        const gaLabel=isGK?'Sv':'G';
-        return`<tr><td>${p.num}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.sus||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`
-      }).join('')}</tbody>
-    </table></div></div>`}
+    <div class="rost"><table><thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>2m</th><th>Val</th></tr></thead>
+      <tbody>${allP.map(p=>{const isGK=p.sav&&p.sav!=='';const ga=isGK?p.sav:p.ga;const val=isGK?p.gval:p.val;const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.sus||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`}).join('')}</tbody></table></div></div>`}
+
+// ═══ SCORE PROGRESSION GRAPH ═══
+function rGraph(){
+  const ev=M.goalEvents||[];
+  if(!ev.length){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('graph')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div><div style="padding:60px;text-align:center;color:var(--text-muted);font-size:24px">No goal data available</div></div>`;return}
+
+  // Build data points: start at 0:00 with 0-0
+  const pts=[{sk:0,r1:0,r2:0,time:'0:00'}];
+  ev.forEach(e=>pts.push({sk:e.sk,r1:e.r1,r2:e.r2,time:e.time,team:e.team,name:e.name,num:e.num}));
+
+  const maxGoals=Math.max(M.home.score,M.away.score,1);
+  const lastSk=Math.max(pts[pts.length-1].sk,3600);
+  // Chart dimensions
+  const W=1310,H=400,padL=60,padR=30,padT=30,padB=50;
+  const cW=W-padL-padR,cH=H-padT-padB;
+
+  function x(sk){return padL+(sk/lastSk)*cW}
+  function y(goals){return padT+cH-(goals/maxGoals)*cH}
+
+  // Build SVG
+  let svg=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Barlow Condensed',sans-serif">`;
+
+  // Grid lines
+  for(let i=0;i<=maxGoals;i++){
+    const yy=y(i);
+    svg+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
+    svg+=`<text x="${padL-10}" y="${yy+5}" fill="${getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim()||'#6A8090'}" font-size="16" text-anchor="end" font-weight="600">${i}</text>`;
+  }
+
+  // Time axis labels
+  const timeMarks=[0,5,10,15,20,25,30,35,40,45,50,55,60];
+  timeMarks.forEach(m=>{
+    const sk2=m*60;
+    if(sk2>lastSk)return;
+    const xx=x(sk2);
+    svg+=`<line x1="${xx}" y1="${padT}" x2="${xx}" y2="${H-padB}" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;
+    svg+=`<text x="${xx}" y="${H-padB+22}" fill="${getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim()||'#6A8090'}" font-size="15" text-anchor="middle" font-weight="600">${m}'</text>`;
+  });
+
+  // Halftime line
+  const htX=x(1800);
+  svg+=`<line x1="${htX}" y1="${padT}" x2="${htX}" y2="${H-padB}" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-dasharray="8,4"/>`;
+  svg+=`<text x="${htX}" y="${padT-8}" fill="rgba(255,255,255,.4)" font-size="14" text-anchor="middle" font-weight="600">HT</text>`;
+
+  // Build path data for home (r1) and away (r2)
+  let pathH='',pathA='';
+  pts.forEach((p,i)=>{
+    const cmd=i===0?'M':'L';
+    pathH+=`${cmd}${x(p.sk).toFixed(1)},${y(p.r1).toFixed(1)} `;
+    pathA+=`${cmd}${x(p.sk).toFixed(1)},${y(p.r2).toFixed(1)} `;
+  });
+
+  // Area fill between lines
+  const homeColor=getComputedStyle(document.documentElement).getPropertyValue('--bg-header-light').trim()||'#4E8098';
+  const awayColor=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#CC3333';
+
+  // Lines
+  svg+=`<path d="${pathH}" fill="none" stroke="${homeColor}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  svg+=`<path d="${pathA}" fill="none" stroke="${awayColor}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  // Goal dots
+  pts.forEach((p,i)=>{
+    if(i===0)return;
+    const cx=x(p.sk),cy1=y(p.r1),cy2=y(p.r2);
+    if(p.team===1){
+      svg+=`<circle cx="${cx.toFixed(1)}" cy="${cy1.toFixed(1)}" r="5" fill="${homeColor}" stroke="var(--white)" stroke-width="2"/>`;
+    }else{
+      svg+=`<circle cx="${cx.toFixed(1)}" cy="${cy2.toFixed(1)}" r="5" fill="${awayColor}" stroke="var(--white)" stroke-width="2"/>`;
+    }
+  });
+
+  // Legend
+  svg+=`<rect x="${padL+10}" y="${padT+6}" width="16" height="4" rx="2" fill="${homeColor}"/>`;
+  svg+=`<text x="${padL+32}" y="${padT+12}" fill="var(--text-primary)" font-size="16" font-weight="600">${M.home.shortName}</text>`;
+  const lw=M.home.shortName.length*10+50;
+  svg+=`<rect x="${padL+lw}" y="${padT+6}" width="16" height="4" rx="2" fill="${awayColor}"/>`;
+  svg+=`<text x="${padL+lw+22}" y="${padT+12}" fill="var(--text-primary)" font-size="16" font-weight="600">${M.away.shortName}</text>`;
+
+  svg+=`</svg>`;
+
+  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('graph')}</div><div class="spu">${stL()}</div></div><div class="tb"><div class="tn">${M.home.shortName}</div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tn r">${M.away.shortName}</div></div><div class="graph-wrap"><div class="graph-canvas">${svg}</div></div></div>`}
 
 // ═══ FIREBASE ═══
 if(ref){
