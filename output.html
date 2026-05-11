@@ -228,38 +228,42 @@ function rShotMap(){
     let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
     // Court bg
     svg+=`<rect x="10" y="10" width="${W-20}" height="${H-20}" rx="8" fill="var(--bg-panel)" stroke="var(--border)" stroke-width="0.5"/>`;
-    // Goal bar
+    // Goal bar at top
     svg+=`<rect x="${W/2-100}" y="14" width="200" height="12" rx="4" fill="${color}" opacity="0.7"/>`;
     svg+=`<text x="${W/2}" y="10" text-anchor="middle" font-family="Oswald" font-size="18" font-weight="600" fill="var(--text-muted)">GOAL</text>`;
-    // 6m arc
-    svg+=`<path d="M${W/2-180} 140 Q${W/2} 50 ${W/2+180} 140" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
-    // 9m arc
-    svg+=`<path d="M${W/2-260} 240 Q${W/2} 110 ${W/2+260} 240" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>`;
-    // 7m dot
-    svg+=`<circle cx="${W/2}" cy="120" r="4" fill="var(--text-muted)" opacity="0.5"/>`;
-    // Zone boxes
+    // 6m arc — D-shape curving DOWN from goal line (realistic handball court)
+    svg+=`<path d="M${W/2-170} 26 C${W/2-170} 140, ${W/2+170} 140, ${W/2+170} 26" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+    // 9m arc — larger D-shape also curving down
+    svg+=`<path d="M${W/2-280} 26 C${W/2-280} 230, ${W/2+280} 230, ${W/2+280} 26" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>`;
+    // 7m mark
+    svg+=`<line x1="${W/2-6}" y1="62" x2="${W/2+6}" y2="62" stroke="var(--text-muted)" stroke-width="2" opacity="0.5"/>`;
+    // Zone data
     const s7=zones['s7m']||{g:0,a:0,e:0};
     const s9=zones['s9m']||{g:0,a:0,e:0};
     const s6=zones['s6m']||{g:0,a:0,e:0};
     const wng=zones['wing']||{g:0,a:0,e:0};
     const fb=zones['fb']||{g:0,a:0,e:0};
     const brk=zones['brk']||{g:0,a:0,e:0};
-    // Wing left
-    svg+=zoneBox(20,60,130,80,t('wing'),wng,'#1D9E75');
+    // Wing left (outside arcs, near sideline)
+    svg+=zoneBox(18,40,120,80,t('wing'),wng,'#1D9E75');
     // Wing right
-    svg+=zoneBox(W-150,60,130,80,t('wing'),wng,'#1D9E75');
-    // 6m line center
-    svg+=zoneBox(W/2-80,55,160,75,t('s6m'),s6,'#378ADD');
-    // 9m backcourt
-    svg+=zoneBox(W/2-150,175,300,80,t('s9m'),s9,'#D85A30');
-    // 7m penalty
-    svg+=`<circle cx="${W/2}" cy="120" r="30" fill="#D4537E" fill-opacity="0.15" stroke="#D4537E" stroke-width="1.5"/>`;
-    svg+=`<text x="${W/2}" y="116" text-anchor="middle" font-family="Oswald" font-size="24" font-weight="700" fill="#D4537E">${s7.g}/${s7.a}</text>`;
-    svg+=`<text x="${W/2}" y="136" text-anchor="middle" font-family="Barlow" font-size="14" fill="var(--text-muted)">7m</text>`;
-    // Fast break
-    svg+=zoneBox(60,310,160,75,t('fb'),fb,'#639922');
-    // Breakthrough
-    svg+=zoneBox(W-220,310,160,75,t('brk'),brk,'#BA7517');
+    svg+=zoneBox(W-138,40,120,80,t('wing'),wng,'#1D9E75');
+    // 6m line zone (inside 6m arc, LEFT of center)
+    svg+=zoneBox(W/2-150,38,120,75,t('s6m'),s6,'#378ADD');
+    // 7m penalty zone (inside 6m arc, RIGHT of center — no overlap)
+    svg+=`<rect x="${W/2+30}" y="38" width="120" height="75" rx="6" fill="#D4537E" fill-opacity="0.15" stroke="#D4537E" stroke-width="1.5"/>`;
+    svg+=`<text x="${W/2+90}" y="68" text-anchor="middle" font-family="Oswald" font-size="32" font-weight="700" fill="#D4537E">${s7.g}/${s7.a}</text>`;
+    svg+=`<text x="${W/2+90}" y="92" text-anchor="middle" font-family="Barlow Condensed" font-size="20" font-weight="600" fill="var(--text-secondary)">${t('s7m')}</text>`;
+    svg+=`<text x="${W/2+90}" y="108" text-anchor="middle" font-family="Barlow" font-size="18" fill="var(--text-muted)">${s7.e}%</text>`;
+    // 9m backcourt (between 6m and 9m arcs)
+    svg+=zoneBox(W/2-150,160,300,80,t('s9m'),s9,'#D85A30');
+    // Fast break (below 9m zone, left)
+    svg+=zoneBox(60,305,160,75,t('fb'),fb,'#639922');
+    // Breakthrough (below 9m zone, right)
+    svg+=zoneBox(W-220,305,160,75,t('brk'),brk,'#BA7517');
+    // Dashed arrows from FB/Brk toward goal area
+    svg+=`<line x1="140" y1="305" x2="270" y2="210" stroke="#639922" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>`;
+    svg+=`<line x1="${W-140}" y1="305" x2="${W-270}" y2="210" stroke="#BA7517" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>`;
     // Team label + total
     svg+=`<text x="${W/2}" y="440" text-anchor="middle" font-family="Oswald" font-size="28" font-weight="700" fill="var(--text-primary)">${teamName}</text>`;
     svg+=`<text x="${W/2}" y="470" text-anchor="middle" font-family="Barlow Condensed" font-size="24" font-weight="600" fill="var(--text-secondary)">${tot.goals||0}/${tot.shots||0} · ${tot.eff||0}%</text>`;
