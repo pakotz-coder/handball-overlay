@@ -123,7 +123,8 @@ function parseAPI(d){
   const u=d.ut[0],ro=d.role?.[0],pl=d.sastavi||[],ev=d.dogadjaji||[];
   const ek1=u.ekipa1,ek2=u.ekipa2,lb='https://www.sportinfocentar2.com/coman/logo/';
   // Logo uses k1/k2 (club IDs), NOT ekipa1/ekipa2 (team registration IDs)
-  const logoId1=u.k1||ek1,logoId2=u.k2||ek2;
+  // For national teams, k1/k2 are null but dr1/dr2 have country codes (e.g. "cz", "at")
+  const logoId1=u.k1||u.dr1||ek1,logoId2=u.k2||u.dr2||ek2;
 
   const nn=(u.nn||'').toLowerCase();
   const femaleKeywords=['junioare','fete','feminin','feminine','cadete','junior f','women','girls','senioare','florilor'];
