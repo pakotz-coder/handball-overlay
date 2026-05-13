@@ -10,13 +10,20 @@
 :root{--bg-dark:#1A2D3D;--bg-panel:#1E3448;--bg-header:#2B5876;--bg-header-light:#4E8098;--accent:#CC3333;--accent-dark:#A02020;--teal:#3A5A6A;--teal-light:#4A7A8A;--green:#27AE60;--gold:#F0C040;--white:#FFF;--text-primary:#F0F4F7;--text-secondary:#9AABB8;--text-muted:#6A8090;--border:#2A4A5A;--row-even:rgba(26,48,64,.95);--row-odd:rgba(30,58,76,.95);--score-bg:#0E1E2A}
 html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Barlow Condensed',sans-serif}
 .ov{position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none}
-@keyframes su{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes si{from{transform:translate(-50%,-50%) scale(.92);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
-@keyframes fo{from{opacity:1}to{opacity:0}}
+@keyframes splitOpen{0%{clip-path:inset(0 50%);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0%)}}
+@keyframes splitClose{0%{clip-path:inset(0 0%);opacity:1}70%{opacity:1}100%{clip-path:inset(0 50%);opacity:0}}
+@keyframes splitOpenGF{0%{clip-path:inset(0 50%);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0%)}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes fadeRow{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0}to{opacity:1}}
+@keyframes drawLine{to{stroke-dashoffset:0}}
 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-.au{animation:su .45s cubic-bezier(.22,1,.36,1) forwards}
-.ac{animation:si .45s cubic-bezier(.22,1,.36,1) forwards}
-.ao{animation:fo .35s ease forwards}
+.ac{animation:splitOpen .7s cubic-bezier(.22,1,.36,1) forwards}
+.au{animation:splitOpenGF .7s cubic-bezier(.22,1,.36,1) forwards}
+.ao{animation:splitClose .5s cubic-bezier(.55,0,.78,.36) forwards}
+.arow{opacity:0;animation:fadeRow .4s ease forwards}
+.abar{transform-origin:left;animation:barGrow .6s cubic-bezier(.22,1,.36,1) forwards}
+.adraw{stroke-dashoffset:var(--len);animation:drawLine 1.5s cubic-bezier(.22,1,.36,1) forwards}
 
 .sp{position:absolute;top:50%;left:50%;width:1700px;max-height:1040px;background:var(--bg-dark);border-radius:14px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7)}
 .sph{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--accent),var(--accent-dark));padding:14px 36px}
@@ -176,16 +183,78 @@ function szn(pl){const z={s7m:'s7m',s9m:'s9m',s6m:'s6m',wng:'wing',fb:'fb',brk:'
 function lg(url,sz=36){return`<img src="${url}" style="width:${sz}px;height:${sz}px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`}
 
 const $=document.getElementById('ov');
-function clr(){if(cT)clearTimeout(cT);$.innerHTML=''}
+function clr(){
+  if(cT)clearTimeout(cT);
+  const el=$.firstChild;
+  if(el){el.classList.remove('ac','au');el.classList.add('ao');setTimeout(()=>{$.innerHTML=''},550)}
+  else{$.innerHTML=''}
+}
 function apC(c){const s=document.documentElement.style;for(const[k,v]of Object.entries(c))s.setProperty('--'+k,v)}
 function stL(){if(!M)return'';if(M.status==='End')return t('ft');if(M.time==='30:00')return t('ht');return M.time||t('live')}
 function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
 
+// Animate inner elements after panel opens
+function animateInner(delay){
+  delay=delay||700;
+  // Animate bars (h2h, shooting, gk)
+  setTimeout(()=>{
+    document.querySelectorAll('.h2hfh,.h2hfa,.zf,.gkb2-fill').forEach((el,i)=>{
+      el.style.transform='scaleX(0)';el.style.transformOrigin='left';
+      setTimeout(()=>{el.classList.add('abar')},i*60);
+    });
+  },delay);
+  // Animate rows with cascade
+  setTimeout(()=>{
+    document.querySelectorAll('.scr,.h2hr,.zr,.gkc2,.pre-pl').forEach((el,i)=>{
+      el.style.opacity='0';
+      setTimeout(()=>{el.classList.add('arow')},i*50);
+    });
+  },delay+100);
+  // Animate table rows
+  setTimeout(()=>{
+    document.querySelectorAll('.rost tr,.pt tr').forEach((el,i)=>{
+      if(i===0)return; // skip header
+      el.style.opacity='0';
+      setTimeout(()=>{el.classList.add('arow')},i*30);
+    });
+  },delay+100);
+}
+
+// Animate SVG graph lines drawing
+function animateGraph(delay){
+  delay=delay||800;
+  setTimeout(()=>{
+    document.querySelectorAll('.draw-line').forEach(path=>{
+      const len=path.getTotalLength();
+      path.style.strokeDasharray=len;
+      path.style.strokeDashoffset=len;
+      path.style.setProperty('--len',len);
+      path.classList.add('adraw');
+    });
+    // Fade in dots after lines finish
+    document.querySelectorAll('.draw-dot').forEach((dot,i)=>{
+      dot.style.opacity='0';
+      setTimeout(()=>{dot.style.opacity='1';dot.style.transition='opacity .2s'},1500+i*20);
+    });
+  },delay);
+}
+
 function show(type,dur){
-  if(!M)return;clr();
+  if(!M)return;
+  // If something is showing, collapse it first then show new
+  const existing=$.firstChild;
+  if(existing){
+    existing.classList.remove('ac','au');existing.classList.add('ao');
+    setTimeout(()=>{$.innerHTML='';doShow(type,dur)},550);
+  }else{doShow(type,dur)}
+}
+function doShow(type,dur){
   const fn={prematch:rPre,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,shotmap:rShotMap};
   if(fn[type])fn[type]();
-  if(dur&&dur>0){cT=setTimeout(()=>{$.firstChild?.classList.add('ao');setTimeout(clr,400)},dur)}
+  // Trigger inner animations
+  if(['h2h','shooting','gkduel','topscorers','roster1','roster2','prematch','shotmap'].includes(type))animateInner();
+  if(type==='graph')animateGraph();
+  if(dur&&dur>0){cT=setTimeout(()=>{clr()},dur)}
 }
 
 // ═══ PRE-MATCH ═══
@@ -287,8 +356,8 @@ for(let i=0;i<=maxG;i++){const yy=yp(i);svg+=`<line x1="${pL}" y1="${yy}" x2="${
 [0,5,10,15,20,25,30,35,40,45,50,55,60].forEach(m=>{const sk2=m*60;if(sk2>lastSk)return;const xx=xp(sk2);svg+=`<line x1="${xx}" y1="${pT}" x2="${xx}" y2="${H-pB}" stroke="rgba(255,255,255,.04)"/><text x="${xx}" y="${H-pB+28}" fill="#6A8090" font-size="22" text-anchor="middle" font-weight="600">${m}'</text>`});
 const htX=xp(1800);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;
 let pH='',pA2='';pts.forEach((p,i)=>{const c=i===0?'M':'L';pH+=`${c}${xp(p.sk).toFixed(1)},${yp(p.r1).toFixed(1)} `;pA2+=`${c}${xp(p.sk).toFixed(1)},${yp(p.r2).toFixed(1)} `});
-svg+=`<path d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><path d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`;
-pts.forEach((p,i)=>{if(i===0)return;if(p.team===1)svg+=`<circle cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r1).toFixed(1)}" r="6" fill="${hC}" stroke="#fff" stroke-width="2.5"/>`;else svg+=`<circle cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r2).toFixed(1)}" r="6" fill="${aC2}" stroke="#fff" stroke-width="2.5"/>`});
+svg+=`<path class="draw-line" d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><path class="draw-line" d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`;
+pts.forEach((p,i)=>{if(i===0)return;if(p.team===1)svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r1).toFixed(1)}" r="6" fill="${hC}" stroke="#fff" stroke-width="2.5" opacity="0"/>`;else svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r2).toFixed(1)}" r="6" fill="${aC2}" stroke="#fff" stroke-width="2.5" opacity="0"/>`});
 svg+=`<rect x="${pL+14}" y="${pT+8}" width="20" height="5" rx="2" fill="${hC}"/><text x="${pL+40}" y="${pT+16}" fill="#F0F4F7" font-size="22" font-weight="700">${M.home.shortName}</text>`;
 const lw=M.home.shortName.length*12+60;svg+=`<rect x="${pL+lw}" y="${pT+8}" width="20" height="5" rx="2" fill="${aC2}"/><text x="${pL+lw+26}" y="${pT+16}" fill="#F0F4F7" font-size="22" font-weight="700">${M.away.shortName}</text>`;
 svg+=`</svg>`;
