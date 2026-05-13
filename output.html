@@ -83,19 +83,21 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .zv{font-family:'Barlow Condensed';font-size:28px;font-weight:700;color:var(--text-primary);text-align:right}
 
 /* POTM */
-.pm{position:absolute;top:50%;left:50%;width:800px;margin-left:-400px;margin-top:-300px;background:var(--bg-dark);border-radius:14px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7);text-align:center}
-.pmh{background:linear-gradient(135deg,var(--gold),#D4A830);padding:22px}
+.pm{position:absolute;top:50%;left:50%;width:1500px;margin-left:-750px;margin-top:-340px;background:var(--bg-dark);border-radius:14px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7)}
+.pmh{background:linear-gradient(135deg,var(--gold),#D4A830);padding:18px;text-align:center}
 .pmht{font-family:'Oswald';font-size:36px;font-weight:700;color:var(--bg-dark);text-transform:uppercase;letter-spacing:4px}
-.pmb{padding:40px}
+.pm-cards{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.pm-card{padding:36px;text-align:center;border-right:1px solid var(--border)}
+.pm-card:last-child{border-right:none}
 .pm-logo{width:50px;height:50px;margin:0 auto 8px}
 .pm-logo img{width:50px;height:50px;object-fit:contain}
-.pmnr{font-family:'Oswald';font-size:120px;font-weight:700;color:var(--gold);line-height:1}
-.pmn{font-family:'Oswald';font-size:50px;font-weight:700;color:var(--white);margin:12px 0 6px;text-transform:uppercase}
-.pmt{font-family:'Barlow';font-size:28px;color:var(--text-secondary);margin-bottom:26px}
-.pms{display:flex;justify-content:center;gap:50px}
+.pmnr{font-family:'Oswald';font-size:100px;font-weight:700;color:var(--gold);line-height:1}
+.pmn{font-family:'Oswald';font-size:42px;font-weight:700;color:var(--white);margin:10px 0 4px;text-transform:uppercase}
+.pmt{font-family:'Barlow';font-size:24px;color:var(--text-secondary);margin-bottom:22px}
+.pms{display:flex;justify-content:center;gap:40px}
 .pmsi{text-align:center}
-.pmsv{font-family:'Oswald';font-size:48px;font-weight:700;color:var(--white)}
-.pmsl{font-family:'Barlow';font-size:20px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.pmsv{font-family:'Oswald';font-size:42px;font-weight:700;color:var(--white)}
+.pmsl{font-family:'Barlow';font-size:18px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
 
 /* H2H */
 .h2h{padding:14px 36px 22px}
@@ -178,7 +180,34 @@ function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
-function bestP(){const all=[...M.home.players.map(p=>({...p,team:M.home.shortName,logo:M.home.logo})),...M.away.players.map(p=>({...p,team:M.away.shortName,logo:M.away.logo}))];return all.filter(p=>p.val!==''&&p.val!=null).sort((a,b)=>parseFloat(b.val)-parseFloat(a.val))[0]}
+function bestPTeam(team){
+  // Combine field players and GKs, use valigrac for field, valgolman for GK
+  const all=[];
+  team.players.forEach(p=>{
+    const rating=parseFloat(p.val);
+    if(isNaN(rating))return;
+    const ga=pga(p.ga);
+    all.push({num:p.num,name:p.name,rating,tiebreak:ga.g,isGK:false,ga:p.ga,g:ga.g,a:ga.a,e:ga.e});
+  });
+  team.gk.forEach(p=>{
+    const rating=parseFloat(p.gval);
+    if(isNaN(rating))return;
+    const sv=pga(p.sav);
+    all.push({num:p.num,name:p.name,rating,tiebreak:sv.g,isGK:true,sav:p.sav,svG:sv.g,svA:sv.a,svE:sv.a>0?Math.round(sv.g/sv.a*100):0});
+  });
+  all.sort((a,b)=>b.rating-a.rating||(b.tiebreak-a.tiebreak));
+  return all[0]||null;
+}
+function pmCard(p,logo,teamName){
+  if(!p)return`<div class="pm-card"><div style="color:var(--text-muted);font-size:28px;padding:60px">N/A</div></div>`;
+  let stats='';
+  if(p.isGK){
+    stats=`<div class="pmsi"><div class="pmsv">${p.svE}%</div><div class="pmsl">${t('savePct')}</div></div><div class="pmsi"><div class="pmsv">${p.svG}/${p.svA}</div><div class="pmsl">${t('sv')}</div></div>`;
+  }else if(p.g>0){
+    stats=`<div class="pmsi"><div class="pmsv">${p.g}/${p.a}</div><div class="pmsl">${t('gl')}</div></div><div class="pmsi"><div class="pmsv">${p.e}%</div><div class="pmsl">${t('eff')}</div></div>`;
+  }
+  return`<div class="pm-card"><div class="pm-logo"><img src="${logo}" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'"></div><div class="pmnr">#${p.num}</div><div class="pmn">${p.name}</div><div class="pmt">${teamName}${p.isGK?' · GK':''}</div><div class="pms">${stats}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${p.rating}</div><div class="pmsl">${t('rt')}</div></div></div></div>`;
+}
 function szn(pl){const z={s7m:'s7m',s9m:'s9m',s6m:'s6m',wng:'wing',fb:'fb',brk:'brk'};const r={};for(const[k,lk]of Object.entries(z)){let g=0,a=0;pl.forEach(p=>{if(p[k]){const x=pga(p[k]);g+=x.g;a+=x.a}});r[lk]={g,a,e:a>0?Math.round(g/a*100):0}}return r}
 function lg(url,sz=36){return`<img src="${url}" style="width:${sz}px;height:${sz}px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`}
 
@@ -273,7 +302,11 @@ function rGKD(){function gkCard(gk,side){if(!gk)return'';const sv=pga(gk.sav);co
 function rSH(){const hZ=szn(M.home.players),aZ=szn(M.away.players);const zKeys=['s7m','s9m','s6m','wing','fb','brk'];const zR=(zones,side)=>zKeys.map(k=>{const d=zones[k]||{g:0,a:0,e:0};return`<div class="zr"><div class="zn">${t(k)}</div><div class="zb"><div class="zf ${side}" style="width:${d.e}%"></div></div><div class="zv">${d.g}/${d.a} · ${d.e}%</div></div>`}).join('');$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shooting')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="shg"><div class="sht"><div class="shtn">${lg(M.home.logo,28)}${M.home.shortName}</div>${zR(hZ,'h')}</div><div class="sht"><div class="shtn">${lg(M.away.logo,28)}${M.away.shortName}</div>${zR(aZ,'a')}</div></div></div>`}
 
 // ═══ POTM ═══
-function rPM(){const b=bestP();if(!b)return;const{g,a,e}=pga(b.ga);$.innerHTML=`<div class="pm ac"><div class="pmh"><div class="pmht">${tPotm()}</div></div><div class="pmb"><div class="pm-logo"><img src="${b.logo}" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'"></div><div class="pmnr">#${b.num}</div><div class="pmn">${b.name}</div><div class="pmt">${b.team}</div><div class="pms">${g>0?`<div class="pmsi"><div class="pmsv">${g}/${a}</div><div class="pmsl">${t('gl')}</div></div><div class="pmsi"><div class="pmsv">${e}%</div><div class="pmsl">${t('eff')}</div></div>`:''}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${b.val}</div><div class="pmsl">${t('rt')}</div></div></div></div></div>`}
+function rPM(){
+  const hB=bestPTeam(M.home),aB=bestPTeam(M.away);
+  if(!hB&&!aB)return;
+  $.innerHTML=`<div class="pm ac"><div class="pmh"><div class="pmht">${tPotm()}</div></div><div class="pm-cards">${pmCard(hB,M.home.logo,M.home.shortName)}${pmCard(aB,M.away.logo,M.away.shortName)}</div></div>`;
+}
 
 // ═══ H2H ═══
 function rH2H(){const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};function row(label,hv,av,suffix=''){const total=(hv+av)||1;const hp=Math.round(hv/total*100),ap=100-hp;return`<div class="h2hr"><div class="h2hv">${hv}${suffix}</div><div class="h2hbar"><div class="h2hfh" style="width:${hp}%"></div></div><div class="h2hl">${label}</div><div class="h2hbar"><div class="h2hfa" style="width:${ap}%"></div></div><div class="h2hv">${av}${suffix}</div></div>`}$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('h2h')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="h2h">${row(t('gl'),ht.goals||0,at.goals||0)}${row(t('shotEff'),ht.eff||0,at.eff||0,'%')}${row(t('savePct'),hg.pct||0,ag.pct||0,'%')}${row(t('ast'),ht.ast||0,at.ast||0)}${row(t('trn'),ht.trn||0,at.trn||0)}${row(t('stl'),ht.stl||0,at.stl||0)}${row(t('sus'),ht.sus||0,at.sus||0)}</div></div>`}
