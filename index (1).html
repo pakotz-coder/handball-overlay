@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRH Live Overlay Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0E1A24;--bg2:#1A2D3D;--panel:#1E3448;--accent:#CC3333;--accent2:#A02020;--teal:#2B5876;--teal-l:#4E8098;--gold:#F0C040;--green:#27AE60;--text:#F0F4F7;--text2:#9AABB8;--muted:#6A8090;--border:#2A4A5A}
+html{height:100%}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;align-items:center}
+
+.hero{width:100%;padding:60px 20px 40px;text-align:center;background:linear-gradient(180deg,var(--teal) 0%,var(--bg) 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.emoji-logo{font-size:72px;margin-bottom:16px;filter:drop-shadow(0 4px 20px rgba(0,0,0,.4))}
+h1{font-family:'Oswald',sans-serif;font-size:48px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text);text-shadow:0 2px 20px rgba(0,0,0,.3)}
+.subtitle{font-size:18px;color:var(--text2);margin-top:8px;letter-spacing:1px}
+
+.card{width:100%;max-width:640px;margin:0 20px;background:var(--bg2);border-radius:14px;border:1px solid var(--border);box-shadow:0 10px 60px rgba(0,0,0,.5);overflow:hidden;position:relative;top:-20px}
+.card-header{background:linear-gradient(90deg,var(--accent),var(--accent2));padding:20px 32px;font-family:'Oswald',sans-serif;font-size:24px;font-weight:600;text-transform:uppercase;letter-spacing:2px}
+
+.form-section{padding:28px 32px}
+.label{font-family:'Oswald',sans-serif;font-size:16px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.input-row{display:flex;gap:12px}
+.input-row input{flex:1;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:14px 18px;font-family:'Barlow',sans-serif;font-size:18px;color:var(--text);outline:none;transition:border-color .2s}
+.input-row input:focus{border-color:var(--teal-l)}
+.input-row input::placeholder{color:var(--muted)}
+.btn-go{background:var(--accent);border:none;border-radius:8px;padding:14px 28px;font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:background .2s,transform .1s}
+.btn-go:hover{background:var(--accent2)}
+.btn-go:active{transform:scale(.97)}
+
+.results{display:none;padding:0 32px 28px}
+.results.show{display:block}
+.url-block{margin-bottom:16px}
+.url-label{font-family:'Oswald',sans-serif;font-size:14px;font-weight:500;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.url-label .dot{width:8px;height:8px;border-radius:50%}
+.dot-ctrl{background:var(--teal-l)}
+.dot-out{background:var(--green)}
+.url-row{display:flex;gap:8px}
+.url-box{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-family:monospace;font-size:13px;color:var(--text2);word-break:break-all;line-height:1.4;cursor:text;user-select:all}
+.btn-copy{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.btn-copy:hover{background:var(--teal);color:var(--text);border-color:var(--teal-l)}
+.btn-copy.copied{background:var(--green);color:#fff;border-color:var(--green)}
+
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+.instructions{padding:0 32px 28px}
+.instructions h3{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px}
+.step{display:flex;gap:14px;margin-bottom:12px;align-items:flex-start}
+.step-num{width:28px;height:28px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;color:var(--text);flex-shrink:0}
+.step-text{font-size:15px;color:var(--text2);line-height:1.5;padding-top:3px}
+.step-text strong{color:var(--text);font-weight:600}
+
+.footer{padding:40px 20px 30px;text-align:center;color:var(--muted);font-size:14px}
+.footer a{color:var(--teal-l);text-decoration:none}
+
+.overlays-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:0 32px 24px}
+.ov-tag{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;text-align:center;font-size:13px;color:var(--text2)}
+.ov-tag .ov-icon{font-size:20px;display:block;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="emoji-logo">🤾</div>
+  <h1>FRH Live Overlay Suite</h1>
+  <div class="subtitle">Overlay-uri profesionale pentru transmisiuni de handbal</div>
+</div>
+
+<div class="card">
+  <div class="card-header">Generează link-urile tale</div>
+  
+  <div class="form-section">
+    <div class="label">Numele tău / Your name</div>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="ex: Zoli, Andrei, MihaelaCam2..." autofocus>
+      <button class="btn-go" onclick="generate()">Go</button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="url-block">
+      <div class="url-label"><span class="dot dot-ctrl"></span> Control Page (deschizi pe laptop)</div>
+      <div class="url-row">
+        <div class="url-box" id="ctrlUrl"></div>
+        <button class="btn-copy" onclick="copyUrl('ctrlUrl',this)">Copy</button>
+      </div>
+    </div>
+    <div class="url-block">
+      <div class="url-label"><span class="dot dot-out"></span> Output Overlay (adaugi în Yolobox / OBS)</div>
+      <div class="url-row">
+        <div class="url-box" id="outUrl"></div>
+        <button class="btn-copy" onclick="copyUrl('outUrl',this)">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin:0 32px"></div>
+
+  <div class="instructions">
+    <h3>Cum funcționează</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Scrie numele tău mai sus și apasă <strong>Go</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">Deschide <strong>Control Page</strong> pe laptop sau telefon</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Copiază <strong>Output Overlay</strong> URL-ul și adaugă-l în streaming software:<br>
+        Yolobox Ultra → Third Party URL<br>
+        OBS → Browser Source (1920×1080, fundal transparent)<br>
+        vMix → Web Browser input</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Pe pagina de Control, lipește link-ul meciului de pe <strong>frhlive2.com</strong> și apasă <strong>Scrape Match</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-text">Apasă butoanele de overlay → apar pe stream. Apasă <strong>Clear</strong> pentru a le ascunde.</div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin:0 32px"></div>
+
+  <div style="padding:16px 32px 8px">
+    <div class="label">12 Overlay-uri disponibile</div>
+  </div>
+  <div class="overlays-grid">
+    <div class="ov-tag"><span class="ov-icon">🏟️</span>Pre-Match</div>
+    <div class="ov-tag"><span class="ov-icon">👔</span>Officials</div>
+    <div class="ov-tag"><span class="ov-icon">⚔️</span>Head to Head</div>
+    <div class="ov-tag"><span class="ov-icon">⚽</span>Last Goal</div>
+    <div class="ov-tag"><span class="ov-icon">📈</span>Score Graph</div>
+    <div class="ov-tag"><span class="ov-icon">🏆</span>Top Scorers</div>
+    <div class="ov-tag"><span class="ov-icon">🧤</span>GK Duel</div>
+    <div class="ov-tag"><span class="ov-icon">🎯</span>Shooting</div>
+    <div class="ov-tag"><span class="ov-icon">⭐</span>Best Player</div>
+    <div class="ov-tag"><span class="ov-icon">🥅</span>Shot Map</div>
+    <div class="ov-tag"><span class="ov-icon">📋</span>Roster Home</div>
+    <div class="ov-tag"><span class="ov-icon">📋</span>Roster Away</div>
+  </div>
+</div>
+
+<div class="footer">
+  FRH Live Overlay Suite · Sursa date: <a href="https://frhlive2.com" target="_blank">frhlive2.com</a>
+</div>
+
+<script>
+const BASE=location.href.replace(/\/[^\/]*$/,'/');
+
+function generate(){
+  const name=document.getElementById('nameInput').value.trim();
+  if(!name){document.getElementById('nameInput').focus();return}
+  const room=name.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(!room){document.getElementById('nameInput').focus();return}
+  
+  const ctrl=BASE+'control.html?room='+room;
+  const out=BASE+'output.html?room='+room;
+  
+  document.getElementById('ctrlUrl').textContent=ctrl;
+  document.getElementById('outUrl').textContent=out;
+  document.getElementById('results').classList.add('show');
+}
+
+document.getElementById('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')generate()});
+
+function copyUrl(id,btn){
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+</body>
+</html>
