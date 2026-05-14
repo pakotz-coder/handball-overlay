@@ -74,6 +74,7 @@ input:focus{border-color:var(--blue)}
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
       <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
       <div class="ob" onclick="send('shotmap')"><div class="oi">🥅</div><div class="ol">Shot Map</div></div>
+      <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
       <div class="ob" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
     </div>
@@ -185,11 +186,28 @@ function parseAPI(d){
     kickoff=dt.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
   }
 
+  // Parse officials from sudionici
+  const sud=d.sudionici||[];
+  const refs=sud.filter(s=>s.tip===3).sort((a,b)=>(a.rbtip||0)-(b.rbtip||0)).map(s=>`${s.i} ${s.p}`.trim());
+  const observer=sud.find(s=>s.tip===4&&s.detaljno===0&&s.rbtip===1);
+  const hCoach=sud.find(s=>s.tip===1&&s.rbekipa===1&&s.oznaka==='A');
+  const hAsst=sud.find(s=>s.tip===2&&s.rbekipa===1&&s.oznaka==='B');
+  const aCoach=sud.find(s=>s.tip===1&&s.rbekipa===2&&s.oznaka==='A');
+  const aAsst=sud.find(s=>s.tip===2&&s.rbekipa===2&&s.oznaka==='B');
+  const officials={
+    ref1:refs[0]||'',ref2:refs[1]||'',
+    observer:observer?`${observer.i} ${observer.p}`.trim():'',
+    homeCoach:hCoach?`${hCoach.i} ${hCoach.p}`.trim():'',
+    homeAsst:hAsst?`${hAsst.i} ${hAsst.p}`.trim():'',
+    awayCoach:aCoach?`${aCoach.i} ${aCoach.p}`.trim():'',
+    awayAsst:aAsst?`${aAsst.i} ${aAsst.p}`.trim():''
+  };
+
   return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1)},
     away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
-    lastGoal,goalEvents,gender,kickoff};
+    lastGoal,goalEvents,gender,kickoff,officials};
 }
 
 function send(t){if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
