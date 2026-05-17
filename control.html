@@ -101,7 +101,13 @@ const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-
 const ROOM=new URLSearchParams(location.search).get('room')||'default';
 let db,ref,M=null,aT=null;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('connB').textContent='✓ Connected';document.getElementById('connB').className='cb ok';const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;document.getElementById('outUrl').textContent=o;document.getElementById('outUrl').dataset.url=o}catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
-firebase.auth().signInAnonymously();
+firebase.auth().signInAnonymously().then(() => {
+  console.log('✓ Auth OK');
+}).catch(err => {
+  console.error('Auth failed:', err);
+});
+db = firebase.database();
+roomRef = db.ref('rooms/' + ROOM);
 function ss(m,t){const e=document.getElementById('sBar');e.textContent=m;e.className='sb '+t}
 function exId(s){s=s.trim();if(/^\d+$/.test(s))return s;const m=s.match(/utakmica=(\d+)/);return m?m[1]:null}
 
