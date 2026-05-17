@@ -98,16 +98,21 @@ input:focus{border-color:var(--blue)}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-overlay.firebaseapp.com",databaseURL:"https://handball-overlay-default-rtdb.europe-west1.firebasedatabase.app",projectId:"handball-overlay",storageBucket:"handball-overlay.firebasestorage.app",messagingSenderId:"926258764",appId:"1:926258764:web:4435158617393fa0a5c6e9"};
-const ROOM=new URLSearchParams(location.search).get('room')||'default';
+const rawRoom=new URLSearchParams(location.search).get('room')||'default';
+const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 let db,ref,M=null,aT=null;
-try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('connB').textContent='✓ Connected';document.getElementById('connB').className='cb ok';const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;document.getElementById('outUrl').textContent=o;document.getElementById('outUrl').dataset.url=o}catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
-firebase.auth().signInAnonymously().then(() => {
-  console.log('✓ Auth OK');
-}).catch(err => {
-  console.error('Auth failed:', err);
-});
-db = firebase.database();
-roomRef = db.ref('rooms/' + ROOM);
+try{
+  firebase.initializeApp(FC);
+  firebase.auth().signInAnonymously().then(()=>{console.log('✓ Auth OK')}).catch(err=>{console.error('Auth failed:',err)});
+  db=firebase.database();
+  ref=db.ref('rooms/'+ROOM);
+  document.getElementById('connB').textContent='✓ Connected';
+  document.getElementById('connB').className='cb ok';
+  const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;
+  document.getElementById('outUrl').textContent=o;
+  document.getElementById('outUrl').dataset.url=o;
+}catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
+
 function ss(m,t){const e=document.getElementById('sBar');e.textContent=m;e.className='sb '+t}
 function exId(s){s=s.trim();if(/^\d+$/.test(s))return s;const m=s.match(/utakmica=(\d+)/);return m?m[1]:null}
 
@@ -131,8 +136,6 @@ function parseAPI(d){
   if(!d.ut?.[0])return null;
   const u=d.ut[0],ro=d.role?.[0],pl=d.sastavi||[],ev=d.dogadjaji||[];
   const ek1=u.ekipa1,ek2=u.ekipa2,lb='https://www.sportinfocentar2.com/coman/logo/';
-  // Logo uses k1/k2 (club IDs), NOT ekipa1/ekipa2 (team registration IDs)
-  // For national teams, k1/k2 are null but dr1/dr2 have country codes (e.g. "cz", "at")
   const logoId1=u.k1||u.dr1||ek1,logoId2=u.k2||u.dr2||ek2;
 
   const nn=(u.nn||'').toLowerCase();
@@ -165,7 +168,6 @@ function parseAPI(d){
     }).sort((a,b)=>a.num-b.num);
   }
 
-  // All roster names for pre-match (field + GK together)
   function rosterNames(eid){
     return pl.filter(p=>p.ekipa===eid).map(p=>({num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),isGK:isGK(p)})).sort((a,b)=>a.num-b.num);
   }
@@ -187,14 +189,12 @@ function parseAPI(d){
   if(ro){time=`${ro.minuta||0}:${String(ro.sekundi||0).padStart(2,'0')}`;if(ro.status===3&&(ro.minuta||0)>=60)status='End'}
   if(u.trenutnistatus===3)status='End';
 
-  // Kickoff time
   let kickoff='';
   if(u.pocetak&&u.pocetak!=='1899-12-30T00:00:00'){
     const dt=new Date(u.pocetak);
     kickoff=dt.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
   }
 
-  // Parse officials from sudionici
   const sud=d.sudionici||[];
   const refs=sud.filter(s=>s.tip===3).sort((a,b)=>(a.rbtip||0)-(b.rbtip||0)).map(s=>`${s.i} ${s.p}`.trim());
   const observer=sud.find(s=>s.tip===4&&s.detaljno===0&&s.rbtip===1);
