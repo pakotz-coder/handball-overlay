@@ -108,7 +108,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .h2hfh{height:100%;background:linear-gradient(90deg,var(--bg-header),var(--teal-light));border-radius:5px 0 0 5px;float:left}
 .h2hfa{height:100%;background:linear-gradient(90deg,var(--accent-dark),var(--accent));border-radius:0 5px 5px 0;float:right}
 
-/* ROSTER — compact to fit 16+ players */
+/* ROSTER */
 .rost-title{padding:10px 36px 0;display:flex;align-items:center;gap:14px}
 .rost-title img{width:38px;height:38px;object-fit:contain;flex-shrink:0}
 .rost-title span{font-family:'Oswald';font-size:44px;font-weight:700;color:var(--white);text-transform:uppercase}
@@ -187,7 +187,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-overlay.firebaseapp.com",databaseURL:"https://handball-overlay-default-rtdb.europe-west1.firebasedatabase.app",projectId:"handball-overlay",storageBucket:"handball-overlay.firebasestorage.app",messagingSenderId:"926258764",appId:"1:926258764:web:4435158617393fa0a5c6e9"};
-const ROOM=new URLSearchParams(location.search).get('room')||'default';
+const rawRoom=new URLSearchParams(location.search).get('room')||'default';
+const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 let db,ref,M=null,LANG='en',cT=null;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -200,7 +201,6 @@ function tPotm(){return t('potm_'+(M?.gender||'m'))}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
 function bestPTeam(team){
-  // Combine field players and GKs, use valigrac for field, valgolman for GK
   const all=[];
   team.players.forEach(p=>{
     const rating=parseFloat(p.val);
@@ -241,34 +241,29 @@ function apC(c){const s=document.documentElement.style;for(const[k,v]of Object.e
 function stL(){if(!M)return'';if(M.status==='End')return t('ft');if(M.time==='30:00')return t('ht');return M.time||t('live')}
 function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
 
-// Animate inner elements after panel opens
 function animateInner(delay){
   delay=delay||700;
-  // Animate bars (h2h, shooting, gk)
   setTimeout(()=>{
     document.querySelectorAll('.h2hfh,.h2hfa,.zf,.gkb2-fill').forEach((el,i)=>{
       el.style.transform='scaleX(0)';el.style.transformOrigin='left';
       setTimeout(()=>{el.classList.add('abar')},i*60);
     });
   },delay);
-  // Animate rows with cascade
   setTimeout(()=>{
     document.querySelectorAll('.scr,.h2hr,.zr,.gkc2,.pre-pl').forEach((el,i)=>{
       el.style.opacity='0';
       setTimeout(()=>{el.classList.add('arow')},i*50);
     });
   },delay+100);
-  // Animate table rows
   setTimeout(()=>{
     document.querySelectorAll('.rost tr,.pt tr').forEach((el,i)=>{
-      if(i===0)return; // skip header
+      if(i===0)return;
       el.style.opacity='0';
       setTimeout(()=>{el.classList.add('arow')},i*30);
     });
   },delay+100);
 }
 
-// Animate SVG graph lines drawing
 function animateGraph(delay){
   delay=delay||800;
   setTimeout(()=>{
@@ -279,7 +274,6 @@ function animateGraph(delay){
       path.style.setProperty('--len',len);
       path.classList.add('adraw');
     });
-    // Fade in dots after lines finish
     document.querySelectorAll('.draw-dot').forEach((dot,i)=>{
       dot.style.opacity='0';
       setTimeout(()=>{dot.style.opacity='1';dot.style.transition='opacity .2s'},1500+i*20);
@@ -289,7 +283,6 @@ function animateGraph(delay){
 
 function show(type,dur){
   if(!M)return;
-  // If something is showing, collapse it first then show new
   const existing=$.firstChild;
   if(existing){
     existing.classList.remove('ac','au');existing.classList.add('ao');
@@ -299,7 +292,6 @@ function show(type,dur){
 function doShow(type,dur){
   const fn={prematch:rPre,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,shotmap:rShotMap,officials:rOfficials};
   if(fn[type])fn[type]();
-  // Trigger inner animations
   if(['h2h','shooting','gkduel','topscorers','roster1','roster2','prematch','shotmap','officials'].includes(type))animateInner();
   if(type==='graph')animateGraph();
   if(dur&&dur>0){cT=setTimeout(()=>{clr()},dur)}
@@ -330,10 +322,10 @@ function rPM(){
 // ═══ H2H ═══
 function rH2H(){const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};function row(label,hv,av,suffix=''){const total=(hv+av)||1;const hp=Math.round(hv/total*100),ap=100-hp;return`<div class="h2hr"><div class="h2hv">${hv}${suffix}</div><div class="h2hbar"><div class="h2hfh" style="width:${hp}%"></div></div><div class="h2hl">${label}</div><div class="h2hbar"><div class="h2hfa" style="width:${ap}%"></div></div><div class="h2hv">${av}${suffix}</div></div>`}$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('h2h')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="h2h">${row(t('gl'),ht.goals||0,at.goals||0)}${row(t('shotEff'),ht.eff||0,at.eff||0,'%')}${row(t('savePct'),hg.pct||0,ag.pct||0,'%')}${row(t('ast'),ht.ast||0,at.ast||0)}${row(t('trn'),ht.trn||0,at.trn||0)}${row(t('stl'),ht.stl||0,at.stl||0)}${row(t('sus'),ht.sus||0,at.sus||0)}</div>${srcHtml()}</div>`}
 
-// ═══ ROSTER — compact rows for 16+ players ═══
+// ═══ ROSTER ═══
 function rRoster(side){const team=side==='home'?M.home:M.away;const allP=[...team.players,...team.gk].sort((a,b)=>a.num-b.num);$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('roster')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="rost-title">${lg(team.logo,38)}<span>${team.name}</span></div><div class="rost"><table><thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>2m</th><th>Val</th></tr></thead><tbody>${allP.map(p=>{const isGK=p.sav&&p.sav!=='';const ga=isGK?p.sav:p.ga;const val=isGK?p.gval:p.val;const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.sus||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`}).join('')}</tbody></table></div>${srcHtml()}</div>`}
 
-// ═══ SHOT MAP — side by side half-courts ═══
+// ═══ SHOT MAP ═══
 function rShotMap(){
   const hZ=szn(M.home.players),aZ=szn(M.away.players);
   const hTot=M.home.totals||{},aTot=M.away.totals||{};
@@ -347,45 +339,30 @@ function rShotMap(){
         <text x="${x+w/2}" y="${y+h/2+34}" text-anchor="middle" font-family="Barlow" font-size="18" fill="var(--text-muted)">${data.e}%</text>`;
     }
     let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
-    // Court bg
     svg+=`<rect x="10" y="10" width="${W-20}" height="${H-20}" rx="8" fill="var(--bg-panel)" stroke="var(--border)" stroke-width="0.5"/>`;
-    // Goal bar at top
     svg+=`<rect x="${W/2-100}" y="14" width="200" height="12" rx="4" fill="${color}" opacity="0.7"/>`;
     svg+=`<text x="${W/2}" y="10" text-anchor="middle" font-family="Oswald" font-size="18" font-weight="600" fill="var(--text-muted)">GOAL</text>`;
-    // 6m arc — D-shape curving DOWN from goal line (realistic handball court)
     svg+=`<path d="M${W/2-170} 26 C${W/2-170} 140, ${W/2+170} 140, ${W/2+170} 26" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
-    // 9m arc — larger D-shape also curving down
     svg+=`<path d="M${W/2-280} 26 C${W/2-280} 230, ${W/2+280} 230, ${W/2+280} 26" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>`;
-    // 7m mark
     svg+=`<line x1="${W/2-6}" y1="62" x2="${W/2+6}" y2="62" stroke="var(--text-muted)" stroke-width="2" opacity="0.5"/>`;
-    // Zone data
     const s7=zones['s7m']||{g:0,a:0,e:0};
     const s9=zones['s9m']||{g:0,a:0,e:0};
     const s6=zones['s6m']||{g:0,a:0,e:0};
     const wng=zones['wing']||{g:0,a:0,e:0};
     const fb=zones['fb']||{g:0,a:0,e:0};
     const brk=zones['brk']||{g:0,a:0,e:0};
-    // Wing left (outside arcs, near sideline)
     svg+=zoneBox(18,40,120,80,t('wing'),wng,'#1D9E75');
-    // Wing right
     svg+=zoneBox(W-138,40,120,80,t('wing'),wng,'#1D9E75');
-    // 6m line zone (inside 6m arc, LEFT of center)
     svg+=zoneBox(W/2-150,38,120,75,t('s6m'),s6,'#378ADD');
-    // 7m penalty zone (inside 6m arc, RIGHT of center — no overlap)
     svg+=`<rect x="${W/2+30}" y="38" width="120" height="75" rx="6" fill="#D4537E" fill-opacity="0.15" stroke="#D4537E" stroke-width="1.5"/>`;
     svg+=`<text x="${W/2+90}" y="68" text-anchor="middle" font-family="Oswald" font-size="32" font-weight="700" fill="#D4537E">${s7.g}/${s7.a}</text>`;
     svg+=`<text x="${W/2+90}" y="92" text-anchor="middle" font-family="Barlow Condensed" font-size="20" font-weight="600" fill="var(--text-secondary)">${t('s7m')}</text>`;
     svg+=`<text x="${W/2+90}" y="108" text-anchor="middle" font-family="Barlow" font-size="18" fill="var(--text-muted)">${s7.e}%</text>`;
-    // 9m backcourt (between 6m and 9m arcs)
     svg+=zoneBox(W/2-150,160,300,80,t('s9m'),s9,'#D85A30');
-    // Fast break (below 9m zone, left)
     svg+=zoneBox(60,305,160,75,t('fb'),fb,'#639922');
-    // Breakthrough (below 9m zone, right)
     svg+=zoneBox(W-220,305,160,75,t('brk'),brk,'#BA7517');
-    // Dashed arrows from FB/Brk toward goal area
     svg+=`<line x1="140" y1="305" x2="270" y2="210" stroke="#639922" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>`;
     svg+=`<line x1="${W-140}" y1="305" x2="${W-270}" y2="210" stroke="#BA7517" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 3"/>`;
-    // Team label + total
     svg+=`<text x="${W/2}" y="440" text-anchor="middle" font-family="Oswald" font-size="28" font-weight="700" fill="var(--text-primary)">${teamName}</text>`;
     svg+=`<text x="${W/2}" y="470" text-anchor="middle" font-family="Barlow Condensed" font-size="24" font-weight="600" fill="var(--text-secondary)">${tot.goals||0}/${tot.shots||0} · ${tot.eff||0}%</text>`;
     svg+=`</svg>`;
