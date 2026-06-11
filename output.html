@@ -360,7 +360,7 @@ function rShotMap(){
 }
 
 function rGraph(){const ev=M.goalEvents||[];if(!ev.length){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('graph')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div style="padding:60px;text-align:center;color:var(--text-muted);font-size:32px">No goal data</div>${srcHtml()}</div>`;return}
-const pts=[{sk:0,r1:0,r2:0}];ev.forEach(e=>pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:e.team}));
+const pts=[{sk:0,r1:0,r2:0}];let _p1=0,_p2=0;ev.forEach(e=>{if(e.r1>_p1){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:1});_p1=e.r1;_p2=e.r2}else if(e.r2>_p2){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:2});_p2=e.r2;_p1=e.r1}});
 const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=Math.max(pts[pts.length-1].sk,3600);
 const W=1600,H=490,pL=70,pR=40,pT=40,pB=60,cW=W-pL-pR,cH=H-pT-pB;
 function xp(sk){return pL+(sk/lastSk)*cW}function yp(g){return pT+cH-(g/maxG)*cH}
