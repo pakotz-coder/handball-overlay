@@ -184,9 +184,10 @@ function parseAPI(d){
   const femaleKeywords=['junioare','fete','feminin','feminine','cadete','junior f','women','girls','senioare','florilor'];
   const gender=femaleKeywords.some(k=>nn.includes(k))?'f':'m';
 
-  // FIX #2: match duration — Junioare/Juniori 3 & 4 play 2x25 = 50 min, everything else 2x30 = 60 min
-  const shortMatch=/junio(?:a?re|ri)\s*[34]\b|\bj[34]\b/i.test(nn);
-  const duration=shortMatch?50:60;
+  // FIX #2: match duration — J4/J5: 2x20=40, J3: 2x25=50, J2+ și seniori: 2x30=60
+  let duration=60;
+  if(/junio(?:a?re|ri)\s*[45]\b|\bj[45]\b/i.test(nn))duration=40;
+  else if(/junio(?:a?re|ri)\s*3\b|\bj3\b/i.test(nn))duration=50;
 
   function isGK(p){return p.tipigraca==1||(p.obranep!=null&&p.obranep>0)}
   function pp(eid,gk){
