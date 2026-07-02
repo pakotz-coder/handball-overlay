@@ -52,6 +52,7 @@ input:focus{border-color:var(--blue)}
 .sb.ld{display:block;background:rgba(43,88,118,.15);color:var(--blue);border:1px solid rgba(43,88,118,.3)}
 .cb{display:inline-block;padding:3px 8px;border-radius:3px;font-size:10px;margin-bottom:8px}
 .cb.ok{background:rgba(39,174,96,.15);color:var(--green)}.cb.err{background:rgba(204,51,51,.15);color:var(--red)}
+.cb.w{background:rgba(240,192,64,.15);color:var(--gold)}
 .ou{background:#0D1520;border:1px solid var(--bdr);border-radius:4px;padding:6px 8px;font-size:11px;font-family:monospace;color:var(--green);word-break:break-all;margin-bottom:8px;cursor:pointer}
 .opa-row{display:flex;align-items:center;gap:8px}
 .opa-row input[type="range"]{flex:1;accent-color:var(--blue);height:6px;margin:0}
@@ -63,7 +64,7 @@ input:focus{border-color:var(--blue)}
 <div class="app">
 <div class="sidebar">
   <div class="logo">🤾 Handball Overlay</div>
-  <div class="sec"><div class="sec-t">Connection</div><div class="cb" id="connB">Connecting...</div><label>Output URL (paste into Yolobox):</label><div class="ou" id="outUrl" onclick="navigator.clipboard.writeText(this.dataset.url).then(()=>ss('Copied!','ok'))">Loading...</div></div>
+  <div class="sec"><div class="sec-t">Connection</div><div class="cb w" id="connB">Connecting...</div><label>Output URL (paste into Yolobox):</label><div class="ou" id="outUrl" onclick="navigator.clipboard.writeText(this.dataset.url).then(()=>ss('Copied!','ok'))">Loading...</div></div>
   <div class="sec"><div class="sec-t">Match Data</div><label>Match ID or frhlive2.com URL</label><input type="text" id="mUrl" placeholder="1651098 or full URL"><button class="btn btn-r btn-f" onclick="scrape()">Scrape Match</button></div>
   <div class="sec"><div class="sec-t">Language</div><div class="lt"><button class="lb active" data-lang="en" onclick="setLang('en')">English</button><button class="lb" data-lang="ro" onclick="setLang('ro')">Română</button></div></div>
   <div class="sec"><div class="sec-t">Show Overlay</div><div class="dr"><label>Duration (0=stay):</label><input type="number" id="dur" value="0" min="0" max="60"><span style="color:var(--muted);font-size:11px">s</span></div>
@@ -104,40 +105,72 @@ input:focus{border-color:var(--blue)}
 const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-overlay.firebaseapp.com",databaseURL:"https://handball-overlay-default-rtdb.europe-west1.firebasedatabase.app",projectId:"handball-overlay",storageBucket:"handball-overlay.firebasestorage.app",messagingSenderId:"926258764",appId:"1:926258764:web:4435158617393fa0a5c6e9"};
 const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
-let db,ref,M=null;
+let db,ref,M=null,AUTHED=false;
 try{
   firebase.initializeApp(FC);
-  firebase.auth().signInAnonymously().then(()=>{console.log('✓ Auth OK')}).catch(err=>{console.error('Auth failed:',err)});
   db=firebase.database();
   ref=db.ref('rooms/'+ROOM);
-  document.getElementById('connB').textContent='✓ Connected';
-  document.getElementById('connB').className='cb ok';
+  // FIX #6: connection badge reflects auth state (write requires auth != null)
+  firebase.auth().signInAnonymously().then(()=>{
+    AUTHED=true;
+    document.getElementById('connB').textContent='✓ Connected';
+    document.getElementById('connB').className='cb ok';
+  }).catch(err=>{
+    console.error('Auth failed:',err);
+    document.getElementById('connB').textContent='✕ Auth: '+err.message;
+    document.getElementById('connB').className='cb err';
+  });
   const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;
   document.getElementById('outUrl').textContent=o;
   document.getElementById('outUrl').dataset.url=o;
   // Load saved opacity
   ref.child('opacity').once('value',s=>{const v=s.val();if(v!=null){document.getElementById('opaSlider').value=v;document.getElementById('opaVal').textContent=v+'%'}});
+  // FIX #3: sync language toggle with saved value
+  ref.child('lang').once('value',s=>{const v=s.val();if(v)document.querySelectorAll('.lb').forEach(b2=>b2.classList.toggle('active',b2.dataset.lang===v))});
 }catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
 
 function ss(m,t){const e=document.getElementById('sBar');e.textContent=m;e.className='sb '+t}
 function exId(s){s=s.trim();if(/^\d+$/.test(s))return s;const m=s.match(/utakmica=(\d+)/);return m?m[1]:null}
+function checkAuth(){if(!AUTHED){ss('Not authenticated yet — wait a moment and retry','err');return false}return true}
 
+// FIX #5: recursive HTML-escape of all strings (applied to local M for preview; output.html sanitizes on receive)
+function sanitize(o){
+  if(typeof o==='string')return o.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  if(Array.isArray(o))return o.map(sanitize);
+  if(o&&typeof o==='object'){const r={};for(const k in o)r[k]=sanitize(o[k]);return r}
+  return o;
+}
+
+// FIX #9: debounce Firebase writes from opacity slider
+let opaT=null;
 function sendOpacity(v){
   document.getElementById('opaVal').textContent=v+'%';
-  ref.child('opacity').set(parseInt(v));
+  clearTimeout(opaT);
+  opaT=setTimeout(()=>{ref.child('opacity').set(parseInt(v))},150);
 }
 
 async function scrape(){
+  if(!checkAuth())return;
   const id=exId(document.getElementById('mUrl').value);
   if(!id){ss('Enter a valid ID or URL','err');return}
   ss('Scraping '+id+'...','ld');localStorage.setItem('hb_url',document.getElementById('mUrl').value);
   try{
     const r=await fetch('https://www.sportinfocentar2.com/coman/utakmice/'+id+'.js?'+Date.now());
     if(!r.ok)throw new Error('HTTP '+r.status);
-    const data=new Function('return('+await r.text()+')')();
+    const txt=await r.text();
+    // FIX #4: strict JSON.parse first; guarded fallback rejects dangerous tokens before evaluating
+    let data;
+    try{data=JSON.parse(txt)}
+    catch(_){
+      const banned=/\b(fetch|XMLHttpRequest|document|window|eval|Function|import|location|firebase|localStorage|cookie)\b|<\s*script/i;
+      if(banned.test(txt))throw new Error('Răspuns suspect — blocat');
+      data=new Function('return('+txt+')')();
+    }
     M=parseAPI(data);if(!M){ss('Parse error','err');return}
-    ref.child('match').set(M);renderPreview();
-    ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name} ${M.gender==='f'?'♀':'♂'}`,'ok');
+    ref.child('match').set(M);      // raw data to Firebase (output escapes at render)
+    M=sanitize(M);                   // escaped copy for local preview
+    renderPreview();
+    ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name} ${M.gender==='f'?'♀':'♂'} · ${M.duration}min`,'ok');
   }catch(e){ss('Error: '+e.message,'err')}
 }
 
@@ -150,6 +183,10 @@ function parseAPI(d){
   const nn=(u.nn||'').toLowerCase();
   const femaleKeywords=['junioare','fete','feminin','feminine','cadete','junior f','women','girls','senioare','florilor'];
   const gender=femaleKeywords.some(k=>nn.includes(k))?'f':'m';
+
+  // FIX #2: match duration — Junioare/Juniori 3 & 4 play 2x25 = 50 min, everything else 2x30 = 60 min
+  const shortMatch=/junio(?:a?re|ri)\s*[34]\b|\bj[34]\b/i.test(nn);
+  const duration=shortMatch?50:60;
 
   function isGK(p){return p.tipigraca==1||(p.obranep!=null&&p.obranep>0)}
   function pp(eid,gk){
@@ -195,7 +232,7 @@ function parseAPI(d){
   const hP=pp(ek1,false),aP=pp(ek2,false),hG=pp(ek1,true),aG=pp(ek2,true);
   const sn=n=>{const w=n.split(' ');return w.length>3?w.slice(-2).join(' '):n};
   let status='Live',time='';
-  if(ro){time=`${ro.minuta||0}:${String(ro.sekundi||0).padStart(2,'0')}`;if(ro.status===3&&(ro.minuta||0)>=60)status='End'}
+  if(ro){time=`${ro.minuta||0}:${String(ro.sekundi||0).padStart(2,'0')}`;if(ro.status===3&&(ro.minuta||0)>=duration)status='End'}
   if(u.trenutnistatus===3)status='End';
 
   let kickoff='';
@@ -224,17 +261,17 @@ function parseAPI(d){
     away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
-    lastGoal,goalEvents,gender,kickoff,officials};
+    lastGoal,goalEvents,gender,kickoff,officials,duration};
 }
 
-function send(t){if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
-function sendClear(){ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
-function setLang(l){document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
+function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
+function sendClear(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
+function setLang(l){if(!checkAuth())return;document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
 const DC={'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-dark':{l:'Accent dark',v:'#A02020'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'text-primary':{l:'Text',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Muted',v:'#6A8090'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
 let colors={};
 function initC(){colors={};for(const[k,v]of Object.entries(DC))colors[k]=v.v;renderC()}
 function renderC(){document.getElementById('cc').innerHTML=Object.entries(DC).map(([k,v])=>`<div class="cr"><label>${v.l}</label><input type="color" value="${colors[k]}" onchange="colors['${k}']=this.value;this.nextElementSibling.value=this.value"><input type="text" value="${colors[k]}" onchange="colors['${k}']=this.value;this.previousElementSibling.value=this.value"></div>`).join('')}
-function sendColors(){ref.child('colors').set(colors);localStorage.setItem('hb_c',JSON.stringify(colors));ss('Colors applied','ok')}
+function sendColors(){if(!checkAuth())return;ref.child('colors').set(colors);localStorage.setItem('hb_c',JSON.stringify(colors));ss('Colors applied','ok')}
 function resetC(){initC();sendColors()}
 
 function renderPreview(){
