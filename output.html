@@ -145,18 +145,15 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .sm-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:14px 36px 18px}
 .sm-court{position:relative;background:var(--bg-panel);border-radius:10px;border:1px solid var(--border);padding:12px;height:560px}
 .sm-court svg{width:100%;height:100%}
-/* Single-team shot map: zones (left) + two 3x3 goal-placement grids (right) */
-.sm1-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:14px 36px 18px}
-.sm1-zones{background:var(--bg-panel);border-radius:10px;border:1px solid var(--border);padding:12px;height:560px}
-.sm1-zones svg{width:100%;height:100%}
-.sm1-grids{display:flex;flex-direction:column;gap:16px}
-.gp-box{background:var(--bg-panel);border-radius:10px;border:1px solid var(--border);padding:16px 18px}
-.gp-title{font-family:'Oswald';font-size:26px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
-.gp-net{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:var(--score-bg);border:3px solid var(--bg-header-light);border-radius:6px;padding:10px}
-.gp-cell{aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;background:var(--row-even)}
+/* Single-team goal placement: two large 3x3 grids side by side */
+.gp2-wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:20px 40px 24px}
+.gp-box{background:var(--bg-panel);border-radius:12px;border:1px solid var(--border);padding:24px 28px}
+.gp-title{font-family:'Oswald';font-size:32px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.gp-net{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:var(--score-bg);border:4px solid var(--bg-header-light);border-radius:8px;padding:16px}
+.gp-cell{aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;background:var(--row-even)}
 .gp-cell.empty{background:transparent;border:1px dashed rgba(255,255,255,.08)}
-.gp-cell .gpv{font-family:'Oswald';font-size:30px;font-weight:700;line-height:1}
-.gp-cell .gpp{font-family:'Barlow';font-size:16px;color:var(--text-muted);margin-top:2px}
+.gp-cell .gpv{font-family:'Oswald';font-size:48px;font-weight:700;line-height:1}
+.gp-cell .gpp{font-family:'Barlow';font-size:22px;color:var(--text-muted);margin-top:4px}
 
 .off-body{display:grid;grid-template-columns:2fr 3fr;gap:0;min-height:340px}
 .off-left{padding:30px 36px;border-right:1px solid var(--border)}
@@ -404,18 +401,13 @@ function gpNet(cells,color){
 function rShotMap1(side){
   const team=side==='home'?M.home:M.away;
   const color=side==='home'?'var(--bg-header-light)':'var(--accent)';
-  const zones=szn(team.players),tot=team.totals||{};
-  const svg=courtSVG(zones,tot,team.shortName,color);
   const pl=team.placement||{shots:[],saves:[]};
   const shotsCells=(pl.shots||[]).map(c=>({n:c.g,t:c.t}));
   const savesCells=(pl.saves||[]).map(c=>({n:c.s,t:c.t}));
-  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shotmap1')}</div><div class="spu">${stL()}</div></div>${tbHtml()}
-    <div class="sm1-wrap">
-      <div class="sm1-zones">${svg}</div>
-      <div class="sm1-grids">
-        <div class="gp-box"><div class="gp-title">${lg(team.logo,28)}${t('gpShots')}</div>${gpNet(shotsCells,color)}</div>
-        <div class="gp-box"><div class="gp-title">🧤 ${t('gpSaves')}</div>${gpNet(savesCells,'var(--green)')}</div>
-      </div>
+  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shotmap1')} — ${team.shortName}</div><div class="spu">${stL()}</div></div>${tbHtml()}
+    <div class="gp2-wrap">
+      <div class="gp-box"><div class="gp-title">${lg(team.logo,32)}${t('gpShots')}</div>${gpNet(shotsCells,color)}</div>
+      <div class="gp-box"><div class="gp-title">🧤 ${t('gpSaves')}</div>${gpNet(savesCells,'var(--green)')}</div>
     </div>${srcHtml()}</div>`;
 }
 
