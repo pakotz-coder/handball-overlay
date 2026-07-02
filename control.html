@@ -78,6 +78,8 @@ input:focus{border-color:var(--blue)}
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
       <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
       <div class="ob" onclick="send('shotmap')"><div class="oi">🥅</div><div class="ol">Shot Map</div></div>
+      <div class="ob" onclick="send('shotmaphome')"><div class="oi">🎯</div><div class="ol">Shot Map Home</div></div>
+      <div class="ob" onclick="send('shotmapaway')"><div class="oi">🎯</div><div class="ol">Shot Map Away</div></div>
       <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
       <div class="ob" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
@@ -219,14 +221,29 @@ function parseAPI(d){
     return pl.filter(p=>p.ekipa===eid).map(p=>({num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),isGK:isGK(p)})).sort((a,b)=>a.num-b.num);
   }
 
+  // Jersey lookup by player id
+  const dresById={};pl.forEach(p=>{dresById[p.igrac]=p.dres});
+
   let lastGoal=null;
   const goalEvents=[];
   for(let i=ev.length-1;i>=0;i--){
     const e=ev[i];
-    if(e.td===0&&e.ig&&(e.ish===0||e.ish===4))
-      goalEvents.push({team:e.e,time:e.vr,sk:e.sk,r1:e.r1,r2:e.r2,name:`${e.i} ${e.p}`.trim(),num:e.pz||0});
+    if(e.td===0&&e.ig&&e.ish===0)   // ish=0 = goal (ish=4 = save, NOT a goal)
+      goalEvents.push({team:e.e,time:e.vr,sk:e.sk,r1:e.r1,r2:e.r2,name:`${e.i} ${e.p}`.trim(),num:dresById[e.ig]||0});
   }
-  if(ev.length>0){for(const e of ev){if(e.td===0&&e.ig&&(e.ish===0||e.ish===4)){lastGoal={team:e.e===1?u.n1:u.n2,teamNum:e.e,num:e.pz||0,name:`${e.i} ${e.p}`.trim(),time:e.vr,r1:e.r1,r2:e.r2};break}}}
+  if(ev.length>0){for(const e of ev){if(e.td===0&&e.ig&&e.ish===0){lastGoal={team:e.e===1?u.n1:u.n2,teamNum:e.e,num:dresById[e.ig]||0,name:`${e.i} ${e.p}`.trim(),time:e.vr,r1:e.r1,r2:e.r2};break}}}
+
+  // Goal placement grids (pz 0-8, 3x3). shots: goals(ish=0)/total per cell. saves: saves(ish=4)/total opp shots per cell.
+  function placementGrid(teamNum){
+    const shots=Array(9).fill(0).map(()=>({g:0,t:0}));   // this team's attack
+    const saves=Array(9).fill(0).map(()=>({s:0,t:0}));   // this team's GK vs opponent
+    ev.forEach(e=>{
+      if(e.td!==0||e.pz==null||e.pz<0||e.pz>8)return;
+      if(e.e===teamNum){shots[e.pz].t++;if(e.ish===0)shots[e.pz].g++}
+      else{saves[e.pz].t++;if(e.ish===4)saves[e.pz].s++}
+    });
+    return{shots,saves};
+  }
 
   function tot(players){let g=0,s=0,a=0,tn=0,st=0,su=0;players.forEach(p=>{if(p.ga){const x=p.ga.split('/');g+=parseInt(x[0])||0;s+=parseInt(x[1])||0}a+=p.ast||0;tn+=p.trn||0;st+=p.stl||0;su+=p.sus||0});return{goals:g,shots:s,eff:s>0?Math.round(g/s*100):0,ast:a,trn:tn,stl:st,sus:su}}
   function gkTot(gks){let sv=0,fc=0;gks.forEach(g=>{if(g.sav){const x=g.sav.split('/');sv+=parseInt(x[0])||0;fc+=parseInt(x[1])||0}});return{saves:sv,faced:fc,pct:fc>0?Math.round(sv/fc*100):0}}
@@ -258,8 +275,8 @@ function parseAPI(d){
     awayAsst:aAsst?`${aAsst.i} ${aAsst.p}`.trim():''
   };
 
-  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1)},
-    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2)},
+  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1)},
+    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
     lastGoal,goalEvents,gender,kickoff,officials,duration};
