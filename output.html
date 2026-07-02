@@ -178,7 +178,16 @@ const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-
 const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
+// FIX #6: no auth needed here — DB rules allow public read ('.read': true); output only reads.
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
+
+// FIX #5: recursive HTML-escape of all incoming strings before any innerHTML rendering
+function sanitize(o){
+  if(typeof o==='string')return o.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  if(Array.isArray(o))return o.map(sanitize);
+  if(o&&typeof o==='object'){const r={};for(const k in o)r[k]=sanitize(o[k]);return r}
+  return o;
+}
 
 const T={
   en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',prematch:'Coming Up Next',shotmap:'Shot Map',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',source:'Source'},
@@ -186,6 +195,8 @@ const T={
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
+// FIX #2: dynamic match duration (50 min for Junioare/Juniori 3-4, else 60)
+function matchDur(){return M?.duration||60}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
 function bestPTeam(team){
@@ -220,18 +231,20 @@ function lg(url,sz=36){return`<img src="${url}" style="width:${sz}px;height:${sz
 
 const $=document.getElementById('ov');
 function clr(){
-  if(cT)clearTimeout(cT);
+  if(cT){clearTimeout(cT);cT=null}
   const el=$.firstChild;
   if(el){el.classList.remove('ac','au');el.classList.add('ao');setTimeout(()=>{$.innerHTML=''},550)}
   else{$.innerHTML=''}
 }
-function apC(c){const s=document.documentElement.style;for(const[k,v]of Object.entries(c))s.setProperty('--'+k,v)}
+// Color whitelist: only valid hex values reach CSS variables
+function apC(c){const s=document.documentElement.style;for(const[k,v]of Object.entries(c)){if(typeof v==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(v)&&/^[a-z0-9\-]+$/.test(k))s.setProperty('--'+k,v)}}
 function apO(){
   // Apply opacity to panel overlays (.sp, .pm, .pre) but NOT goal flash (.gf)
   const panels=$.querySelectorAll('.sp,.pm,.pre');
   panels.forEach(el=>{el.style.opacity=OPA});
 }
-function stL(){if(!M)return'';if(M.status==='End')return t('ft');if(M.time==='30:00')return t('ht');return M.time||t('live')}
+// FIX #2: HT/FT detection based on actual match duration
+function stL(){if(!M)return'';const d=matchDur();if(M.status==='End')return t('ft');if(M.time===(d/2)+':00')return t('ht');return M.time||t('live')}
 function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
 
 function animateInner(delay){
@@ -276,6 +289,8 @@ function animateGraph(delay){
 
 function show(type,dur){
   if(!M)return;
+  // FIX #1: cancel any pending auto-clear timer from a previous overlay
+  if(cT){clearTimeout(cT);cT=null}
   const existing=$.firstChild;
   if(existing){
     existing.classList.remove('ac','au');existing.classList.add('ao');
@@ -361,14 +376,16 @@ function rShotMap(){
 
 function rGraph(){const ev=M.goalEvents||[];if(!ev.length){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('graph')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div style="padding:60px;text-align:center;color:var(--text-muted);font-size:32px">No goal data</div>${srcHtml()}</div>`;return}
 const pts=[{sk:0,r1:0,r2:0}];let _p1=0,_p2=0;ev.forEach(e=>{if(e.r1>_p1){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:1});_p1=e.r1;_p2=e.r2}else if(e.r2>_p2){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:2});_p2=e.r2;_p1=e.r1}});
-const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=Math.max(pts[pts.length-1].sk,3600);
+// FIX #2: axis, HT line and minute ticks derived from actual match duration
+const DUR=matchDur(),DURS=DUR*60,HALF=DUR/2;
+const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=Math.max(pts[pts.length-1].sk,DURS);
 const W=1600,H=490,pL=70,pR=40,pT=40,pB=60,cW=W-pL-pR,cH=H-pT-pB;
 function xp(sk){return pL+(sk/lastSk)*cW}function yp(g){return pT+cH-(g/maxG)*cH}
 const hC='#4E8098',aC2='#CC3333';
 let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Barlow Condensed',sans-serif">`;
 for(let i=0;i<=maxG;i++){const yy=yp(i);svg+=`<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="rgba(255,255,255,.06)"/><text x="${pL-14}" y="${yy+7}" fill="#6A8090" font-size="22" text-anchor="end" font-weight="600">${i}</text>`}
-[0,5,10,15,20,25,30,35,40,45,50,55,60].forEach(m=>{const sk2=m*60;if(sk2>lastSk)return;const xx=xp(sk2);svg+=`<line x1="${xx}" y1="${pT}" x2="${xx}" y2="${H-pB}" stroke="rgba(255,255,255,.04)"/><text x="${xx}" y="${H-pB+28}" fill="#6A8090" font-size="22" text-anchor="middle" font-weight="600">${m}'</text>`});
-const htX=xp(1800);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;
+for(let m=0;m<=DUR;m+=5){const sk2=m*60;if(sk2>lastSk)continue;const xx=xp(sk2);svg+=`<line x1="${xx}" y1="${pT}" x2="${xx}" y2="${H-pB}" stroke="rgba(255,255,255,.04)"/><text x="${xx}" y="${H-pB+28}" fill="#6A8090" font-size="22" text-anchor="middle" font-weight="600">${m}'</text>`}
+const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;
 function stepPath(teamNum,scoreFn){let path=`M${xp(0).toFixed(1)},${yp(0).toFixed(1)}`;let cur=0,endSk=0;for(let i=1;i<pts.length;i++){const p=pts[i];if(p.team===teamNum){path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`;cur=scoreFn(p);path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`}endSk=p.sk}if(endSk>0)path+=` L${xp(endSk).toFixed(1)},${yp(cur).toFixed(1)}`;return path} const pH=stepPath(1,p=>p.r1);const pA2=stepPath(2,p=>p.r2);
 svg+=`<path class="draw-line" d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round"/><path class="draw-line" d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round"/>`;
 pts.forEach((p,i)=>{if(i===0)return;if(p.team===1)svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r1).toFixed(1)}" r="6" fill="${hC}" stroke="#fff" stroke-width="2.5" opacity="0"/>`;else svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r2).toFixed(1)}" r="6" fill="${aC2}" stroke="#fff" stroke-width="2.5" opacity="0"/>`});
@@ -398,10 +415,10 @@ function rOfficials(){
 // ═══ FIREBASE ═══
 if(ref){
   ref.child('command').on('value',s=>{const v=s.val();if(!v)return;if(v.type==='show')show(v.overlay,v.duration||0);if(v.type==='clear')clr()});
-  ref.child('match').on('value',s=>{const v=s.val();if(v)M=v});
-  ref.child('lang').on('value',s=>{const v=s.val();if(v)LANG=v});
-  ref.child('colors').on('value',s=>{const v=s.val();if(v)apC(v)});
-  ref.child('opacity').on('value',s=>{const v=s.val();OPA=v!=null?v/100:1;apO()});
+  ref.child('match').on('value',s=>{const v=s.val();if(v)M=sanitize(v)});   // FIX #5
+  ref.child('lang').on('value',s=>{const v=s.val();if(v==='en'||v==='ro')LANG=v});
+  ref.child('colors').on('value',s=>{const v=s.val();if(v&&typeof v==='object')apC(v)});
+  ref.child('opacity').on('value',s=>{const v=s.val();OPA=v!=null?Math.min(Math.max(v,20),100)/100:1;apO()});
 }
 </script>
 </body>
