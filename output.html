@@ -175,6 +175,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .off-team-hdr img{width:32px;height:32px;object-fit:contain}
 .off-team-name{font-family:'Oswald';font-size:28px;font-weight:700;color:var(--text-primary);text-transform:uppercase}
 .off-staff{padding:4px 0 4px 44px}
+.off-staff-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;padding-left:44px}
+.off-staff-grid .off-staff{padding:4px 0}
 .off-staff-role{font-family:'Barlow';font-size:20px;color:var(--text-muted)}
 .off-staff-name{font-family:'Barlow Condensed';font-size:28px;font-weight:600;color:var(--text-primary)}
 .off-foot{display:flex;align-items:center;justify-content:center;gap:30px;padding:12px 36px;background:var(--bg-panel);border-top:1px solid var(--border);font-family:'Barlow';font-size:22px;color:var(--text-secondary)}
@@ -461,15 +463,17 @@ function rOfficials(){
     ${o.delegat?`<div class="off-role">${t('delegate')}</div><div class="off-name"><span class="off-dot"></span>${o.delegat}</div>`:''}
   </div><div class="off-right">
     <div class="off-team"><div class="off-team-hdr">${lg(M.home.logo,32)}<div class="off-team-name">${M.home.shortName}</div></div>
+      <div class="off-staff-grid">
       ${o.homeCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.homeCoach}</div></div>`:''}
-      ${o.homeAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.homeAsst}</div></div>`:''}
       ${o.homeC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeC}</div></div>`:''}
-      ${o.homeD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeD}</div></div>`:''}</div>
+      ${o.homeAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.homeAsst}</div></div>`:''}
+      ${o.homeD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeD}</div></div>`:''}</div></div>
     <div class="off-team"><div class="off-team-hdr">${lg(M.away.logo,32)}<div class="off-team-name">${M.away.shortName}</div></div>
+      <div class="off-staff-grid">
       ${o.awayCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.awayCoach}</div></div>`:''}
-      ${o.awayAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.awayAsst}</div></div>`:''}
       ${o.awayC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayC}</div></div>`:''}
-      ${o.awayD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayD}</div></div>`:''}</div>
+      ${o.awayAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.awayAsst}</div></div>`:''}
+      ${o.awayD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayD}</div></div>`:''}</div></div>
   </div></div><div class="off-foot">${M.competition||''} ${M.phase?'· '+M.phase:''} ${M.venue?'· '+M.venue:''}${M.city?', '+M.city:''}</div>${srcHtml()}</div>`;
 }
 
