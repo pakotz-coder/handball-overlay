@@ -208,8 +208,8 @@ function sanitize(o){
 }
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',source:'Source'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',source:'Sursa'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
@@ -458,13 +458,18 @@ function rOfficials(){
     ${o.ref1?`<div class="off-role">${t('referee')} 1</div><div class="off-name"><span class="off-dot"></span>${o.ref1}</div>`:''}
     ${o.ref2?`<div class="off-role">${t('referee')} 2</div><div class="off-name"><span class="off-dot"></span>${o.ref2}</div>`:''}
     ${o.observer?`<div class="off-role">${t('observer')}</div><div class="off-name"><span class="off-dot"></span>${o.observer}</div>`:''}
+    ${o.delegat?`<div class="off-role">${t('delegate')}</div><div class="off-name"><span class="off-dot"></span>${o.delegat}</div>`:''}
   </div><div class="off-right">
     <div class="off-team"><div class="off-team-hdr">${lg(M.home.logo,32)}<div class="off-team-name">${M.home.shortName}</div></div>
-      ${o.homeCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.homeCoach}</div></div>`:''} 
-      ${o.homeAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.homeAsst}</div></div>`:''}</div>
+      ${o.homeCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.homeCoach}</div></div>`:''}
+      ${o.homeAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.homeAsst}</div></div>`:''}
+      ${o.homeC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeC}</div></div>`:''}
+      ${o.homeD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeD}</div></div>`:''}</div>
     <div class="off-team"><div class="off-team-hdr">${lg(M.away.logo,32)}<div class="off-team-name">${M.away.shortName}</div></div>
       ${o.awayCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.awayCoach}</div></div>`:''}
-      ${o.awayAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.awayAsst}</div></div>`:''}</div>
+      ${o.awayAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.awayAsst}</div></div>`:''}
+      ${o.awayC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayC}</div></div>`:''}
+      ${o.awayD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayD}</div></div>`:''}</div>
   </div></div><div class="off-foot">${M.competition||''} ${M.phase?'· '+M.phase:''} ${M.venue?'· '+M.venue:''}${M.city?', '+M.city:''}</div>${srcHtml()}</div>`;
 }
 
