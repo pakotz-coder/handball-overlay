@@ -260,19 +260,16 @@ function parseAPI(d){
   }
 
   const sud=d.sudionici||[];
-  const refs=sud.filter(s=>s.tip===3).sort((a,b)=>(a.rbtip||0)-(b.rbtip||0)).map(s=>`${s.i} ${s.p}`.trim());
-  const observer=sud.find(s=>s.tip===4&&s.detaljno===0&&s.rbtip===1);
-  const hCoach=sud.find(s=>s.tip===1&&s.rbekipa===1&&s.oznaka==='A');
-  const hAsst=sud.find(s=>s.tip===2&&s.rbekipa===1&&s.oznaka==='B');
-  const aCoach=sud.find(s=>s.tip===1&&s.rbekipa===2&&s.oznaka==='A');
-  const aAsst=sud.find(s=>s.tip===2&&s.rbekipa===2&&s.oznaka==='B');
+  const nm=s=>s?`${s.i} ${s.p}`.trim():'';
+  const refs=sud.filter(s=>s.tip===3).sort((a,b)=>(a.rbtip||0)-(b.rbtip||0)).map(nm);
+  const observer=sud.find(s=>s.tip===5);
+  const delegat=sud.find(s=>s.tip===4&&s.detaljno===1);
+  const staff=(team,ozn)=>sud.find(s=>s.tip===(ozn==='A'?1:2)&&s.rbekipa===team&&s.oznaka===ozn);
   const officials={
     ref1:refs[0]||'',ref2:refs[1]||'',
-    observer:observer?`${observer.i} ${observer.p}`.trim():'',
-    homeCoach:hCoach?`${hCoach.i} ${hCoach.p}`.trim():'',
-    homeAsst:hAsst?`${hAsst.i} ${hAsst.p}`.trim():'',
-    awayCoach:aCoach?`${aCoach.i} ${aCoach.p}`.trim():'',
-    awayAsst:aAsst?`${aAsst.i} ${aAsst.p}`.trim():''
+    observer:nm(observer),delegat:nm(delegat),
+    homeCoach:nm(staff(1,'A')),homeAsst:nm(staff(1,'B')),homeC:nm(staff(1,'C')),homeD:nm(staff(1,'D')),
+    awayCoach:nm(staff(2,'A')),awayAsst:nm(staff(2,'B')),awayC:nm(staff(2,'C')),awayD:nm(staff(2,'D'))
   };
 
   return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1)},
