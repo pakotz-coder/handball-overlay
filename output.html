@@ -10,20 +10,67 @@
 :root{--bg-dark:#1A2D3D;--bg-panel:#1E3448;--bg-header:#2B5876;--bg-header-light:#4E8098;--accent:#CC3333;--accent-dark:#A02020;--teal:#3A5A6A;--teal-light:#4A7A8A;--green:#27AE60;--gold:#F0C040;--white:#FFF;--text-primary:#F0F4F7;--text-secondary:#9AABB8;--text-muted:#6A8090;--border:#2A4A5A;--row-even:rgba(26,48,64,.95);--row-odd:rgba(30,58,76,.95);--score-bg:#0E1E2A}
 html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Barlow Condensed',sans-serif}
 .ov{position:absolute;top:0;left:0;width:1920px;height:1080px;pointer-events:none;display:flex;align-items:center;justify-content:center}
-@keyframes splitOpen{0%{clip-path:inset(0 50%);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0%)}}
-@keyframes splitClose{0%{clip-path:inset(0 0%);opacity:1}70%{opacity:1}100%{clip-path:inset(0 50%);opacity:0}}
-@keyframes splitOpenGF{0%{clip-path:inset(0 50%);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0%)}}
+/* ══════════════ BROADCAST MOTION SYSTEM ══════════════
+   Entrances: split reveal (clip-path, GPU-composited). Exit: compress → collapse to center.
+   Panel→panel: morph (content transition, no full teardown). All ≤700ms.
+   Only transform / opacity / clip-path are animated. */
+@keyframes splitOpen{0%{clip-path:inset(0 50% round 14px);opacity:0;transform:scale(.985)}30%{opacity:1}100%{clip-path:inset(0 0% round 14px);opacity:1;transform:scale(1)}}
+@keyframes splitClose{0%{opacity:1;transform:scaleY(1) scaleX(1)}45%{opacity:1;transform:scaleY(.05) scaleX(1)}100%{opacity:0;transform:scaleY(.05) scaleX(.12)}}
+@keyframes splitOpenGF{0%{clip-path:inset(0 50% round 10px);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0% round 10px)}}
+@keyframes morphOut{to{opacity:0;transform:translateY(14px) scale(.988)}}
+@keyframes morphIn{from{opacity:0;transform:translateY(-14px) scale(.988)}to{opacity:1;transform:none}}
 @keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes fadeRow{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes countUp{from{opacity:0}to{opacity:1}}
 @keyframes drawLine{to{stroke-dashoffset:0}}
 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-.ac{animation:splitOpen .7s cubic-bezier(.22,1,.36,1) forwards}
-.au{animation:splitOpenGF .7s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes sweepX{from{transform:translateX(-160%) skewX(-18deg)}to{transform:translateX(280%) skewX(-18deg)}}
+@keyframes scorePop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes gfGlow{0%,100%{box-shadow:0 6px 40px rgba(0,0,0,.6)}50%{box-shadow:0 6px 40px rgba(0,0,0,.6),0 0 34px rgba(240,192,64,.26)}}
+@keyframes logoReveal{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes vsPop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes cellPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes dotPulse2{0%,100%{transform:scale(1)}50%{transform:scale(1.8)}}
+@keyframes bgDrift{0%{transform:translate3d(-1.5%,-1.5%,0)}50%{transform:translate3d(1.5%,1.5%,0)}100%{transform:translate3d(-1.5%,-1.5%,0)}}
+.ac{animation:splitOpen .65s cubic-bezier(.22,1,.36,1) forwards}
+.au{animation:splitOpenGF .6s cubic-bezier(.22,1,.36,1) forwards,gfGlow 1.4s ease-in-out .75s 1}
 .ao{animation:splitClose .5s cubic-bezier(.55,0,.78,.36) forwards}
+.amo{animation:morphOut .24s cubic-bezier(.55,0,.78,.36) forwards}
+.ami{animation:morphIn .32s cubic-bezier(.22,1,.36,1) forwards}
 .arow{opacity:0;animation:fadeRow .4s ease forwards}
 .abar{transform-origin:left;animation:barGrow .6s cubic-bezier(.22,1,.36,1) forwards}
 .adraw{stroke-dashoffset:var(--len);animation:drawLine 4s cubic-bezier(.22,1,.36,1) forwards}
+.acell{animation:cellPop .4s cubic-bezier(.22,1,.36,1) forwards}
+.dot-pulse{transform-box:fill-box;transform-origin:center;animation:dotPulse2 .9s ease-in-out 1}
+/* Light sweep — premium moments only (overlay titles, goal flash, POTM). One elegant pass. */
+.sweep{overflow:hidden}
+.sph.sweep,.pmh.sweep,.pre-top.sweep{position:relative}
+.sweep::after{content:'';position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-160%) skewX(-18deg);animation:sweepX 1s cubic-bezier(.4,0,.2,1) .55s 1 forwards;pointer-events:none}
+.spop{animation:scorePop .3s cubic-bezier(.34,1.3,.5,1) .55s 1}
+/* Ambient panel life: near-invisible drifting gradient + light procedural noise */
+.sp,.pm,.pre{position:relative}
+.sp::before,.pm::before,.pre::before{content:'';position:absolute;inset:-8%;background:radial-gradient(60% 80% at 18% 8%,rgba(78,128,152,.10),transparent 60%),radial-gradient(50% 70% at 86% 92%,rgba(204,51,51,.07),transparent 60%);animation:bgDrift 22s ease-in-out infinite;pointer-events:none;z-index:0;will-change:transform}
+.sp::after,.pm::after,.pre::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.6'/></svg>");opacity:.028;pointer-events:none;z-index:0}
+.sp>*,.pm>*,.pre>*{position:relative;z-index:1}
+/* Goal flash hero sequence: panel opens → player → score pop → glow → sweep */
+.gf .gft,.gf .gfp,.gf .gfsc{opacity:0}
+.gf .gft{animation:fadeRow .32s ease .22s forwards}
+.gf .gfp{animation:fadeRow .32s ease .42s forwards}
+.gf .gfsc{animation:fadeRow .32s ease .58s forwards,scorePop .3s cubic-bezier(.34,1.3,.5,1) .95s 1}
+/* Pre-match cinematic sequence: logos → names → VS → footer */
+.pre .pre-logo{opacity:0;animation:logoReveal .55s cubic-bezier(.22,1,.36,1) .3s forwards}
+.pre .pre-tname{opacity:0;animation:fadeRow .45s ease .58s forwards}
+.pre .pre-vsx{opacity:0;animation:vsPop .5s cubic-bezier(.34,1.4,.5,1) .78s forwards}
+.pre .pre-foot .pre-fi{opacity:0;animation:fadeRow .45s ease 1s forwards}
+/* Player of the Match hero card stagger */
+.pm .pm-logo{opacity:0;animation:logoReveal .5s cubic-bezier(.22,1,.36,1) .3s forwards}
+.pm .pmnr{opacity:0;animation:fadeRow .4s ease .45s forwards}
+.pm .pmn{opacity:0;animation:fadeRow .4s ease .58s forwards}
+.pm .pmt{opacity:0;animation:fadeRow .4s ease .7s forwards}
+.pm .pmsi{opacity:0;animation:fadeRow .4s ease forwards}
+.pm .pmsi:nth-child(1){animation-delay:.82s}
+.pm .pmsi:nth-child(2){animation-delay:.92s}
+.pm .pmsi:nth-child(3){animation-delay:1.02s}
 
 .sp{width:1700px;max-height:1040px;background:var(--bg-dark);border-radius:14px;overflow:hidden;box-shadow:0 10px 60px rgba(0,0,0,.7)}
 .sph{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--accent),var(--accent-dark));padding:14px 36px}
@@ -250,10 +297,15 @@ function szn(pl){const z={s7m:'s7m',s9m:'s9m',s6m:'s6m',wng:'wing',fb:'fb',brk:'
 function lg(url,sz=36){return`<img src="${url}" style="width:${sz}px;height:${sz}px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`}
 
 const $=document.getElementById('ov');
+// ═══ BROADCAST TRANSITION ENGINE ═══
+// Panels in this set morph into each other (content transition) instead of full close/open.
+const PANEL=['h2h','shooting','gkduel','topscorers','roster1','roster2','graph','shotmap','shotmaphome','shotmapaway','officials'];
+let CUR=null;
 function clr(){
   if(cT){clearTimeout(cT);cT=null}
+  CUR=null;
   const el=$.firstChild;
-  if(el){el.classList.remove('ac','au');el.classList.add('ao');setTimeout(()=>{$.innerHTML=''},550)}
+  if(el){el.classList.remove('ac','au','ami','amo');el.classList.add('ao');setTimeout(()=>{$.innerHTML=''},550)}
   else{$.innerHTML=''}
 }
 // Color whitelist: only valid hex values reach CSS variables
@@ -263,9 +315,35 @@ function apO(){
   const panels=$.querySelectorAll('.sp,.pm,.pre');
   panels.forEach(el=>{el.style.opacity=OPA});
 }
+// ═══ PREMIUM COUNTER ENGINE ═══
+// Animates every number inside a text-only element from 0 → final (eased, rAF), preserving separators.
+function animNums(el,dur,delay){
+  const final=el.textContent;
+  const parts=final.split(/(-?\d+)/);
+  if(!parts.some(p=>/^-?\d+$/.test(p)))return;
+  const nums=parts.map(p=>/^-?\d+$/.test(p)?parseInt(p,10):null);
+  const t0=performance.now()+(delay||0);
+  function fr(now){
+    let p=(now-t0)/dur;
+    if(p<0){requestAnimationFrame(fr);return}
+    if(p>=1){el.textContent=final;return}
+    const e=1-Math.pow(1-p,3);
+    el.textContent=parts.map((s,i)=>nums[i]!==null?Math.round(nums[i]*e):s).join('');
+    requestAnimationFrame(fr);
+  }
+  requestAnimationFrame(fr);
+}
+function runCounters(sel,delay){
+  setTimeout(()=>{
+    document.querySelectorAll(sel).forEach((el,i)=>{
+      if(el.children.length)return;
+      animNums(el,650,i*40);
+    });
+  },delay||0);
+}
 // FIX #2: HT/FT detection based on actual match duration
 function stL(){if(!M)return'';const d=matchDur();if(M.status==='End')return t('ft');if(M.time===(d/2)+':00')return t('ht');return M.time||t('live')}
-function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
+function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts spop">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
 
 function animateInner(delay){
   delay=delay||700;
@@ -276,9 +354,9 @@ function animateInner(delay){
     });
   },delay);
   setTimeout(()=>{
-    document.querySelectorAll('.scr,.h2hr,.zr,.gkc2,.pre-pl').forEach((el,i)=>{
+    document.querySelectorAll('.scr,.h2hr,.zr,.gkc2,.pre-pl,.sm-court,.gp-box,.off-name,.off-team-hdr,.off-staff').forEach((el,i)=>{
       el.style.opacity='0';
-      setTimeout(()=>{el.classList.add('arow')},i*50);
+      setTimeout(()=>{el.classList.add('arow')},i*40);
     });
   },delay+100);
   setTimeout(()=>{
@@ -288,6 +366,15 @@ function animateInner(delay){
       setTimeout(()=>{el.classList.add('arow')},i*30);
     });
   },delay+100);
+  // Shot placement cells: one at a time (goals grow in, empty cells stay quiet)
+  setTimeout(()=>{
+    document.querySelectorAll('.gp-cell').forEach((el,i)=>{
+      el.style.opacity='0';
+      setTimeout(()=>{el.classList.add('acell')},i*60);
+    });
+  },delay+150);
+  // Synchronized value counters (bars + numbers move together)
+  runCounters('.h2hv,.zv,.gkb2-v,.gkc2-pct,.scg,.sce,.gpv,.gpp',delay+150);
 }
 
 function animateGraph(delay){
@@ -300,10 +387,16 @@ function animateGraph(delay){
       path.style.setProperty('--len',len);
       path.classList.add('adraw');
     });
-    document.querySelectorAll('.draw-dot').forEach((dot,i)=>{
+    const dots=document.querySelectorAll('.draw-dot');
+    dots.forEach((dot,i)=>{
       dot.style.opacity='0';
       setTimeout(()=>{dot.style.opacity='1';dot.style.transition='opacity .2s'},4000+i*20);
     });
+    // Cinematic finish: last point pulses once
+    if(dots.length){
+      const last=dots[dots.length-1];
+      setTimeout(()=>{last.classList.add('dot-pulse')},4200+dots.length*20);
+    }
   },delay);
 }
 
@@ -312,16 +405,35 @@ function show(type,dur){
   // FIX #1: cancel any pending auto-clear timer from a previous overlay
   if(cT){clearTimeout(cT);cT=null}
   const existing=$.firstChild;
-  if(existing){
-    existing.classList.remove('ac','au');existing.classList.add('ao');
-    setTimeout(()=>{$.innerHTML='';doShow(type,dur)},550);
+  const morph=!!existing&&PANEL.includes(CUR)&&PANEL.includes(type);
+  if(existing&&morph){
+    // Morph: panel does not disappear — content transforms into the next overlay
+    existing.classList.remove('ac','au','ami');
+    existing.classList.add('amo');
+    setTimeout(()=>{$.innerHTML='';doShow(type,dur,true)},240);
+  }else if(existing){
+    existing.classList.remove('ac','au','ami','amo');
+    existing.classList.add('ao');
+    setTimeout(()=>{$.innerHTML='';doShow(type,dur)},520);
   }else{doShow(type,dur)}
 }
-function doShow(type,dur){
+function doShow(type,dur,morph){
   const fn={prematch:rPre,prematchclean:rPreClean,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,shotmap:rShotMap,shotmaphome:()=>rShotMap1('home'),shotmapaway:()=>rShotMap1('away'),officials:rOfficials};
   if(fn[type])fn[type]();
-  if(['h2h','shooting','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials'].includes(type))animateInner();
-  if(type==='graph')animateGraph();
+  CUR=type;
+  const root=$.firstChild;
+  if(morph&&root){root.classList.remove('ac');root.classList.add('ami')}
+  if(root){
+    // Light sweep on titles + premium moments (one pass, never continuous)
+    root.querySelectorAll('.sph,.pmh,.pre-top').forEach(e=>e.classList.add('sweep'));
+    if(type==='goalflash')root.classList.add('sweep');
+  }
+  const innerDelay=morph?350:700;
+  if(['h2h','shooting','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials'].includes(type))animateInner(innerDelay);
+  if(type==='graph')animateGraph(morph?450:800);
+  if(type==='potm')runCounters('.pmsv',900);
+  // Scoreboard digits count up on every panel reveal
+  if(type!=='goalflash')runCounters('.ts',morph?250:550);
   // Apply opacity to panels (not goal flash)
   if(type!=='goalflash')apO();
   if(dur&&dur>0){cT=setTimeout(()=>{clr()},dur)}
@@ -443,6 +555,8 @@ const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=Math.max(pts[pts.l
 const W=1600,H=490,pL=70,pR=40,pT=40,pB=60,cW=W-pL-pR,cH=H-pT-pB;
 function xp(sk){return pL+(sk/lastSk)*cW}function yp(g){return pT+cH-(g/maxG)*cH}
 const hC='#4E8098',aC2='#CC3333';
+// Winning team's line gets a subtle glow (no excessive shadows)
+const hWin=M.home.score>M.away.score,aWin=M.away.score>M.home.score;
 let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Barlow Condensed',sans-serif">`;
 for(let i=0;i<=maxG;i++){const yy=yp(i);svg+=`<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="rgba(255,255,255,.06)"/><text x="${pL-14}" y="${yy+7}" fill="#6A8090" font-size="22" text-anchor="end" font-weight="600">${i}</text>`}
 const maxMin=Math.ceil(lastSk/60);
@@ -451,7 +565,7 @@ const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}
 // overtime marker if events go past regulation
 if(lastSk>DURS){const otX=xp(DURS);svg+=`<line x1="${otX}" y1="${pT}" x2="${otX}" y2="${H-pB}" stroke="rgba(240,192,64,.4)" stroke-width="2" stroke-dasharray="8,4"/><text x="${otX}" y="${pT-12}" fill="rgba(240,192,64,.7)" font-size="22" text-anchor="middle" font-weight="700">${LANG==='ro'?'PREL':'OT'}</text>`}
 function stepPath(teamNum,scoreFn){let path=`M${xp(0).toFixed(1)},${yp(0).toFixed(1)}`;let cur=0,endSk=0;for(let i=1;i<pts.length;i++){const p=pts[i];if(p.team===teamNum){path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`;cur=scoreFn(p);path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`}endSk=p.sk}if(endSk>0)path+=` L${xp(endSk).toFixed(1)},${yp(cur).toFixed(1)}`;return path} const pH=stepPath(1,p=>p.r1);const pA2=stepPath(2,p=>p.r2);
-svg+=`<path class="draw-line" d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round"/><path class="draw-line" d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round"/>`;
+svg+=`<path class="draw-line" d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round" style="${hWin?'filter:drop-shadow(0 0 5px rgba(78,128,152,.75))':''}"/><path class="draw-line" d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round" style="${aWin?'filter:drop-shadow(0 0 5px rgba(204,51,51,.75))':''}"/>`;
 pts.forEach((p,i)=>{if(i===0)return;if(p.team===1)svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r1).toFixed(1)}" r="6" fill="${hC}" stroke="#fff" stroke-width="2.5" opacity="0"/>`;else svg+=`<circle class="draw-dot" cx="${xp(p.sk).toFixed(1)}" cy="${yp(p.r2).toFixed(1)}" r="6" fill="${aC2}" stroke="#fff" stroke-width="2.5" opacity="0"/>`});
 svg+=`<rect x="${pL+14}" y="${pT+8}" width="20" height="5" rx="2" fill="${hC}"/><text x="${pL+40}" y="${pT+16}" fill="#F0F4F7" font-size="22" font-weight="700">${M.home.shortName}</text>`;
 const lw=M.home.shortName.length*12+60;svg+=`<rect x="${pL+lw}" y="${pT+8}" width="20" height="5" rx="2" fill="${aC2}"/><text x="${pL+lw+26}" y="${pT+16}" fill="#F0F4F7" font-size="22" font-weight="700">${M.away.shortName}</text>`;
