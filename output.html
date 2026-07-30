@@ -311,9 +311,15 @@ function clr(){
 // Color whitelist: only valid hex values reach CSS variables
 function apC(c){const s=document.documentElement.style;for(const[k,v]of Object.entries(c)){if(typeof v==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(v)&&/^[a-z0-9\-]+$/.test(k))s.setProperty('--'+k,v)}}
 function apO(){
-  // Apply opacity to panel overlays (.sp, .pm, .pre) but NOT goal flash (.gf)
+  // Apply opacity to panel overlays (.sp, .pm, .pre) but NOT goal flash (.gf).
+  // Entrance/morph animations use fill:forwards and would override plain inline
+  // opacity, so at <100% we set it with !important (beats animation origin);
+  // at 100% we remove it so fade animations run untouched.
   const panels=$.querySelectorAll('.sp,.pm,.pre');
-  panels.forEach(el=>{el.style.opacity=OPA});
+  panels.forEach(el=>{
+    if(OPA<1)el.style.setProperty('opacity',OPA,'important');
+    else el.style.removeProperty('opacity');
+  });
 }
 // ═══ PREMIUM COUNTER ENGINE ═══
 // Animates every number inside a text-only element from 0 → final (eased, rAF), preserving separators.
