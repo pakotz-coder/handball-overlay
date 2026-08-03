@@ -69,21 +69,21 @@ input:focus{border-color:var(--blue)}
   <div class="sec"><div class="sec-t">Language</div><div class="lt"><button class="lb active" data-lang="en" onclick="setLang('en')">English</button><button class="lb" data-lang="ro" onclick="setLang('ro')">Română</button></div></div>
   <div class="sec"><div class="sec-t">Show Overlay</div><div class="dr"><label>Duration (0=stay):</label><input type="number" id="dur" value="0" min="0" max="60"><span style="color:var(--muted);font-size:11px">s</span></div>
     <div class="og">
-      <div class="ob pre" onclick="send('prematch')"><div class="oi">🏟️</div><div class="ol">Pre-Match</div></div>
       <div class="ob pre" onclick="send('prematchclean')"><div class="oi">🎬</div><div class="ol">Pre-Match Clean</div></div>
-      <div class="ob" onclick="send('h2h')"><div class="oi">⚔️</div><div class="ol">Head to Head</div></div>
+      <div class="ob pre" onclick="send('prematch')"><div class="oi">🏟️</div><div class="ol">Pre-Match</div></div>
+      <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
       <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
       <div class="ob" onclick="send('topscorers')"><div class="oi">🏆</div><div class="ol">Top Scorers</div></div>
-      <div class="ob" onclick="send('gkduel')"><div class="oi">🧤</div><div class="ol">GK Duel</div></div>
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
-      <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
+      <div class="ob" onclick="send('gkduel')"><div class="oi">🧤</div><div class="ol">GK Duel</div></div>
       <div class="ob" onclick="send('shotmap')"><div class="oi">🥅</div><div class="ol">Shot Map</div></div>
       <div class="ob" onclick="send('shotmaphome')"><div class="oi">🎯</div><div class="ol">Shot Map Home</div></div>
       <div class="ob" onclick="send('shotmapaway')"><div class="oi">🎯</div><div class="ol">Shot Map Away</div></div>
-      <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
+      <div class="ob" onclick="send('h2h')"><div class="oi">⚔️</div><div class="ol">Head to Head</div></div>
       <div class="ob" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
       <div class="ob" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
+      <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
     </div>
     <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear</button>
   </div>
