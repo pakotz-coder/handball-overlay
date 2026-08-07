@@ -264,8 +264,8 @@ function sanitize(o){
 }
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
@@ -489,6 +489,55 @@ function rH2H(){const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkT
 
 function rRoster(side){const team=side==='home'?M.home:M.away;const allP=[...team.players,...team.gk].sort((a,b)=>a.num-b.num);$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('roster')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="rost-title">${lg(team.logo,38)}<span>${team.name}</span></div><div class="rost"><table><thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>Blk</th><th>2m</th><th>Min</th><th>Val</th></tr></thead><tbody>${allP.map(p=>{const isGK=p.sav&&p.sav!=='';const ga=isGK?p.sav:p.ga;const val=isGK?p.gval:p.val;const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}${p.starter?' <span class="st-dot">●</span>':''}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.blk||''}</td><td>${isGK?'':p.sus||''}</td><td>${p.min||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`}).join('')}</tbody></table></div>${srcHtml()}</div>`}
 
+// ═══ Side-aware half-court (ps/ss event data) ═══
+function courtSVG2(z,tot,teamName,color){
+  const W=780,H=540;
+  function heat(e){const hue=Math.round(e/100*130);return`hsl(${hue},62%,50%)`}
+  function zb(x,y,w,h,label,d){
+    if(!d||d.t===0){
+      return`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="${x+w/2}" y="${y+h/2+6}" text-anchor="middle" font-family="Barlow Condensed" font-size="17" font-weight="600" fill="rgba(255,255,255,.22)">${label}</text>`;
+    }
+    const e=Math.round(d.g/d.t*100);
+    const clr=heat(e);
+    return`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${clr}" fill-opacity="0.2" stroke="${clr}" stroke-width="1.5"/>
+      <text x="${x+w/2}" y="${y+h/2-9}" text-anchor="middle" font-family="Oswald" font-size="29" font-weight="700" fill="${clr}" style="filter:brightness(1.35)">${d.g}/${d.t}</text>
+      <text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" font-family="Barlow Condensed" font-size="17" font-weight="600" fill="var(--text-secondary)">${label}</text>
+      <text x="${x+w/2}" y="${y+h/2+30}" text-anchor="middle" font-family="Barlow" font-size="15" fill="var(--text-muted)">${e}%</text>`;
+  }
+  let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  svg+=`<rect x="10" y="10" width="${W-20}" height="${H-20}" rx="8" fill="var(--bg-panel)" stroke="var(--border)" stroke-width="0.5"/>`;
+  // goal
+  svg+=`<rect x="${W/2-70}" y="16" width="140" height="10" rx="4" fill="${color}" opacity="0.75"/>`;
+  // 6m solid arc
+  svg+=`<path d="M${W/2-150} 26 C${W/2-150} 168, ${W/2+150} 168, ${W/2+150} 26" fill="none" stroke="var(--border)" stroke-width="2"/>`;
+  // 9m dashed arc
+  svg+=`<path d="M${W/2-265} 26 C${W/2-265} 288, ${W/2+265} 288, ${W/2+265} 26" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="7 5"/>`;
+  // 7m mark
+  svg+=`<line x1="${W/2-8}" y1="150" x2="${W/2+8}" y2="150" stroke="var(--text-muted)" stroke-width="2" opacity="0.5"/>`;
+  // wings (goal-line corners)
+  svg+=zb(16,36,110,80,t('wingL'),z.wingL);
+  svg+=zb(W-126,36,110,80,t('wingR'),z.wingR);
+  // 6m line zones
+  svg+=zb(160,86,105,76,t('lineL'),z.lineL);
+  svg+=zb(W/2-55,66,110,76,t('lineC'),z.lineC);
+  svg+=zb(W-265,86,105,76,t('lineR'),z.lineR);
+  // 7m penalty
+  svg+=zb(W/2-55,158,110,64,t('s7m'),z.p7);
+  // 9m backcourt zones
+  svg+=zb(92,238,120,82,t('backL'),z.backL);
+  svg+=zb(W/2-70,254,140,84,t('backC'),z.backC);
+  svg+=zb(W-212,238,120,82,t('backR'),z.backR);
+  // bottom band: fast break + breakthrough
+  svg+=zb(W/2-172,368,160,72,t('fb'),z.fb);
+  svg+=zb(W/2+12,368,160,72,t('brk'),z.brk);
+  // footer
+  svg+=`<text x="${W/2}" y="478" text-anchor="middle" font-family="Oswald" font-size="27" font-weight="700" fill="var(--text-primary)">${teamName}</text>`;
+  svg+=`<text x="${W/2}" y="506" text-anchor="middle" font-family="Barlow Condensed" font-size="23" font-weight="600" fill="var(--text-secondary)">${tot.goals||0}/${tot.shots||0} · ${tot.eff||0}%</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
 function courtSVG(zones,tot,teamName,color){
     const W=780,H=540;
     function zoneBox(x,y,w,h,label,data,clr){
@@ -530,10 +579,16 @@ function courtSVG(zones,tot,teamName,color){
 }
 
 function rShotMap(){
-  const hZ=szn(M.home.players),aZ=szn(M.away.players);
   const hTot=M.home.totals||{},aTot=M.away.totals||{};
-  const hSVG=courtSVG(hZ,hTot,M.home.shortName,'var(--bg-header-light)');
-  const aSVG=courtSVG(aZ,aTot,M.away.shortName,'var(--accent)');
+  let hSVG,aSVG;
+  if(M.home.zones&&M.away.zones){
+    hSVG=courtSVG2(M.home.zones,hTot,M.home.shortName,'var(--bg-header-light)');
+    aSVG=courtSVG2(M.away.zones,aTot,M.away.shortName,'var(--accent)');
+  }else{
+    const hZ=szn(M.home.players),aZ=szn(M.away.players);
+    hSVG=courtSVG(hZ,hTot,M.home.shortName,'var(--bg-header-light)');
+    aSVG=courtSVG(aZ,aTot,M.away.shortName,'var(--accent)');
+  }
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shotmap')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="sm-wrap"><div class="sm-court">${hSVG}</div><div class="sm-court">${aSVG}</div></div>${srcHtml()}</div>`;
 }
 
