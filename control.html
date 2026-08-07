@@ -250,6 +250,25 @@ function parseAPI(d){
     return{shots,saves};
   }
 
+  // Positional zones with sides (ps: 0=wing,1=9m,2=6m,3=7m,4=FB,5=breakthrough; ss: 0=left,1=center,2=right — verified vs Toma-soft PDF)
+  function zoneSides(teamNum){
+    const mk=()=>({g:0,t:0});
+    const z={wingL:mk(),wingR:mk(),backL:mk(),backC:mk(),backR:mk(),lineL:mk(),lineC:mk(),lineR:mk(),p7:mk(),fb:mk(),brk:mk()};
+    ev.forEach(e=>{
+      if(e.td!==0||e.e!==teamNum)return;
+      let key=null;
+      if(e.ps===0)key=e.ss===0?'wingL':e.ss===2?'wingR':null;
+      else if(e.ps===1)key=e.ss===0?'backL':e.ss===2?'backR':'backC';
+      else if(e.ps===2)key=e.ss===0?'lineL':e.ss===2?'lineR':'lineC';
+      else if(e.ps===3)key='p7';
+      else if(e.ps===4)key='fb';
+      else if(e.ps===5)key='brk';
+      if(!key)return;
+      z[key].t++;if(e.ish===0)z[key].g++;
+    });
+    return z;
+  }
+
   // Shot outcomes per team (ish: 0=goal, 1=post, 2=miss, 3=block, 4=save — verified vs Toma-soft PDF)
   function outcomes(teamNum){
     const o={goal:0,save:0,miss:0,post:0,block:0,total:0};
@@ -301,8 +320,8 @@ function parseAPI(d){
     awayCoach:nm(staff(2,'A')),awayAsst:nm(staff(2,'B')),awayC:nm(staff(2,'C')),awayD:nm(staff(2,'D'))
   };
 
-  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1),outcomes:outcomes(1)},
-    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2)},
+  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1),outcomes:outcomes(1),zones:zoneSides(1)},
+    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2),zones:zoneSides(2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
     lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration};
