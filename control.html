@@ -74,8 +74,11 @@ input:focus{border-color:var(--blue)}
       <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
       <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
+      <div class="ob" onclick="send('leadgraph')"><div class="oi">📉</div><div class="ol">Lead Graph</div></div>
+      <div class="ob" onclick="send('momentum')"><div class="oi">🔥</div><div class="ol">Momentum</div></div>
       <div class="ob" onclick="send('topscorers')"><div class="oi">🏆</div><div class="ol">Top Scorers</div></div>
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
+      <div class="ob" onclick="send('shotout')"><div class="oi">🧮</div><div class="ol">Shot Outcomes</div></div>
       <div class="ob" onclick="send('gkduel')"><div class="oi">🧤</div><div class="ol">GK Duel</div></div>
       <div class="ob" onclick="send('shotmap')"><div class="oi">🥅</div><div class="ol">Shot Map</div></div>
       <div class="ob" onclick="send('shotmaphome')"><div class="oi">🎯</div><div class="ol">Shot Map Home</div></div>
@@ -113,7 +116,6 @@ try{
   firebase.initializeApp(FC);
   db=firebase.database();
   ref=db.ref('rooms/'+ROOM);
-  // FIX #6: connection badge reflects auth state (write requires auth != null)
   firebase.auth().signInAnonymously().then(()=>{
     AUTHED=true;
     document.getElementById('connB').textContent='✓ Connected';
@@ -126,9 +128,7 @@ try{
   const b=location.href.replace('control.html','output.html'),o=b+(b.includes('?')?'&':'?')+'room='+ROOM;
   document.getElementById('outUrl').textContent=o;
   document.getElementById('outUrl').dataset.url=o;
-  // Load saved opacity
   ref.child('opacity').once('value',s=>{const v=s.val();if(v!=null){document.getElementById('opaSlider').value=v;document.getElementById('opaVal').textContent=v+'%'}});
-  // FIX #3: sync language toggle with saved value
   ref.child('lang').once('value',s=>{const v=s.val();if(v)document.querySelectorAll('.lb').forEach(b2=>b2.classList.toggle('active',b2.dataset.lang===v))});
 }catch(e){document.getElementById('connB').textContent='✕ '+e.message;document.getElementById('connB').className='cb err'}
 
@@ -136,7 +136,6 @@ function ss(m,t){const e=document.getElementById('sBar');e.textContent=m;e.class
 function exId(s){s=s.trim();if(/^\d+$/.test(s))return s;const m=s.match(/utakmica=(\d+)/);return m?m[1]:null}
 function checkAuth(){if(!AUTHED){ss('Not authenticated yet — wait a moment and retry','err');return false}return true}
 
-// FIX #5: recursive HTML-escape of all strings (applied to local M for preview; output.html sanitizes on receive)
 function sanitize(o){
   if(typeof o==='string')return o.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   if(Array.isArray(o))return o.map(sanitize);
@@ -144,7 +143,6 @@ function sanitize(o){
   return o;
 }
 
-// FIX #9: debounce Firebase writes from opacity slider
 let opaT=null;
 function sendOpacity(v){
   document.getElementById('opaVal').textContent=v+'%';
@@ -161,7 +159,6 @@ async function scrape(){
     const r=await fetch('https://www.sportinfocentar2.com/coman/utakmice/'+id+'.js?'+Date.now());
     if(!r.ok)throw new Error('HTTP '+r.status);
     const txt=await r.text();
-    // FIX #4: strict JSON.parse first; guarded fallback rejects dangerous tokens before evaluating
     let data;
     try{data=JSON.parse(txt)}
     catch(_){
@@ -170,8 +167,8 @@ async function scrape(){
       data=new Function('return('+txt+')')();
     }
     M=parseAPI(data);if(!M){ss('Parse error','err');return}
-    ref.child('match').set(M);      // raw data to Firebase (output escapes at render)
-    M=sanitize(M);                   // escaped copy for local preview
+    ref.child('match').set(M);
+    M=sanitize(M);
     renderPreview();
     ss(`✓ ${M.home.name} ${M.home.score}:${M.away.score} ${M.away.name} ${M.gender==='f'?'♀':'♂'} · ${M.duration}min`,'ok');
   }catch(e){ss('Error: '+e.message,'err')}
@@ -183,13 +180,18 @@ function parseAPI(d){
   const ek1=u.ekipa1,ek2=u.ekipa2,lb='https://www.sportinfocentar2.com/coman/logo/';
   const logoId1=u.k1||u.dr1||ek1,logoId2=u.k2||u.dr2||ek2;
 
+  // Gender: prefer API field u.spol, fallback to competition-name keywords
   const nn=(u.nn||'').toLowerCase();
   const femaleKeywords=['junioare','fete','feminin','feminine','cadete','junior f','women','girls','senioare','florilor'];
-  const gender=femaleKeywords.some(k=>nn.includes(k))?'f':'m';
+  let gender;
+  if(u.spol===2||u.spol==='2'||u.spol==='Z'||u.spol==='Ž'||u.spol==='F'||u.spol==='f')gender='f';
+  else if(u.spol===1||u.spol==='1'||u.spol==='M'||u.spol==='m')gender='m';
+  else gender=femaleKeywords.some(k=>nn.includes(k))?'f':'m';
 
-  // FIX #2: match duration — J4/J5: 2x20=40, J3: 2x25=50, J2+ și seniori: 2x30=60
+  // Match duration: prefer API field u.ukupnominuta, fallback to name heuristics
   let duration=60;
-  if(/junio(?:a?re|ri)\s*[45]\b|\bj[45]\b/i.test(nn))duration=40;
+  if(u.ukupnominuta>=30&&u.ukupnominuta<=80)duration=u.ukupnominuta;
+  else if(/junio(?:a?re|ri)\s*[45]\b|\bj[45]\b/i.test(nn))duration=40;
   else if(/junio(?:a?re|ri)\s*3\b|\bj3\b/i.test(nn))duration=50;
 
   function isGK(p){return p.tipigraca==1||(p.obranep!=null&&p.obranep>0)}
@@ -204,8 +206,12 @@ function parseAPI(d){
         wng:p.sutkrilop>0?`${p.sutkrilod}/${p.sutkrilop}`:'',
         fb:p.sutkontrap>0?`${p.sutkontrad}/${p.sutkontrap}`:'',
         brk:p.sutprolazp>0?`${p.sutprolazd}/${p.sutprolazp}`:'',
+        ld:p.sutizdalekap>0?`${p.sutizdalekad}/${p.sutizdalekap}`:'',
         ast:p.asistencija||0,e7:p.izborenihsedmeraca||0,trn:p.tehnickih||0,stl:p.osvojenih||0,
         sus:p.iskljucenja||0,yel:p.zutih||0,red:p.crvenih||0,
+        blk:p.blokova||0,fou:p.faulova||0,
+        min:p.sekundi>0?Math.round(p.sekundi/60):0,
+        starter:p.starter?1:0,pos:p.pozicija||0,
         val:p.valigrac!=null?p.valigrac:'',
         sav:p.obranep>0?`${p.obraned}/${p.obranep}`:'',
         gs7m:p.obranesedmeracp>0?`${p.obranesedmeracd}/${p.obranesedmeracp}`:'',
@@ -219,25 +225,23 @@ function parseAPI(d){
   }
 
   function rosterNames(eid){
-    return pl.filter(p=>p.ekipa===eid).map(p=>({num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),isGK:isGK(p)})).sort((a,b)=>a.num-b.num);
+    return pl.filter(p=>p.ekipa===eid).map(p=>({num:p.dres,name:`${p.ime} ${p.prezime}`.trim(),isGK:isGK(p),starter:p.starter?1:0})).sort((a,b)=>a.num-b.num);
   }
 
-  // Jersey lookup by player id
   const dresById={};pl.forEach(p=>{dresById[p.igrac]=p.dres});
 
   let lastGoal=null;
   const goalEvents=[];
   for(let i=ev.length-1;i>=0;i--){
     const e=ev[i];
-    if(e.td===0&&e.ig&&e.ish===0)   // ish=0 = goal (ish=4 = save, NOT a goal)
+    if(e.td===0&&e.ig&&e.ish===0)
       goalEvents.push({team:e.e,time:e.vr,sk:e.sk,r1:e.r1,r2:e.r2,name:`${e.i} ${e.p}`.trim(),num:dresById[e.ig]||0});
   }
   if(ev.length>0){for(const e of ev){if(e.td===0&&e.ig&&e.ish===0){lastGoal={team:e.e===1?u.n1:u.n2,teamNum:e.e,num:dresById[e.ig]||0,name:`${e.i} ${e.p}`.trim(),time:e.vr,r1:e.r1,r2:e.r2};break}}}
 
-  // Goal placement grids (pz 0-8, 3x3). shots: goals(ish=0)/total per cell. saves: saves(ish=4)/total opp shots per cell.
   function placementGrid(teamNum){
-    const shots=Array(9).fill(0).map(()=>({g:0,t:0}));   // this team's attack
-    const saves=Array(9).fill(0).map(()=>({s:0,t:0}));   // this team's GK vs opponent
+    const shots=Array(9).fill(0).map(()=>({g:0,t:0}));
+    const saves=Array(9).fill(0).map(()=>({s:0,t:0}));
     ev.forEach(e=>{
       if(e.td!==0||e.pz==null||e.pz<0||e.pz>8)return;
       if(e.e===teamNum){shots[e.pz].t++;if(e.ish===0)shots[e.pz].g++}
@@ -246,7 +250,31 @@ function parseAPI(d){
     return{shots,saves};
   }
 
-  function tot(players){let g=0,s=0,a=0,tn=0,st=0,su=0;players.forEach(p=>{if(p.ga){const x=p.ga.split('/');g+=parseInt(x[0])||0;s+=parseInt(x[1])||0}a+=p.ast||0;tn+=p.trn||0;st+=p.stl||0;su+=p.sus||0});return{goals:g,shots:s,eff:s>0?Math.round(g/s*100):0,ast:a,trn:tn,stl:st,sus:su}}
+  // Shot outcomes per team (ish: 0=goal, 1=post, 2=miss, 3=block, 4=save — verified vs Toma-soft PDF)
+  function outcomes(teamNum){
+    const o={goal:0,save:0,miss:0,post:0,block:0,total:0};
+    ev.forEach(e=>{
+      if(e.td!==0||e.e!==teamNum)return;
+      o.total++;
+      if(e.ish===0)o.goal++;else if(e.ish===4)o.save++;else if(e.ish===2)o.miss++;
+      else if(e.ish===1)o.post++;else if(e.ish===3)o.block++;
+    });
+    return o;
+  }
+
+  // Scoring runs (consecutive unanswered goals) computed from goalEvents (ascending)
+  function computeRuns(){
+    const best={1:{n:0,fromSk:0,toSk:0},2:{n:0,fromSk:0,toSk:0}};
+    let cur={team:0,n:0,fromSk:0,toSk:0};
+    goalEvents.forEach(e=>{
+      if(cur.team===e.team){cur.n++;cur.toSk=e.sk}
+      else cur={team:e.team,n:1,fromSk:e.sk,toSk:e.sk};
+      if(cur.n>best[cur.team].n)best[cur.team]={n:cur.n,fromSk:cur.fromSk,toSk:cur.toSk};
+    });
+    return{home:best[1],away:best[2],current:cur};
+  }
+
+  function tot(players){let g=0,s=0,a=0,tn=0,st=0,su=0,bl=0;players.forEach(p=>{if(p.ga){const x=p.ga.split('/');g+=parseInt(x[0])||0;s+=parseInt(x[1])||0}a+=p.ast||0;tn+=p.trn||0;st+=p.stl||0;su+=p.sus||0;bl+=p.blk||0});return{goals:g,shots:s,eff:s>0?Math.round(g/s*100):0,ast:a,trn:tn,stl:st,sus:su,blk:bl}}
   function gkTot(gks){let sv=0,fc=0;gks.forEach(g=>{if(g.sav){const x=g.sav.split('/');sv+=parseInt(x[0])||0;fc+=parseInt(x[1])||0}});return{saves:sv,faced:fc,pct:fc>0?Math.round(sv/fc*100):0}}
   const hP=pp(ek1,false),aP=pp(ek2,false),hG=pp(ek1,true),aG=pp(ek2,true);
   const sn=n=>{const w=n.split(' ');return w.length>3?w.slice(-2).join(' '):n};
@@ -273,11 +301,11 @@ function parseAPI(d){
     awayCoach:nm(staff(2,'A')),awayAsst:nm(staff(2,'B')),awayC:nm(staff(2,'C')),awayD:nm(staff(2,'D'))
   };
 
-  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1)},
-    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2)},
+  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1),outcomes:outcomes(1)},
+    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
-    lastGoal,goalEvents,gender,kickoff,officials,duration};
+    lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration};
 }
 
 function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
@@ -299,8 +327,8 @@ function renderPreview(){
   if(M.home.gk.length){document.getElementById('hgC').style.display='block';document.getElementById('hgT').textContent=M.home.name+' — GK';rGK('hgTbl',M.home.gk)}
   if(M.away.gk.length){document.getElementById('agC').style.display='block';document.getElementById('agT').textContent=M.away.name+' — GK';rGK('agTbl',M.away.gk)}
 }
-function rPT(id,pl){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Brk</th><th>Ast</th><th>Trn</th><th>Stl</th><th>2m</th><th>Val</th></tr></thead><tbody>'+pl.map(p=>{const v=p.val,vc=v!==''?(v>=0?'vp':'vn'):'';return`<tr><td>${p.num}</td><td>${p.name}</td><td><b>${p.ga}</b></td><td>${p.s7m}</td><td>${p.s9m}</td><td>${p.s6m}</td><td>${p.wng}</td><td>${p.fb}</td><td>${p.brk}</td><td>${p.ast||''}</td><td>${p.trn||''}</td><td>${p.stl||''}</td><td>${p.sus||''}</td><td class="${vc}">${v!==''?v:''}</td></tr>`}).join('')+'</tbody>'}
-function rGK(id,gks){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>Sav</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Val</th></tr></thead><tbody>'+gks.map(g=>{const v=g.gval,vc=v!==''?(v>=0?'vp':'vn'):'';return`<tr><td>${g.num}</td><td>${g.name}</td><td><b>${g.sav}</b></td><td>${g.gs7m}</td><td>${g.gs9m}</td><td>${g.gs6m}</td><td>${g.gwng}</td><td>${g.gfb}</td><td class="${vc}">${v!==''?v:''}</td></tr>`}).join('')+'</tbody>'}
+function rPT(id,pl){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Brk</th><th>Ast</th><th>Blk</th><th>Trn</th><th>Stl</th><th>2m</th><th>Min</th><th>Val</th></tr></thead><tbody>'+pl.map(p=>{const v=p.val,vc=v!==''?(v>=0?'vp':'vn'):'';return`<tr><td>${p.num}${p.starter?' <span style="color:var(--gold)">●</span>':''}</td><td>${p.name}</td><td><b>${p.ga}</b></td><td>${p.s7m}</td><td>${p.s9m}</td><td>${p.s6m}</td><td>${p.wng}</td><td>${p.fb}</td><td>${p.brk}</td><td>${p.ast||''}</td><td>${p.blk||''}</td><td>${p.trn||''}</td><td>${p.stl||''}</td><td>${p.sus||''}</td><td>${p.min||''}</td><td class="${vc}">${v!==''?v:''}</td></tr>`}).join('')+'</tbody>'}
+function rGK(id,gks){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>Sav</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Min</th><th>Val</th></tr></thead><tbody>'+gks.map(g=>{const v=g.gval,vc=v!==''?(v>=0?'vp':'vn'):'';return`<tr><td>${g.num}${g.starter?' <span style="color:var(--gold)">●</span>':''}</td><td>${g.name}</td><td><b>${g.sav}</b></td><td>${g.gs7m}</td><td>${g.gs9m}</td><td>${g.gs6m}</td><td>${g.gwng}</td><td>${g.gfb}</td><td>${g.min||''}</td><td class="${vc}">${v!==''?v:''}</td></tr>`}).join('')+'</tbody>'}
 initC();try{const sc=JSON.parse(localStorage.getItem('hb_c'));if(sc){colors={...colors,...sc};renderC()}}catch(e){}
 const sv=localStorage.getItem('hb_url');if(sv)document.getElementById('mUrl').value=sv;
 </script>
