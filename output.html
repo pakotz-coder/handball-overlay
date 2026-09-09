@@ -599,7 +599,6 @@ function gpNet(cells,invert){
   }
   let html='<div class="gp-net">';
   for(let i=0;i<9;i++){
-    if(i===4){html+='<div class="gp-cell empty"></div>';continue}
     const c=cells[i]||{n:0,t:0};
     if(c.t===0){html+='<div class="gp-cell empty"></div>';continue}
     const pct=Math.round(c.n/c.t*100);
