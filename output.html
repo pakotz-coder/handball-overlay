@@ -249,6 +249,26 @@ html.thumb-static .pre,html.thumb-static .pre *{animation:none!important;opacity
 #thumbbar button{background:#CC3333;color:#fff;border:none;border-radius:8px;padding:12px 22px;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer}
 #thumbbar button:hover{background:#A02020}
 #thumbbar #thumbst{color:#9AABB8;font-size:14px;max-width:520px}
+/* Full-bleed thumbnail layout */
+.tf{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:'Oswald','Barlow',sans-serif}
+.tf-side{position:absolute;inset:0}
+.tf-a{top:-6%;bottom:-6%;right:-8%;left:auto;width:60%;transform:skewX(-9deg);border-left:8px solid rgba(255,255,255,.9);box-shadow:-16px 0 55px rgba(0,0,0,.45)}
+.tf-vig{position:absolute;inset:0;background:radial-gradient(120% 92% at 50% 40%,transparent 26%,rgba(0,0,0,.5) 100%),linear-gradient(180deg,rgba(0,0,0,.28) 0%,transparent 26%,transparent 60%,rgba(0,0,0,.6) 100%)}
+.tf-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:52px 70px 46px;text-align:center}
+.tf-comp{align-self:center;background:rgba(8,16,24,.72);border:1px solid rgba(255,255,255,.14);border-radius:44px;padding:13px 50px;backdrop-filter:blur(2px)}
+.tf-comp b{display:block;font-size:46px;font-weight:700;letter-spacing:3px;color:#fff;text-transform:uppercase;line-height:1}
+.tf-comp small{display:block;font-size:22px;font-weight:500;color:#CFDBE5;letter-spacing:4px;text-transform:uppercase;margin-top:6px}
+.tf-mid{flex:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;padding:6px 0}
+.tf-team{display:flex;flex-direction:column;align-items:center;gap:24px;min-width:0}
+.tf-crest{width:284px;height:284px;border-radius:30px;padding:26px;display:flex;align-items:center;justify-content:center;background:linear-gradient(158deg,#ffffff 0%,#e9eef3 100%);box-shadow:0 18px 44px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.55)}
+.tf-crest img{max-width:100%;max-height:100%;object-fit:contain}
+.tf-crest .tf-emoji{font-size:150px;line-height:1}
+.tf-name{font-size:56px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:1px;line-height:1.03;max-width:780px;text-shadow:0 4px 22px rgba(0,0,0,.75),0 2px 4px rgba(0,0,0,.9)}
+.tf-name i{display:block;height:7px;width:116px;margin:18px auto 0;border-radius:4px;background:var(--nu,#fff);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.tf-vs{font-size:200px;font-weight:800;color:#E23B3B;line-height:.8;text-shadow:0 0 44px rgba(226,59,59,.6),0 6px 8px rgba(0,0,0,.55);-webkit-text-stroke:4px rgba(255,255,255,.12)}
+.tf-foot{align-self:center;display:flex;align-items:center;gap:30px;background:rgba(8,16,24,.7);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 42px;font-family:'Barlow',sans-serif;font-size:27px;color:#E6EDF3}
+.tf-foot b{color:#F0C040;font-weight:700}
+.tf-foot .tf-dot{color:#6E8698}
 </style>
 </head>
 <body>
@@ -736,15 +756,67 @@ function thumbStatus(m){const e=document.getElementById('thumbst');if(e)e.textCo
 // Route logos through a CORS-enabled image proxy so html2canvas can draw them onto the canvas.
 function proxyLogo(u){if(!u||typeof u!=='string')return u;return 'https://images.weserv.nl/?url='+encodeURIComponent('ssl:'+u.replace(/^https?:\/\//,''))+'&output=png'}
 function whenH2C(){return new Promise(res=>{(function chk(){typeof html2canvas==='function'?res():setTimeout(chk,60)})()})}
-function renderThumb(){
+function loadImgCORS(url){return new Promise(res=>{if(!url)return res(null);const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=()=>res(null);im.src=url})}
+function rgbStr(c){return 'rgb('+c.r+','+c.g+','+c.b+')'}
+function shade(c,f){const t=f<0?0:255,p=Math.abs(f);return 'rgb('+Math.round((t-c.r)*p+c.r)+','+Math.round((t-c.g)*p+c.g)+','+Math.round((t-c.b)*p+c.b)+')'}
+// Pull the dominant vibrant colour out of a crest for the diagonal background split.
+function dominantColor(img){
+  try{
+    const s=48,cv=document.createElement('canvas');cv.width=s;cv.height=s;
+    const cx=cv.getContext('2d');cx.drawImage(img,0,0,s,s);
+    const d=cx.getImageData(0,0,s,s).data,buckets={};
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<128)continue;
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx===0?0:(mx-mn)/mx,val=mx/255;
+      if(val<0.22||val>0.97||sat<0.32)continue;
+      const k=(r>>5)+','+(g>>5)+','+(b>>5);const bk=buckets[k]||(buckets[k]={r:0,g:0,b:0,n:0,s:0});
+      bk.r+=r;bk.g+=g;bk.b+=b;bk.n++;bk.s+=sat;
+    }
+    let best=null;
+    for(const k in buckets){const bk=buckets[k],score=bk.n*(0.5+bk.s/bk.n);
+      if(!best||score>best.score)best={score,r:Math.round(bk.r/bk.n),g:Math.round(bk.g/bk.n),b:Math.round(bk.b/bk.n)}}
+    return best?{r:best.r,g:best.g,b:best.b}:null;
+  }catch(e){return null}
+}
+function rThumbFull(hc,ac){
+  const h=M.home,a=M.away;
+  const hb=rgbStr(hc),hbd=shade(hc,-0.52),ab=rgbStr(ac),abd=shade(ac,-0.52);
+  const hAcc=shade(hc,0.18),aAcc=shade(ac,0.18);
+  const emoji="onerror=\"this.parentElement.innerHTML='<div class=\\'tf-emoji\\'>🤾</div>'\"";
+  $.innerHTML=`<div class="tf">
+    <div class="tf-side tf-h" style="background:linear-gradient(155deg,${hb} 0%,${hbd} 100%)"></div>
+    <div class="tf-side tf-a" style="background:linear-gradient(205deg,${ab} 0%,${abd} 100%)"></div>
+    <div class="tf-vig"></div>
+    <div class="tf-content">
+      ${M.competition?`<div class="tf-comp"><b>${M.competition}</b>${M.phase?`<small>${M.phase}</small>`:''}</div>`:'<div></div>'}
+      <div class="tf-mid">
+        <div class="tf-team">
+          <div class="tf-crest"><img src="${h.logo}" ${emoji}></div>
+          <div class="tf-name" style="--nu:${hAcc}">${h.name}<i></i></div>
+        </div>
+        <div class="tf-vs">VS</div>
+        <div class="tf-team">
+          <div class="tf-crest"><img src="${a.logo}" ${emoji}></div>
+          <div class="tf-name" style="--nu:${aAcc}">${a.name}<i></i></div>
+        </div>
+      </div>
+      <div class="tf-foot">${M.venue?`<span>📍 ${M.venue}${M.city?', '+M.city:''}</span>`:''}${M.venue&&M.kickoff?'<span class="tf-dot">•</span>':''}${M.kickoff?`<span>🕐 Start: <b>${M.kickoff}</b></span>`:''}</div>
+    </div>
+  </div>`;
+}
+async function renderThumb(){
   document.documentElement.classList.add('thumb-static');
-  rPreClean();
+  thumbStatus('Reading crest colours…');
+  const [hi,ai]=await Promise.all([loadImgCORS(M.home.logo),loadImgCORS(M.away.logo)]);
+  const hc=(hi&&dominantColor(hi))||{r:43,g:88,b:118};
+  const ac=(ai&&dominantColor(ai))||{r:160,g:32,b:32};
+  rThumbFull(hc,ac);
   thumbStatus('Rendering…');
-  const imgs=[...$.querySelectorAll('img')];
-  const ready=imgs.map(im=>im.complete?Promise.resolve():new Promise(r=>{im.onload=im.onerror=r}));
-  ready.push(whenH2C());
+  const ready=[whenH2C()];
   if(document.fonts&&document.fonts.ready)ready.push(document.fonts.ready);
-  Promise.all(ready).then(()=>setTimeout(captureThumb,350));
+  [...$.querySelectorAll('img')].forEach(im=>{if(!im.complete)ready.push(new Promise(r=>{im.onload=im.onerror=r}))});
+  await Promise.all(ready);
+  setTimeout(captureThumb,300);
 }
 function captureThumb(){
   if(!M){thumbStatus('No match data.');return}
