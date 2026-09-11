@@ -89,6 +89,7 @@ input:focus{border-color:var(--blue)}
       <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
     </div>
     <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear</button>
+    <button class="btn btn-b btn-f" style="margin-top:6px" onclick="openThumb()">🖼️ Export YouTube Thumbnail</button>
   </div>
   <div class="sec"><div class="sec-t">Overlay Opacity</div><div class="opa-row"><input type="range" id="opaSlider" min="20" max="100" value="100" oninput="sendOpacity(this.value)"><div class="opa-val" id="opaVal">100%</div></div></div>
   <div class="sec"><div class="sec-t">Colors</div><div id="cc" style="max-height:240px;overflow-y:auto;padding-right:4px"></div><div class="row" style="margin-top:6px"><button class="btn btn-b btn-s btn-f" onclick="sendColors()">Apply</button><button class="btn btn-d btn-s" onclick="resetC()">Reset</button></div></div>
@@ -329,6 +330,7 @@ function parseAPI(d){
 
 function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
 function sendClear(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
+function openThumb(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&thumb=1','_blank');ss('→ Opening thumbnail exporter…','ok')}
 function setLang(l){if(!checkAuth())return;document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
 const DC={'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-dark':{l:'Accent dark',v:'#A02020'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'text-primary':{l:'Text',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Muted',v:'#6A8090'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
 let colors={};

@@ -114,7 +114,7 @@ h1{font-family:'Oswald',sans-serif;font-size:48px;font-weight:700;letter-spacing
     <h3>Cum funcționează</h3>
     <div class="step">
       <div class="step-num">1</div>
-      <div class="step-text">Scrie numele tău (cat mai unic si greu de ghicit) mai sus și apasă <strong>Go</strong></div>
+      <div class="step-text">Scrie numele tău mai sus și apasă <strong>Go</strong>. Link-ul primește automat un <strong>cod secret</strong> care îți protejează transmisiunea — nu îl poate ghici nimeni.</div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
@@ -175,9 +175,21 @@ const BASE=location.href.replace(/\/[^\/]*$/,'/');
 function generate(){
   const name=document.getElementById('nameInput').value.trim();
   if(!name){document.getElementById('nameInput').focus();return}
-  const room=name.toLowerCase().replace(/[^a-z0-9]/g,'');
-  if(!room){document.getElementById('nameInput').focus();return}
-  
+  const base=name.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,14);
+
+  // Security: the room id is the only thing protecting a live stream from being
+  // hijacked (anyone with the URL can control the overlay). A typed name alone
+  // is guessable, so we append a long random token and reuse it per name on this
+  // device. Total length stays <=30 to match the sanitizer in control/output.html.
+  let room;
+  try{room=(JSON.parse(localStorage.getItem('hb_rooms')||'{}'))[base]}catch(e){}
+  if(!room||!/^[a-z0-9-]{1,30}$/.test(room)){
+    const rnd=Array.from(crypto.getRandomValues(new Uint32Array(3)))
+      .map(n=>n.toString(36)).join('').replace(/[^a-z0-9]/g,'').substring(0,12);
+    room=((base?base+'-':'r-')+rnd).substring(0,30);
+    try{const m=JSON.parse(localStorage.getItem('hb_rooms')||'{}');m[base]=room;localStorage.setItem('hb_rooms',JSON.stringify(m))}catch(e){}
+  }
+
   const ctrl=BASE+'control.html?room='+room;
   const out=BASE+'output.html?room='+room;
   

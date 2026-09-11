@@ -1,0 +1,33 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$room": {
+        ".read": true,
+        ".write": "auth != null && $room.matches(/^[a-z0-9-]{1,40}$/)",
+        "opacity": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        },
+        "lang": {
+          ".validate": "newData.isString() && (newData.val() === 'en' || newData.val() === 'ro')"
+        },
+        "command": {
+          ".validate": "newData.hasChild('type')",
+          "type": { ".validate": "newData.isString() && (newData.val() === 'show' || newData.val() === 'clear')" },
+          "overlay": { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "duration": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600000" },
+          "ts": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        },
+        "colors": {
+          "$c": { ".validate": "newData.isString() && newData.val().length <= 9" }
+        },
+        "match": {
+          ".validate": "newData.hasChildren()"
+        },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

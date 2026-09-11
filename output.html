@@ -242,6 +242,13 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
 #cs.ok{background:rgba(39,174,96,.2);color:#27AE60}
 #cs.w{background:rgba(255,167,38,.2);color:#ffa726}
+/* ── Thumbnail export mode (?thumb=1) ── */
+html.thumb-static body{background:#0E1A24}
+html.thumb-static .pre,html.thumb-static .pre *{animation:none!important;opacity:1!important;transform:none!important}
+#thumbbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:14px;background:rgba(14,26,36,.94);border:1px solid #2A4A5A;border-radius:10px;padding:10px 16px;font-family:'Barlow',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+#thumbbar button{background:#CC3333;color:#fff;border:none;border-radius:8px;padding:12px 22px;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer}
+#thumbbar button:hover{background:#A02020}
+#thumbbar #thumbst{color:#9AABB8;font-size:14px;max-width:520px}
 </style>
 </head>
 <body>
@@ -253,6 +260,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-overlay.firebaseapp.com",databaseURL:"https://handball-overlay-default-rtdb.europe-west1.firebasedatabase.app",projectId:"handball-overlay",storageBucket:"handball-overlay.firebasestorage.app",messagingSenderId:"926258764",appId:"1:926258764:web:4435158617393fa0a5c6e9"};
 const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
+const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -723,13 +731,71 @@ function rOfficials(){
   </div></div><div class="off-foot">${M.competition||''} ${M.phase?'· '+M.phase:''} ${M.venue?'· '+M.venue:''}${M.city?', '+M.city:''}</div>${srcHtml()}</div>`;
 }
 
+// ═══ THUMBNAIL EXPORT (YouTube, 1280×720 JPG) ═══
+function thumbStatus(m){const e=document.getElementById('thumbst');if(e)e.textContent=m}
+// Route logos through a CORS-enabled image proxy so html2canvas can draw them onto the canvas.
+function proxyLogo(u){if(!u||typeof u!=='string')return u;return 'https://images.weserv.nl/?url='+encodeURIComponent('ssl:'+u.replace(/^https?:\/\//,''))+'&output=png'}
+function whenH2C(){return new Promise(res=>{(function chk(){typeof html2canvas==='function'?res():setTimeout(chk,60)})()})}
+function renderThumb(){
+  document.documentElement.classList.add('thumb-static');
+  rPreClean();
+  thumbStatus('Rendering…');
+  const imgs=[...$.querySelectorAll('img')];
+  const ready=imgs.map(im=>im.complete?Promise.resolve():new Promise(r=>{im.onload=im.onerror=r}));
+  ready.push(whenH2C());
+  if(document.fonts&&document.fonts.ready)ready.push(document.fonts.ready);
+  Promise.all(ready).then(()=>setTimeout(captureThumb,350));
+}
+function captureThumb(){
+  if(!M){thumbStatus('No match data.');return}
+  if(typeof html2canvas!=='function'){thumbStatus('Renderer still loading — click the button again in a second.');return}
+  thumbStatus('Capturing…');
+  const ov=$,prev=ov.style.background;
+  ov.style.background='linear-gradient(160deg,#2B5876 0%,#13232F 55%,#0B1620 100%)';
+  html2canvas(ov,{width:1920,height:1080,windowWidth:1920,windowHeight:1080,scale:1,useCORS:true,backgroundColor:'#0E1A24',logging:false}).then(src=>{
+    ov.style.background=prev;
+    const c=document.createElement('canvas');c.width=1280;c.height=720;
+    const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(src,0,0,1280,720);
+    c.toBlob(b=>{
+      if(!b){thumbStatus('Export failed (empty image).');return}
+      const url=URL.createObjectURL(b);
+      const a=document.createElement('a');
+      a.download=('thumb_'+(M.home.shortName||'home')+'_vs_'+(M.away.shortName||'away')).replace(/[^a-z0-9]+/gi,'_').toLowerCase()+'.jpg';
+      a.href=url;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),5000);
+      thumbStatus('✓ Saved '+a.download+' — click the button to download again.');
+    },'image/jpeg',0.92);
+  }).catch(e=>{ov.style.background=prev;thumbStatus('Capture failed: '+(e&&e.message||e))});
+}
+if(THUMB){
+  document.documentElement.classList.add('thumb-static');
+  const cs=document.getElementById('cs');if(cs)cs.style.display='none';
+  const bar=document.createElement('div');bar.id='thumbbar';
+  bar.innerHTML='<button id="dlbtn">⬇ Download Thumbnail (1280×720 JPG)</button><span id="thumbst">Loading match…</span>';
+  document.body.appendChild(bar);
+  document.getElementById('dlbtn').onclick=captureThumb;
+  const hs=document.createElement('script');hs.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';document.head.appendChild(hs);
+}
+
 // ═══ FIREBASE ═══
 if(ref){
-  ref.child('command').on('value',s=>{const v=s.val();if(!v)return;if(v.type==='show')show(v.overlay,v.duration||0);if(v.type==='clear')clr()});
-  ref.child('match').on('value',s=>{const v=s.val();if(v)M=sanitize(v)});
-  ref.child('lang').on('value',s=>{const v=s.val();if(v==='en'||v==='ro')LANG=v});
-  ref.child('colors').on('value',s=>{const v=s.val();if(v&&typeof v==='object')apC(v)});
-  ref.child('opacity').on('value',s=>{const v=s.val();OPA=v!=null?Math.min(Math.max(v,20),100)/100:1;apO()});
+  if(THUMB){
+    Promise.all([ref.child('lang').once('value'),ref.child('colors').once('value'),ref.child('match').once('value')]).then(([ls,cs2,ms])=>{
+      const lv=ls.val();if(lv==='en'||lv==='ro')LANG=lv;
+      const cv=cs2.val();if(cv&&typeof cv==='object')apC(cv);
+      const mv=ms.val();
+      if(!mv){thumbStatus('No match in this room — scrape a match in the control page first.');return}
+      M=sanitize(mv);M.home.logo=proxyLogo(M.home.logo);M.away.logo=proxyLogo(M.away.logo);
+      renderThumb();
+    }).catch(e=>thumbStatus('Load error: '+(e&&e.message||e)));
+  }else{
+    ref.child('command').on('value',s=>{const v=s.val();if(!v)return;if(v.type==='show')show(v.overlay,v.duration||0);if(v.type==='clear')clr()});
+    ref.child('match').on('value',s=>{const v=s.val();if(v)M=sanitize(v)});
+    ref.child('lang').on('value',s=>{const v=s.val();if(v==='en'||v==='ro')LANG=v});
+    ref.child('colors').on('value',s=>{const v=s.val();if(v&&typeof v==='object')apC(v)});
+    ref.child('opacity').on('value',s=>{const v=s.val();OPA=v!=null?Math.min(Math.max(v,20),100)/100:1;apO()});
+  }
 }
 </script>
 </body>
