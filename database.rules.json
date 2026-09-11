@@ -14,10 +14,17 @@
         },
         "command": {
           ".validate": "newData.hasChild('type')",
-          "type": { ".validate": "newData.isString() && (newData.val() === 'show' || newData.val() === 'clear')" },
+          "type": { ".validate": "newData.isString() && (newData.val() === 'show' || newData.val() === 'clear' || newData.val() === 'carousel')" },
           "overlay": { ".validate": "newData.isString() && newData.val().length <= 40" },
           "duration": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600000" },
           "ts": { ".validate": "newData.isNumber()" },
+          "interval": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 600000" },
+          "cycles": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50" },
+          "skipEmpty": { ".validate": "newData.isBoolean()" },
+          "overlays": {
+            ".validate": "newData.hasChildren()",
+            "$i": { ".validate": "newData.isString() && newData.val().length <= 40" }
+          },
           "$other": { ".validate": false }
         },
         "colors": {

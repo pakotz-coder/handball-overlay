@@ -32,6 +32,11 @@ input:focus{border-color:var(--blue)}
 .og{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:6px}
 .ob{padding:10px 8px;border:1px solid var(--bdr);border-radius:4px;background:var(--card);cursor:pointer;transition:all .2s;text-align:center}
 .ob:hover{border-color:var(--red);background:#1A2C3C}
+.ob{position:relative}
+.kb{position:absolute;top:3px;right:3px;min-width:15px;height:15px;line-height:14px;text-align:center;font-family:'Oswald';font-size:9px;font-weight:700;color:var(--muted);background:#0D1520;border:1px solid var(--bdr);border-radius:3px;padding:0 3px}
+.car-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px}
+.car-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt);text-transform:none;letter-spacing:0;margin:0;cursor:pointer}
+.car-item input{width:auto;height:auto;margin:0;accent-color:var(--red)}
 .ob .oi{font-size:20px;margin-bottom:2px}.ob .ol{font-family:'Oswald';font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .ob.pre{border-color:var(--gold);background:rgba(240,192,64,.06)}
 .ob.pre:hover{background:rgba(240,192,64,.12)}
@@ -90,6 +95,12 @@ input:focus{border-color:var(--blue)}
     </div>
     <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear</button>
     <button class="btn btn-b btn-f" style="margin-top:6px" onclick="openThumb()">🖼️ Export YouTube Thumbnail</button>
+    <button class="btn btn-b btn-f" style="margin-top:6px" onclick="openStats()">📊 Export Stats Image</button>
+  </div>
+  <div class="sec"><div class="sec-t">Auto Carousel</div>
+    <div id="carList" class="car-grid"></div>
+    <div class="dr" style="margin-top:8px"><label>Sec/overlay:</label><input type="number" id="carSec" value="12" min="3" max="60"><label style="margin-left:10px">Cycles:</label><input type="number" id="carCyc" value="2" min="1" max="10"></div>
+    <div class="row"><button class="btn btn-r btn-s btn-f" onclick="startCarousel()">▶ Start</button><button class="btn btn-d btn-s" onclick="stopCarousel()">■ Stop</button></div>
   </div>
   <div class="sec"><div class="sec-t">Overlay Opacity</div><div class="opa-row"><input type="range" id="opaSlider" min="20" max="100" value="100" oninput="sendOpacity(this.value)"><div class="opa-val" id="opaVal">100%</div></div></div>
   <div class="sec"><div class="sec-t">Colors</div><div id="cc" style="max-height:240px;overflow-y:auto;padding-right:4px"></div><div class="row" style="margin-top:6px"><button class="btn btn-b btn-s btn-f" onclick="sendColors()">Apply</button><button class="btn btn-d btn-s" onclick="resetC()">Reset</button></div></div>
@@ -331,6 +342,7 @@ function parseAPI(d){
 function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
 function sendClear(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
 function openThumb(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&thumb=1','_blank');ss('→ Opening thumbnail exporter…','ok')}
+function openStats(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&stats=1','_blank');ss('→ Opening stats exporter…','ok')}
 function setLang(l){if(!checkAuth())return;document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
 const DC={'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-dark':{l:'Accent dark',v:'#A02020'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'text-primary':{l:'Text',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Muted',v:'#6A8090'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
 let colors={};
@@ -352,6 +364,35 @@ function rPT(id,pl){document.getElementById(id).innerHTML='<thead><tr><th>#</th>
 function rGK(id,gks){document.getElementById(id).innerHTML='<thead><tr><th>#</th><th>Player</th><th>Sav</th><th>7m</th><th>9m</th><th>6m</th><th>Wng</th><th>FB</th><th>Min</th><th>Val</th></tr></thead><tbody>'+gks.map(g=>{const v=g.gval,vc=v!==''?(v>=0?'vp':'vn'):'';return`<tr><td>${g.num}${g.starter?' <span style="color:var(--gold)">●</span>':''}</td><td>${g.name}</td><td><b>${g.sav}</b></td><td>${g.gs7m}</td><td>${g.gs9m}</td><td>${g.gs6m}</td><td>${g.gwng}</td><td>${g.gfb}</td><td>${g.min||''}</td><td class="${vc}">${v!==''?v:''}</td></tr>`}).join('')+'</tbody>'}
 initC();try{const sc=JSON.parse(localStorage.getItem('hb_c'));if(sc){colors={...colors,...sc};renderC()}}catch(e){}
 const sv=localStorage.getItem('hb_url');if(sv)document.getElementById('mUrl').value=sv;
+
+// ═══ HOTKEYS ═══ fast overlay switching during live production
+const HOTKEYS={'1':'prematchclean','2':'prematch','3':'officials','4':'goalflash','5':'topscorers','6':'shooting','7':'gkduel','8':'h2h','9':'potm','q':'graph','w':'leadgraph','e':'momentum','r':'shotout','t':'shotmap','y':'shotmaphome','u':'shotmapaway','i':'roster1','o':'roster2'};
+// Show the key on each overlay button
+(function(){const REV={};for(const k in HOTKEYS)REV[HOTKEYS[k]]=k;
+  document.querySelectorAll('.ob').forEach(ob=>{const m=(ob.getAttribute('onclick')||'').match(/send\('([^']+)'\)/);if(m&&REV[m[1]]){const b=document.createElement('span');b.className='kb';b.textContent=REV[m[1]].toUpperCase();ob.appendChild(b)}});
+})();
+document.addEventListener('keydown',e=>{
+  const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return; // don't hijack typing
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(k==='0'||k==='c'||k==='escape'){sendClear();e.preventDefault();return}
+  if(HOTKEYS[k]){send(HOTKEYS[k]);e.preventDefault()}
+});
+
+// ═══ AUTO CAROUSEL ═══
+const CAR_OPTS=[['topscorers','Top Scorers'],['shooting','Shooting'],['gkduel','GK Duel'],['h2h','Head to Head'],['shotout','Shot Outcomes'],['momentum','Momentum'],['graph','Score Graph'],['leadgraph','Lead Graph'],['shotmap','Shot Map'],['shotmaphome','Shot Map Home'],['shotmapaway','Shot Map Away']];
+const CAR_DEFAULT=['topscorers','shooting','gkduel','h2h','shotout','momentum','graph','shotmap'];
+document.getElementById('carList').innerHTML=CAR_OPTS.map(([v,l])=>`<label class="car-item"><input type="checkbox" class="car-chk" value="${v}" ${CAR_DEFAULT.includes(v)?'checked':''}>${l}</label>`).join('');
+function startCarousel(){
+  if(!checkAuth())return;if(!M){ss('No data!','err');return}
+  const overlays=[...document.querySelectorAll('.car-chk:checked')].map(c=>c.value);
+  if(!overlays.length){ss('Pick at least one overlay for the carousel','err');return}
+  const interval=(parseInt(document.getElementById('carSec').value)||12)*1000;
+  const cycles=parseInt(document.getElementById('carCyc').value)||2;
+  ref.child('command').set({type:'carousel',overlays,interval,cycles,skipEmpty:true,ts:Date.now()});
+  ss('▶ Carousel started — '+overlays.length+' overlays × '+cycles+' cycles','ok');
+}
+function stopCarousel(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('■ Carousel stopped','ok')}
 </script>
 </body>
 </html>

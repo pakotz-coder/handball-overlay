@@ -269,6 +269,44 @@ html.thumb-static .pre,html.thumb-static .pre *{animation:none!important;opacity
 .tf-foot{align-self:center;display:flex;align-items:center;gap:30px;background:rgba(8,16,24,.7);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 42px;font-family:'Barlow',sans-serif;font-size:27px;color:#E6EDF3}
 .tf-foot b{color:#F0C040;font-weight:700}
 .tf-foot .tf-dot{color:#6E8698}
+/* Post-match stats infographic (?stats=1) */
+.stf{position:absolute;inset:0;width:1920px;height:1080px;background:linear-gradient(160deg,#16283A 0%,#0C1723 100%);display:flex;flex-direction:column;padding:44px 60px 30px;font-family:'Oswald','Barlow',sans-serif;color:var(--text-primary)}
+.stf-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.stf-hteam{display:flex;align-items:center;gap:24px}
+.stf-hteam:last-child{flex-direction:row-reverse;text-align:right}
+.stf-crest{width:150px;height:150px;border-radius:20px;padding:14px;background:linear-gradient(158deg,#fff,#e9eef3);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(0,0,0,.45);flex-shrink:0}
+.stf-crest img{max-width:100%;max-height:100%;object-fit:contain}
+.stf-hname{font-size:40px;font-weight:700;text-transform:uppercase;line-height:1.04;max-width:380px}
+.stf-scorebox{text-align:center;min-width:440px}
+.stf-comp{font-size:22px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+.stf-score{font-size:118px;font-weight:800;line-height:.92;display:flex;align-items:center;justify-content:center;gap:20px}
+.stf-sh{color:var(--bg-header-light)}.stf-sa{color:var(--accent)}.stf-sep{color:var(--text-muted)}
+.stf-status{font-size:24px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+.stf-body{flex:1;display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:38px;padding-top:26px;min-height:0}
+.stf-col{display:flex;flex-direction:column;gap:12px}
+.stf-coltitle{font-size:23px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);border-bottom:1px solid var(--border);padding-bottom:8px}
+.stf-scr{display:grid;grid-template-columns:64px 1fr auto 66px;align-items:center;gap:12px;background:rgba(255,255,255,.03);border-radius:8px;padding:13px 16px}
+.stf-scn{font-size:29px;font-weight:700;color:var(--text-muted)}
+.stf-scnm{font-size:27px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stf-scg{font-size:27px;font-weight:700}
+.stf-sce{font-size:21px;color:var(--green);text-align:right}
+.stf-empty{color:var(--text-muted);font-size:26px;padding:22px;text-align:center}
+.stf-mid{display:flex;flex-direction:column;gap:24px;justify-content:center}
+.stf-bars{display:flex;flex-direction:column;gap:13px}
+.stf-br{display:grid;grid-template-columns:66px 1fr auto 1fr 66px;align-items:center;gap:10px}
+.stf-bv{font-size:26px;font-weight:700}
+.stf-bl{font-size:18px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;text-align:center;white-space:nowrap;padding:0 6px}
+.stf-btrack{height:14px;background:rgba(255,255,255,.07);border-radius:7px;overflow:hidden;display:flex}
+.stf-br .stf-btrack:first-of-type{justify-content:flex-end}
+.stf-bfh{height:100%;background:linear-gradient(90deg,var(--bg-header),var(--bg-header-light));border-radius:7px}
+.stf-bfa{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:7px}
+.stf-best{background:linear-gradient(120deg,rgba(240,192,64,.15),rgba(240,192,64,.04));border:1px solid rgba(240,192,64,.35);border-radius:14px;padding:16px 24px}
+.stf-best-t{font-size:21px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:8px}
+.stf-best-b{display:flex;align-items:center;justify-content:center;gap:22px}
+.stf-best-r{font-size:60px;font-weight:800;color:var(--gold);line-height:1}
+.stf-best-n{font-size:31px;font-weight:700}
+.stf-best-d{font-size:21px;color:var(--text-secondary);margin-top:2px}
+.stf-src{text-align:right;font-size:17px;color:var(--text-muted);padding-top:12px;opacity:.7}
 </style>
 </head>
 <body>
@@ -281,6 +319,7 @@ const FC={apiKey:"AIzaSyD2l1tmw1hVpv9dxrA-4DiYVjR0uPoADPM",authDomain:"handball-
 const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
+const STATS=new URLSearchParams(location.search).get('stats')==='1';
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -818,7 +857,7 @@ async function renderThumb(){
   await Promise.all(ready);
   setTimeout(captureThumb,300);
 }
-function captureThumb(){
+function captureFrame(outW,outH,prefix){
   if(!M){thumbStatus('No match data.');return}
   if(typeof html2canvas!=='function'){thumbStatus('Renderer still loading — click the button again in a second.');return}
   thumbStatus('Capturing…');
@@ -826,43 +865,123 @@ function captureThumb(){
   ov.style.background='linear-gradient(160deg,#2B5876 0%,#13232F 55%,#0B1620 100%)';
   html2canvas(ov,{width:1920,height:1080,windowWidth:1920,windowHeight:1080,scale:1,useCORS:true,backgroundColor:'#0E1A24',logging:false}).then(src=>{
     ov.style.background=prev;
-    const c=document.createElement('canvas');c.width=1280;c.height=720;
+    const c=document.createElement('canvas');c.width=outW;c.height=outH;
     const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-    ctx.drawImage(src,0,0,1280,720);
+    ctx.drawImage(src,0,0,outW,outH);
     c.toBlob(b=>{
       if(!b){thumbStatus('Export failed (empty image).');return}
       const url=URL.createObjectURL(b);
       const a=document.createElement('a');
-      a.download=('thumb_'+(M.home.shortName||'home')+'_vs_'+(M.away.shortName||'away')).replace(/[^a-z0-9]+/gi,'_').toLowerCase()+'.jpg';
+      a.download=(prefix+'_'+(M.home.shortName||'home')+'_vs_'+(M.away.shortName||'away')).replace(/[^a-z0-9]+/gi,'_').toLowerCase()+'.jpg';
       a.href=url;document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),5000);
       thumbStatus('✓ Saved '+a.download+' — click the button to download again.');
     },'image/jpeg',0.92);
   }).catch(e=>{ov.style.background=prev;thumbStatus('Capture failed: '+(e&&e.message||e))});
 }
-if(THUMB){
+function captureThumb(){captureFrame(1280,720,'thumb')}
+function captureStats(){captureFrame(1920,1080,'stats')}
+// Post-match stats infographic (?stats=1) — full 1920x1080 recap
+function rStatsFull(){
+  const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};
+  const hS=topS(h.players,3),aS=topS(a.players,3),hB=bestPTeam(h),aB=bestPTeam(a);
+  let best=null,bestTeam='';
+  if(hB&&aB){const hw=hB.rating>=aB.rating;best=hw?hB:aB;bestTeam=hw?h.shortName:a.shortName;}
+  else if(hB){best=hB;bestTeam=h.shortName;} else if(aB){best=aB;bestTeam=a.shortName;}
+  function bar(label,hv,av,suf){suf=suf||'';const tot=hv+av,hp=tot?Math.round(hv/tot*100):0,ap=tot?100-hp:0;
+    return `<div class="stf-br"><div class="stf-bv">${hv}${suf}</div><div class="stf-btrack"><div class="stf-bfh" style="width:${hp}%"></div></div><div class="stf-bl">${label}</div><div class="stf-btrack"><div class="stf-bfa" style="width:${ap}%"></div></div><div class="stf-bv">${av}${suf}</div></div>`;}
+  const scorers=arr=>arr.length?arr.map(p=>`<div class="stf-scr"><div class="stf-scn">#${p.num}</div><div class="stf-scnm">${p.name}</div><div class="stf-scg">${p.g}/${p.a}</div><div class="stf-sce">${p.e}%</div></div>`).join(''):`<div class="stf-empty">—</div>`;
+  const chip=logo=>`<div class="stf-crest"><img src="${logo}" onerror="this.parentElement.innerHTML='<div class=\\'tf-emoji\\' style=\\'font-size:88px\\'>🤾</div>'"></div>`;
+  const statusTxt=M.status==='End'?t('ft'):(M.status||t('live'));
+  $.innerHTML=`<div class="stf">
+    <div class="stf-head">
+      <div class="stf-hteam">${chip(h.logo)}<div class="stf-hname">${h.name}</div></div>
+      <div class="stf-scorebox">
+        <div class="stf-comp">${M.competition||''}${M.phase?' · '+M.phase:''}</div>
+        <div class="stf-score"><span class="stf-sh">${h.score}</span><span class="stf-sep">:</span><span class="stf-sa">${a.score}</span></div>
+        <div class="stf-status">${statusTxt}${M.htScore?' · HT '+M.htScore:''}</div>
+      </div>
+      <div class="stf-hteam">${chip(a.logo)}<div class="stf-hname">${a.name}</div></div>
+    </div>
+    <div class="stf-body">
+      <div class="stf-col"><div class="stf-coltitle">${h.shortName} · ${t('topScorers')}</div>${scorers(hS)}</div>
+      <div class="stf-mid">
+        <div class="stf-bars">${bar(t('shotEff'),ht.eff||0,at.eff||0,'%')}${bar(t('savePct'),hg.pct||0,ag.pct||0,'%')}${bar(t('ast'),ht.ast||0,at.ast||0)}${bar(t('sus'),ht.sus||0,at.sus||0)}${bar(t('trn'),ht.trn||0,at.trn||0)}${bar(t('stl'),ht.stl||0,at.stl||0)}</div>
+        ${best?`<div class="stf-best"><div class="stf-best-t">⭐ ${tPotm()}</div><div class="stf-best-b"><div class="stf-best-r">${best.rating}</div><div class="stf-best-i"><div class="stf-best-n">#${best.num} ${best.name}</div><div class="stf-best-d">${bestTeam}${best.isGK?' · GK · '+best.sav:' · '+best.ga}</div></div></div></div>`:''}
+      </div>
+      <div class="stf-col"><div class="stf-coltitle">${a.shortName} · ${t('topScorers')}</div>${scorers(aS)}</div>
+    </div>
+    <div class="stf-src">${t('source')}: frhlive2.com</div>
+  </div>`;
+}
+async function renderStats(){
+  document.documentElement.classList.add('thumb-static');
+  rStatsFull();
+  thumbStatus('Rendering…');
+  const ready=[whenH2C()];
+  if(document.fonts&&document.fonts.ready)ready.push(document.fonts.ready);
+  [...$.querySelectorAll('img')].forEach(im=>{if(!im.complete)ready.push(new Promise(r=>{im.onload=im.onerror=r}))});
+  await Promise.all(ready);
+  setTimeout(captureStats,300);
+}
+if(THUMB||STATS){
   document.documentElement.classList.add('thumb-static');
   const cs=document.getElementById('cs');if(cs)cs.style.display='none';
   const bar=document.createElement('div');bar.id='thumbbar';
-  bar.innerHTML='<button id="dlbtn">⬇ Download Thumbnail (1280×720 JPG)</button><span id="thumbst">Loading match…</span>';
+  const label=STATS?'⬇ Download Stats Image (1920×1080 JPG)':'⬇ Download Thumbnail (1280×720 JPG)';
+  bar.innerHTML='<button id="dlbtn">'+label+'</button><span id="thumbst">Loading match…</span>';
   document.body.appendChild(bar);
-  document.getElementById('dlbtn').onclick=captureThumb;
+  document.getElementById('dlbtn').onclick=STATS?captureStats:captureThumb;
   const hs=document.createElement('script');hs.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';document.head.appendChild(hs);
+}
+
+// ═══ AUTO CAROUSEL ═══ output-driven rotation through stat overlays (survives control-tab close)
+let carTimer=null,carActive=false;
+function stopCarousel(){carActive=false;if(carTimer){clearTimeout(carTimer);carTimer=null}}
+function carHasData(type){
+  if(!M)return false;
+  const goals=(M.goalEvents||[]).length>0;
+  const shots=((M.home.totals&&M.home.totals.shots)||0)+((M.away.totals&&M.away.totals.shots)||0)>0;
+  switch(type){
+    case 'graph':case 'leadgraph':case 'momentum':return goals;
+    case 'topscorers':return topS(M.home.players).length>0||topS(M.away.players).length>0;
+    case 'gkduel':return ((M.home.gkTotals&&M.home.gkTotals.faced)||0)+((M.away.gkTotals&&M.away.gkTotals.faced)||0)>0;
+    case 'shooting':case 'shotout':case 'shotmap':case 'shotmaphome':case 'shotmapaway':return shots;
+    case 'potm':return !!(bestPTeam(M.home)||bestPTeam(M.away));
+    default:return true;
+  }
+}
+function startCarousel(v){
+  stopCarousel();
+  if(!M)return;
+  let list=(v.overlays||[]).slice();
+  if(v.skipEmpty)list=list.filter(carHasData);
+  if(!list.length)return;
+  const interval=Math.min(600000,Math.max(3000,v.interval||12000));
+  const cycles=Math.min(50,Math.max(1,v.cycles||2));
+  carActive=true;let idx=0,pass=0;
+  (function step(){
+    if(!carActive)return;
+    show(list[idx],0);
+    idx++;
+    if(idx>=list.length){idx=0;pass++;if(pass>=cycles){carTimer=setTimeout(()=>{if(carActive){clr();stopCarousel()}},interval);return}}
+    carTimer=setTimeout(step,interval);
+  })();
 }
 
 // ═══ FIREBASE ═══
 if(ref){
-  if(THUMB){
+  if(THUMB||STATS){
     Promise.all([ref.child('lang').once('value'),ref.child('colors').once('value'),ref.child('match').once('value')]).then(([ls,cs2,ms])=>{
       const lv=ls.val();if(lv==='en'||lv==='ro')LANG=lv;
       const cv=cs2.val();if(cv&&typeof cv==='object')apC(cv);
       const mv=ms.val();
       if(!mv){thumbStatus('No match in this room — scrape a match in the control page first.');return}
       M=sanitize(mv);M.home.logo=proxyLogo(M.home.logo);M.away.logo=proxyLogo(M.away.logo);
-      renderThumb();
+      STATS?renderStats():renderThumb();
     }).catch(e=>thumbStatus('Load error: '+(e&&e.message||e)));
   }else{
-    ref.child('command').on('value',s=>{const v=s.val();if(!v)return;if(v.type==='show')show(v.overlay,v.duration||0);if(v.type==='clear')clr()});
+    ref.child('command').on('value',s=>{const v=s.val();if(!v)return;stopCarousel();if(v.type==='show')show(v.overlay,v.duration||0);else if(v.type==='clear')clr();else if(v.type==='carousel')startCarousel(v)});
     ref.child('match').on('value',s=>{const v=s.val();if(v)M=sanitize(v)});
     ref.child('lang').on('value',s=>{const v=s.val();if(v==='en'||v==='ro')LANG=v});
     ref.child('colors').on('value',s=>{const v=s.val();if(v&&typeof v==='object')apC(v)});
