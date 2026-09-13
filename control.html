@@ -96,6 +96,7 @@ input:focus{border-color:var(--blue)}
     <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear</button>
     <button class="btn btn-b btn-f" style="margin-top:6px" onclick="openThumb()">🖼️ Export YouTube Thumbnail</button>
     <button class="btn btn-b btn-f" style="margin-top:6px" onclick="openStats()">📊 Export Stats Image</button>
+    <button class="btn btn-r btn-f" style="margin-top:6px" onclick="ytGen()">📋 Generate YouTube Text</button>
   </div>
   <div class="sec"><div class="sec-t">Auto Carousel</div>
     <div id="carList" class="car-grid"></div>
@@ -336,13 +337,82 @@ function parseAPI(d){
     away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2),zones:zoneSides(2)},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
-    lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration};
+    lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration,
+    round:u.kolo??null,startISO:(u.pocetak&&u.pocetak!=='1899-12-30T00:00:00')?u.pocetak:null,matchStatus:(u.trenutnistatus??u.status??0)};
 }
 
 function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.child('command').set({type:'show',overlay:t,duration:(parseInt(document.getElementById('dur').value)||0)*1000,ts:Date.now()});ss('→ '+t,'ok')}
 function sendClear(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
 function openThumb(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&thumb=1','_blank');ss('→ Opening thumbnail exporter…','ok')}
 function openStats(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&stats=1','_blank');ss('→ Opening stats exporter…','ok')}
+
+// ═══ YOUTUBE TITLE + DESCRIPTION GENERATOR ═══
+const YT_DIA={'Bucuresti':'București','Brasov':'Brașov','Timisoara':'Timișoara','Constanta':'Constanța','Valcea':'Vâlcea','Ramnicu':'Râmnicu','Targoviste':'Târgoviște','Focsani':'Focșani','Resita':'Reșița','Zalau':'Zalău','Ploiesti':'Ploiești','Galati':'Galați','Bacau':'Bacău','Iasi':'Iași','Neamt':'Neamț','Maramures':'Maramureș','Dambovita':'Dâmbovița','Polivalenta':'Polivalentă','Sportiva':'Sportivă','Universitatii':'Universității'};
+function ytUnesc(s){return (s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'")}
+function ytDia(s){return ytUnesc(s).replace(/[A-Za-zĂÂÎȘȚăâîșț]+/g,w=>YT_DIA[w]||w)}
+function ytShort(n){return ytDia(n).replace(/\bUniversitatea\b/g,'U').replace(/\bHandbal Club\b/g,'HC').replace(/\bClub Sportiv Municipal\b/g,'CSM')}
+function ytSeason(nn){return ytDia(nn).replace(/\b(\d{2})-(\d{2})\b/,(m,a,b)=>(+a>=20&&+a<=40?'20'+a+'-'+b:m))}
+function ytStripYr(nn){return ytUnesc(nn).replace(/\b\d{2,4}(-\d{2,4})?\b/g,'').replace(/\s+/g,' ').trim()}
+function ytSlug(n){return ytUnesc(n).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9 ]/g,'').split(/\s+/).filter(Boolean).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join('')}
+function ytCompTags(nn){const base=ytStripYr(nn);const full='#'+ytSlug(base);const short='#'+ytSlug(base.split(/\s+/).slice(0,2).join(' '));return short===full?[full]:[short,full]}
+const YT_WD=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
+const YT_MO=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+function ytDate(iso){if(!iso)return null;const p=iso.split('T'),dp=p[0].split('-'),tp=(p[1]||'').slice(0,5),Y=+dp[0],Mo=+dp[1],D=+dp[2];return{line:`${YT_WD[new Date(Y,Mo-1,D).getDay()]}, ${D} ${YT_MO[Mo-1]} ${Y}`,time:tp}}
+
+function ytBuild(mode){
+  const hF=ytDia(M.home.name),aF=ytDia(M.away.name),hS=ytShort(M.home.name),aS=ytShort(M.away.name);
+  const comp=ytSeason(M.competition),et=M.round!=null?('Etapa '+M.round):'';
+  const fem=M.gender==='f',gRo=fem?'handbal feminin':'handbal masculin',gEm=fem?'🤾‍♀️':'🤾‍♂️',gTag=fem?'#handbalfeminin':'#handbalmasculin',gWord=fem?'Handbal feminin':'Handbal masculin';
+  const venue=ytDia(M.venue),city=ytDia(M.city),d=ytDate(M.startISO),tail=[comp,et].filter(Boolean).join(' · ');
+  const title=mode==='replay'?`${hS} vs ${aS} | Meci Integral${tail?' | '+tail:''}`:`${hS} vs ${aS} 🔴 LIVE${tail?' | '+tail:''}`;
+  const place=venue?(' din '+venue+(city?' din '+city:'')):'';
+  const L=[];
+  L.push(mode==='replay'?`${hF} – ${aF}, meci integral din ${comp}${et?', '+et:''} — ${gRo} de top în România.`:`${hF} – ${aF}, în direct${place}! Meci din ${comp}${et?', '+et:''} — ${gRo} de top în România.`);
+  L.push('',`${gEm} Competiție: ${comp}`);
+  if(et)L.push(`📅 ${et}`);
+  L.push(d?`🗓️ ${d.line}, ora ${d.time}`:'🗓️ Data și ora: se anunță');
+  if(venue)L.push(`🏟️ ${venue}${city?', '+city:''}`);
+  L.push(mode==='replay'?'🎥 Meci integral':'🔴 Transmisiune LIVE','');
+  L.push(mode==='replay'?`Revezi integral confruntarea dintre ${hF} și ${aF}, din ${comp}${et?', '+et:''}.`:`Nu rata niciun gol, nicio paradă și niciun contraatac! Urmărește live confruntarea dintre ${hF} și ${aF}, în ${comp}.`);
+  L.push('','🔔 Abonează-te la canal și activează clopoțelul pentru toate meciurile transmise LIVE.','👍 Dă un Like și lasă un comentariu cu echipa favorită!','');
+  L.push(`${gWord} • ${ytStripYr(M.competition)} • România • handbal live • meci în direct`,'');
+  const tags=['#handbal',...ytCompTags(M.competition),gTag,'#'+ytSlug(ytShort(M.home.name)),'#'+ytSlug(ytShort(M.away.name)),'#handballlive','#handbalromania'];
+  L.push([...new Set(tags)].join(' '));
+  return{title,desc:L.join('\n')};
+}
+
+let ytMode='live';
+function ytGen(){if(!M){ss('Scrape a match first','err');return}ytMode=(M.matchStatus===3)?'replay':'live';ytShow();ss('→ Text YouTube generat','ok')}
+function ytShow(){
+  const o=ytBuild(ytMode);let m=document.getElementById('ytModal');
+  if(!m){
+    m=document.createElement('div');m.id='ytModal';
+    m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px';
+    m.innerHTML=`<div style="background:#16283A;border:1px solid #2A4A5A;border-radius:12px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:20px;font-family:Barlow,sans-serif;color:#F0F4F7;box-shadow:0 12px 50px rgba(0,0,0,.6)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-family:Oswald;font-size:20px;font-weight:600">📋 Text YouTube</div><button onclick="document.getElementById('ytModal').remove()" style="background:none;border:none;color:#9AABB8;font-size:26px;cursor:pointer;line-height:1">×</button></div>
+      <div style="display:flex;gap:8px;margin-bottom:14px"><button id="ytLiveBtn" onclick="ytMode='live';ytShow()">🔴 LIVE</button><button id="ytRepBtn" onclick="ytMode='replay';ytShow()">🎥 Replay</button></div>
+      <div id="ytWarn" style="display:none;background:rgba(240,192,64,.15);color:#F0C040;border-radius:6px;padding:8px 10px;font-size:12px;margin-bottom:12px"></div>
+      <label style="font-size:12px;color:#9AABB8;display:block;margin-bottom:4px">TITLU <span id="ytTitleLen" style="color:#6A8090"></span></label>
+      <textarea id="ytTitle" style="width:100%;box-sizing:border-box;background:#0D1520;border:1px solid #2A4A5A;border-radius:6px;color:#F0F4F7;padding:8px;font-family:Barlow;font-size:13px;resize:vertical;height:52px"></textarea>
+      <button onclick="ytCopy('ytTitle',this)" style="margin:6px 0 16px;background:#378ADD;border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:Oswald;text-transform:uppercase;letter-spacing:1px;font-size:12px">Copiază titlul</button>
+      <label style="font-size:12px;color:#9AABB8;display:block;margin-bottom:4px">DESCRIERE</label>
+      <textarea id="ytDesc" style="width:100%;box-sizing:border-box;background:#0D1520;border:1px solid #2A4A5A;border-radius:6px;color:#F0F4F7;padding:8px;font-family:Barlow;font-size:13px;resize:vertical;height:300px"></textarea>
+      <button onclick="ytCopy('ytDesc',this)" style="margin-top:6px;background:#378ADD;border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:Oswald;text-transform:uppercase;letter-spacing:1px;font-size:12px">Copiază descrierea</button>
+    </div>`;
+    m.addEventListener('click',e=>{if(e.target===m)m.remove()});
+    document.body.appendChild(m);
+  }
+  document.getElementById('ytTitle').value=o.title;
+  document.getElementById('ytDesc').value=o.desc;
+  document.getElementById('ytTitleLen').textContent='('+o.title.length+' car.)';
+  const base='flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-family:Oswald;text-transform:uppercase;letter-spacing:1px;',on='background:#CC3333;color:#fff',off='background:#0D1520;color:#9AABB8';
+  document.getElementById('ytLiveBtn').setAttribute('style',base+(ytMode==='live'?on:off));
+  document.getElementById('ytRepBtn').setAttribute('style',base+(ytMode==='replay'?on:off));
+  const w=document.getElementById('ytWarn');
+  if(M.matchStatus===3){w.style.display='block';w.textContent='⚠️ Meciul apare ca DISPUTAT în sistem — „Replay" e selectat automat. Comută pe LIVE dacă totuși transmiți în direct.'}
+  else w.style.display='none';
+}
+function ytCopy(id,btn){const t=document.getElementById(id);t.select();navigator.clipboard.writeText(t.value).then(()=>{const o=btn.textContent;btn.textContent='✓ Copiat';setTimeout(()=>btn.textContent=o,1500)}).catch(()=>ss('Copiere eșuată — selectează manual','err'))}
 function setLang(l){if(!checkAuth())return;document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));ref.child('lang').set(l)}
 const DC={'bg-dark':{l:'Background',v:'#1A2D3D'},'bg-panel':{l:'Panel',v:'#1E3448'},'bg-header':{l:'Header',v:'#2B5876'},'bg-header-light':{l:'Header light',v:'#4E8098'},'accent':{l:'Accent',v:'#CC3333'},'accent-dark':{l:'Accent dark',v:'#A02020'},'green':{l:'Positive',v:'#27AE60'},'gold':{l:'Gold',v:'#F0C040'},'text-primary':{l:'Text',v:'#F0F4F7'},'text-secondary':{l:'Text 2',v:'#9AABB8'},'text-muted':{l:'Muted',v:'#6A8090'},'score-bg':{l:'Score bg',v:'#0E1E2A'}};
 let colors={};
