@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920">
-<meta name="frh-build" content="crest-unify-1">
+<meta name="frh-build" content="comparison-1">
 <title>Handball Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -357,7 +357,7 @@ const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
 const STATS=new URLSearchParams(location.search).get('stats')==='1';
-console.info('frh-build crest-unify-1');
+console.info('frh-build comparison-1');
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
