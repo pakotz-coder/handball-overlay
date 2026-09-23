@@ -239,33 +239,41 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .src{text-align:right;padding:4px 20px 6px;font-family:'Barlow';font-size:16px;color:var(--text-muted);opacity:0.5}
 
 /* Team comparison overlay */
-.cmp{padding:26px 60px 34px}
-.cmp-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px;padding:8px 0 30px;border-bottom:1px solid var(--border)}
-.cmp-tm{display:flex;align-items:center;gap:24px}
-.cmp-tm.r{flex-direction:row-reverse;text-align:right}
-.cmp-nm{font-family:'Oswald';font-size:48px;font-weight:700;color:var(--text-primary);text-transform:uppercase;line-height:1.03}
-.cmp-pos{font-family:'Barlow';font-size:27px;color:var(--gold);font-weight:600;margin-top:4px}
-.cmp-vs{font-family:'Oswald';font-size:72px;font-weight:800;color:var(--accent);text-shadow:0 0 28px rgba(204,51,51,.45)}
-.cmp-bars{display:flex;flex-direction:column;gap:20px;padding:30px 0}
-.cmp-br{display:grid;grid-template-columns:96px 1fr auto 1fr 96px;align-items:center;gap:16px}
-.cmp-bv{font-family:'Oswald';font-size:36px;font-weight:700;color:var(--text-primary)}
-.cmp-bl{font-family:'Oswald';font-size:25px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;text-align:center;white-space:nowrap}
-.cmp-bt{height:22px;background:rgba(255,255,255,.07);border-radius:11px;overflow:hidden;display:flex}
-.cmp-br .cmp-bt:first-of-type{justify-content:flex-end}
-.cmp-bfh{height:100%;background:linear-gradient(90deg,var(--bg-header),var(--bg-header-light));border-radius:11px}
-.cmp-bfa{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:11px}
-.cmp-mid{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:10px 0 22px}
-.cmp-col{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:22px 28px}
-.cmp-col.r{text-align:right}
-.cmp-clab{font-family:'Oswald';font-size:24px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
-.cmp-form{display:flex;gap:8px;margin-bottom:18px}
-.cmp-col.r .cmp-form{justify-content:flex-end}
-.cmp-fp{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Oswald';font-size:24px;font-weight:700;color:#fff}
-.cmp-fp.W{background:var(--green)}.cmp-fp.D{background:var(--gold);color:#1A2D3D}.cmp-fp.L{background:var(--accent)}
-.cmp-kv{font-family:'Barlow';font-size:31px;color:var(--text-primary);margin-bottom:2px}
-.cmp-kv b{color:var(--gold);font-weight:700}
-.cmp-kl{font-size:19px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.cmp-h2h{text-align:center;font-family:'Oswald';font-size:30px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;padding:20px 0 4px;border-top:1px solid var(--border)}
+.cmp{padding:22px 60px 28px}
+.cmp-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;padding:4px 0 22px;border-bottom:1px solid var(--border)}
+.cmp-tm{display:flex;align-items:center;gap:22px}
+.cmp-tm.r{flex-direction:row-reverse}
+.cmp-ti{min-width:0}
+.cmp-tm.r .cmp-ti{text-align:right}
+.cmp-nm{font-family:'Oswald';font-size:42px;font-weight:700;color:var(--text-primary);text-transform:uppercase;line-height:1.02}
+.cmp-sub{display:flex;align-items:center;gap:16px;margin-top:10px}
+.cmp-tm.r .cmp-sub{flex-direction:row-reverse}
+.cmp-badge{display:flex;align-items:baseline;gap:5px;background:var(--gold);color:#16283A;border-radius:9px;padding:5px 14px;font-family:'Oswald';font-size:34px;font-weight:800;line-height:1}
+.cmp-badge small{font-size:15px;font-weight:600;text-transform:uppercase}
+.cmp-form{display:flex;gap:6px}
+.cmp-fp{width:38px;height:38px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Oswald';font-size:20px;font-weight:700;color:#fff}
+.cmp-fp.W{background:var(--green)}.cmp-fp.D{background:var(--gold);color:#16283A}.cmp-fp.L{background:var(--accent)}
+.cmp-vs{font-family:'Oswald';font-size:60px;font-weight:800;color:var(--accent);text-shadow:0 0 26px rgba(204,51,51,.45)}
+.cmp-rows{display:flex;flex-direction:column;gap:20px;padding:26px 0 20px}
+.cmp-row{display:grid;grid-template-columns:210px 1fr 210px;align-items:center;gap:22px}
+.cmp-rv{font-family:'Oswald';font-size:54px;font-weight:800;color:var(--text-secondary);display:flex;align-items:center;justify-content:flex-start;gap:8px}
+.cmp-rv.r{justify-content:flex-end}
+.cmp-rv.win{color:var(--green)}
+.cmp-ar{font-size:24px;line-height:1}
+.cmp-rc{text-align:center}
+.cmp-rl{font-family:'Oswald';font-size:24px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px}
+.cmp-rbar{display:flex;height:20px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06)}
+.cmp-rbh{background:linear-gradient(90deg,var(--bg-header-light),var(--bg-header))}
+.cmp-rba{background:linear-gradient(90deg,var(--accent-dark),var(--accent))}
+.cmp-stars{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;padding:18px 0 8px;position:relative}
+.cmp-slab{position:absolute;top:-4px;left:50%;transform:translateX(-50%);font-family:'Oswald';font-size:16px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px}
+.cmp-star{padding-top:16px}
+.cmp-star.r{text-align:right}
+.cmp-sname{font-family:'Oswald';font-size:34px;font-weight:700;color:var(--text-primary);text-transform:uppercase;line-height:1.05}
+.cmp-sg{font-family:'Barlow';font-size:24px;color:var(--text-secondary);margin-top:2px}
+.cmp-sg b{color:var(--gold);font-size:30px;font-weight:700}
+.cmp-star-vs{font-size:38px;padding-top:12px}
+.cmp-h2h{text-align:center;font-family:'Oswald';font-size:28px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;padding:16px 0 2px;border-top:1px solid var(--border)}
 .cmp-h2h b{color:var(--text-primary)}
 .cmp-msg{padding:90px;text-align:center;color:var(--text-muted);font-size:34px}
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
@@ -361,8 +369,8 @@ function sanitize(o){
 }
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line',cmpTitle:'Team Comparison',pos:'Pos',pts:'Pts',gpm:'Goals / match',formL:'Form',topSc:'Top scorer',watch:'To watch',firstMeet:'First meeting this season',lastMeet:'Last meeting',cmpLoad:'Loading…',cmpNA:'Comparison unavailable'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr',cmpTitle:'Comparație Echipe',pos:'Loc',pts:'Pct',gpm:'Goluri / meci',formL:'Formă',topSc:'Golgheter',watch:'De urmărit',firstMeet:'Prima întâlnire în sezon',lastMeet:'Ultima întâlnire',cmpLoad:'Se încarcă…',cmpNA:'Comparație indisponibilă'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line',cmpTitle:'Team Comparison',pos:'Pos',pts:'Pts',gpm:'Goals / match',formL:'Form',topSc:'Top scorer',watch:'To watch',firstMeet:'First meeting this season',lastMeet:'Last meeting',cmpLoad:'Loading…',cmpNA:'Comparison unavailable',conc:'Conceded / game'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr',cmpTitle:'Comparație Echipe',pos:'Loc',pts:'Pct',gpm:'Goluri / meci',formL:'Formă',topSc:'Golgheter',watch:'De urmărit',firstMeet:'Prima întâlnire în sezon',lastMeet:'Ultima întâlnire',cmpLoad:'Se încarcă…',cmpNA:'Comparație indisponibilă',conc:'Primite / meci'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
@@ -993,29 +1001,34 @@ function rComparison(){
   if(!COMP||COMP_KEY!==key){compMsg(t('cmpLoad'));loadComparison();return}
   const C=COMP,h=C.home,a=C.away;
   if((!h||!h.found)&&(!a||!a.found)){compMsg(t('cmpNA'));return}
-  const num=x=>(x==null?'-':x);
-  const bar=(label,hv,av,suf)=>{suf=suf||'';const tot=(+hv||0)+(+av||0),hp=tot?Math.round((+hv||0)/tot*100):50,ap=tot?100-hp:50;
-    return `<div class="cmp-br"><div class="cmp-bv">${num(hv)}${suf}</div><div class="cmp-bt"><div class="cmp-bfh" style="width:${hp}%"></div></div><div class="cmp-bl">${label}</div><div class="cmp-bt"><div class="cmp-bfa" style="width:${ap}%"></div></div><div class="cmp-bv">${num(av)}${suf}</div></div>`;};
-  const posTxt=s=>s?`${t('pos')} ${s.pos}${s.group?' · '+s.group:''}`:'';
-  const pills=f=>((f&&f.length)?f.map(x=>`<div class="cmp-fp ${x.res}">${x.res}</div>`).join(''):'—');
-  const col=(tm,right)=>{const sc=tm.scorers&&tm.scorers[0],w=tm.watch;
-    return `<div class="cmp-col${right?' r':''}"><div class="cmp-clab">${tm.name}</div><div class="cmp-form">${pills(tm.form)}</div>`
-      +(sc?`<div class="cmp-kv"><b>${sc.name}</b> ${sc.g}/${sc.s}</div><div class="cmp-kl">${t('topSc')}</div>`:'')
-      +(w&&(!sc||w.igrac!==sc.igrac)?`<div class="cmp-kv" style="margin-top:8px"><b>${w.name}</b> ${w.val}</div><div class="cmp-kl">${t('watch')} · ${t('rt')}</div>`:'')
-      +`</div>`;};
+  const n=x=>(x==null?'-':x);
+  // one comparison row: bigger/greener = better; bar length also favours the better team (inverted for 'low')
+  const row=(label,hv,av,suf,better)=>{
+    hv=+hv||0; av=+av||0; suf=suf||''; const tot=hv+av;
+    const hShare=tot?((better==='low'?av:hv)/tot*100):50, aShare=100-hShare;
+    const hw=(better==='low')?(hv<av):(hv>av), aw=(better==='low')?(av<hv):(av>hv);
+    return `<div class="cmp-row"><div class="cmp-rv ${hw?'win':''}">${n(hv)}${suf}${hw?' <span class="cmp-ar">▲</span>':''}</div>`
+      +`<div class="cmp-rc"><div class="cmp-rl">${label}</div><div class="cmp-rbar"><div class="cmp-rbh" style="width:${hShare.toFixed(1)}%"></div><div class="cmp-rba" style="width:${aShare.toFixed(1)}%"></div></div></div>`
+      +`<div class="cmp-rv r ${aw?'win':''}">${aw?'<span class="cmp-ar">▲</span> ':''}${n(av)}${suf}</div></div>`;
+  };
+  const badge=s=>s?`<div class="cmp-badge">${s.pos}<small>${t('pos')}</small></div>`:'';
+  const pills=f=>((f&&f.length)?f.map(x=>`<div class="cmp-fp ${x.res}">${x.res}</div>`).join(''):'');
+  const head=(tm,live,right)=>`<div class="cmp-tm${right?' r':''}">${lg(live.logo,84)}<div class="cmp-ti"><div class="cmp-nm">${tm.name}</div><div class="cmp-sub">${badge(tm.standing)}<div class="cmp-form">${pills(tm.form)}</div></div></div></div>`;
+  const star=(tm,right)=>{const s=tm.scorers&&tm.scorers[0];return `<div class="cmp-star${right?' r':''}">`+(s?`<div class="cmp-sname">${s.name}</div><div class="cmp-sg"><b>${s.g}</b> ${t('gl')} · ${s.e}%</div>`:'<div class="cmp-sg">—</div>')+`</div>`;};
   const h2h=C.h2h||{played:0,matches:[]};
   let h2hTxt;
-  if(h2h.played>0){const last=h2h.matches[h2h.matches.length-1];h2hTxt=`${t('h2h')}: <b>${h.name} ${h2h.homeWins}–${h2h.awayWins} ${a.name}</b>`+(last?` · ${t('lastMeet')} ${last.hs}:${last.as}`:'');}
+  if(h2h.played>0){const last=h2h.matches[h2h.matches.length-1];h2hTxt=`${t('h2h')} <b>${h2h.homeWins}–${h2h.awayWins}</b>`+(last?` · ${t('lastMeet')} ${last.hs}:${last.as}`:'');}
   else h2hTxt=t('firstMeet');
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('cmpTitle')}</div><div class="spu">${C.ligaName||M.competition||''}</div></div>
     <div class="cmp">
-      <div class="cmp-head">
-        <div class="cmp-tm">${lg(M.home.logo,88)}<div><div class="cmp-nm">${h.name}</div><div class="cmp-pos">${posTxt(h.standing)}</div></div></div>
-        <div class="cmp-vs">VS</div>
-        <div class="cmp-tm r">${lg(M.away.logo,88)}<div><div class="cmp-nm">${a.name}</div><div class="cmp-pos">${posTxt(a.standing)}</div></div></div>
+      <div class="cmp-head">${head(h,M.home,false)}<div class="cmp-vs">VS</div>${head(a,M.away,true)}</div>
+      <div class="cmp-rows">
+        ${row(t('gpm'),h.agg.gfpm,a.agg.gfpm,'','high')}
+        ${row(t('conc'),h.agg.gapm,a.agg.gapm,'','low')}
+        ${row(t('shotEff'),h.agg.eff,a.agg.eff,'%','high')}
+        ${row(t('savePct'),h.agg.spct,a.agg.spct,'%','high')}
       </div>
-      <div class="cmp-bars">${bar(t('pts'),h.standing?h.standing.p:0,a.standing?a.standing.p:0)}${bar(t('gpm'),h.agg.gfpm,a.agg.gfpm)}${bar(t('shotEff'),h.agg.eff,a.agg.eff,'%')}${bar(t('savePct'),h.agg.spct,a.agg.spct,'%')}</div>
-      <div class="cmp-mid">${col(h,false)}${col(a,true)}</div>
+      <div class="cmp-stars"><div class="cmp-slab">${t('topSc')}</div>${star(h,false)}<div class="cmp-star-vs">⭐</div>${star(a,true)}</div>
       <div class="cmp-h2h">${h2hTxt}</div>
     </div>${srcHtml()}</div>`;
 }
