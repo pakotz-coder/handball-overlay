@@ -690,10 +690,16 @@ function rShotMap1(side){
     </div>${srcHtml()}</div>`;
 }
 
+// Timeline end: current match clock while the game is live, full time once it has ended.
+function graphEndSk(lastGoalSk,DURS){
+  const m=((M&&M.time)||'').match(/^(\d+):(\d+)/);const nowSk=m?(+m[1])*60+(+m[2]):0;
+  const ended=!!(M&&(M.status==='End'||M.matchStatus===3));
+  return ended?Math.max(lastGoalSk,DURS):Math.max(lastGoalSk,nowSk||lastGoalSk);
+}
 function rGraph(){const ev=M.goalEvents||[];if(!ev.length){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('graph')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div style="padding:60px;text-align:center;color:var(--text-muted);font-size:32px">No goal data</div>${srcHtml()}</div>`;return}
 const pts=[{sk:0,r1:0,r2:0}];let _p1=0,_p2=0;ev.forEach(e=>{if(e.r1>_p1){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:1});_p1=e.r1;_p2=e.r2}else if(e.r2>_p2){pts.push({sk:e.sk,r1:e.r1,r2:e.r2,team:2});_p2=e.r2;_p1=e.r1}});
 const DUR=matchDur(),DURS=DUR*60,HALF=DUR/2;
-const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=Math.max(pts[pts.length-1].sk,DURS);
+const maxG=Math.max(M.home.score,M.away.score,1);const lastSk=graphEndSk(pts[pts.length-1].sk,DURS);
 const W=1600,H=490,pL=70,pR=40,pT=40,pB=60,cW=W-pL-pR,cH=H-pT-pB;
 function xp(sk){return pL+(sk/lastSk)*cW}function yp(g){return pT+cH-(g/maxG)*cH}
 const hC='#4E8098',aC2='#CC3333';
@@ -702,7 +708,7 @@ let svg=`<svg width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://w
 for(let i=0;i<=maxG;i++){const yy=yp(i);svg+=`<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="rgba(255,255,255,.06)"/><text x="${pL-14}" y="${yy+7}" fill="#6A8090" font-size="22" text-anchor="end" font-weight="600">${i}</text>`}
 const maxMin=Math.ceil(lastSk/60);
 for(let m=0;m<=maxMin;m+=5){const sk2=m*60;if(sk2>lastSk)continue;const xx=xp(sk2);svg+=`<line x1="${xx}" y1="${pT}" x2="${xx}" y2="${H-pB}" stroke="rgba(255,255,255,.04)"/><text x="${xx}" y="${H-pB+28}" fill="#6A8090" font-size="22" text-anchor="middle" font-weight="600">${m}'</text>`}
-const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;
+if(HALF*60<lastSk){const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;}
 if(lastSk>DURS){const otX=xp(DURS);svg+=`<line x1="${otX}" y1="${pT}" x2="${otX}" y2="${H-pB}" stroke="rgba(240,192,64,.4)" stroke-width="2" stroke-dasharray="8,4"/><text x="${otX}" y="${pT-12}" fill="rgba(240,192,64,.7)" font-size="22" text-anchor="middle" font-weight="700">${LANG==='ro'?'PREL':'OT'}</text>`}
 function stepPath(teamNum,scoreFn){let path=`M${xp(0).toFixed(1)},${yp(0).toFixed(1)}`;let cur=0,endSk=0;for(let i=1;i<pts.length;i++){const p=pts[i];if(p.team===teamNum){path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`;cur=scoreFn(p);path+=` L${xp(p.sk).toFixed(1)},${yp(cur).toFixed(1)}`}endSk=p.sk}if(endSk>0)path+=` L${xp(endSk).toFixed(1)},${yp(cur).toFixed(1)}`;return path} const pH=stepPath(1,p=>p.r1);const pA2=stepPath(2,p=>p.r2);
 svg+=`<path class="draw-line" d="${pH}" fill="none" stroke="${hC}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round" style="${hWin?'filter:drop-shadow(0 0 5px rgba(78,128,152,.75))':''}"/><path class="draw-line" d="${pA2}" fill="none" stroke="${aC2}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="round" style="${aWin?'filter:drop-shadow(0 0 5px rgba(204,51,51,.75))':''}"/>`;
@@ -720,7 +726,7 @@ function rLeadGraph(){
   ev.forEach(e=>pts.push({sk:e.sk,d:e.r1-e.r2,team:e.team}));
   const DUR=matchDur(),DURS=DUR*60,HALF=DUR/2;
   const maxAbs=Math.max(2,...pts.map(p=>Math.abs(p.d)));
-  const lastSk=Math.max(pts[pts.length-1].sk,DURS);
+  const lastSk=graphEndSk(pts[pts.length-1].sk,DURS);
   const W=1600,H=490,pL=90,pR=40,pT=40,pB=60,cW=W-pL-pR,cH=H-pT-pB;
   const midY=pT+cH/2;
   function xp(sk){return pL+(sk/lastSk)*cW}
@@ -742,7 +748,7 @@ function rLeadGraph(){
   const maxMin=Math.ceil(lastSk/60);
   for(let m=0;m<=maxMin;m+=5){const sk2=m*60;if(sk2>lastSk)continue;const xx=xp(sk2);svg+=`<line x1="${xx}" y1="${pT}" x2="${xx}" y2="${H-pB}" stroke="rgba(255,255,255,.04)"/><text x="${xx}" y="${H-pB+28}" fill="#6A8090" font-size="22" text-anchor="middle" font-weight="600">${m}'</text>`}
   // HT line
-  const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;
+  if(HALF*60<lastSk){const htX=xp(HALF*60);svg+=`<line x1="${htX}" y1="${pT}" x2="${htX}" y2="${H-pB}" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="8,4"/><text x="${htX}" y="${pT-12}" fill="rgba(255,255,255,.5)" font-size="22" text-anchor="middle" font-weight="700">HT</text>`;}
   if(lastSk>DURS){const otX=xp(DURS);svg+=`<line x1="${otX}" y1="${pT}" x2="${otX}" y2="${H-pB}" stroke="rgba(240,192,64,.4)" stroke-width="2" stroke-dasharray="8,4"/><text x="${otX}" y="${pT-12}" fill="rgba(240,192,64,.7)" font-size="22" text-anchor="middle" font-weight="700">${LANG==='ro'?'PREL':'OT'}</text>`}
   // step path of the difference
   let path=`M${xp(0).toFixed(1)},${yp(0).toFixed(1)}`;
