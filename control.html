@@ -76,6 +76,7 @@ input:focus{border-color:var(--blue)}
     <div class="og">
       <div class="ob pre" onclick="send('prematchclean')"><div class="oi">🎬</div><div class="ol">Pre-Match Clean</div></div>
       <div class="ob pre" onclick="send('prematch')"><div class="oi">🏟️</div><div class="ol">Pre-Match</div></div>
+      <div class="ob pre" onclick="send('comparison')"><div class="oi">🆚</div><div class="ol">Team Comparison</div></div>
       <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
       <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
@@ -333,11 +334,11 @@ function parseAPI(d){
     awayCoach:nm(staff(2,'A')),awayAsst:nm(staff(2,'B')),awayC:nm(staff(2,'C')),awayD:nm(staff(2,'D'))
   };
 
-  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1),outcomes:outcomes(1),zones:zoneSides(1)},
-    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2),zones:zoneSides(2)},
+  return{home:{name:u.n1,shortName:sn(u.n1),logo:lb+logoId1+'.png',score:u.r1||0,players:hP,gk:hG,totals:tot(hP),gkTotals:gkTot(hG),roster:rosterNames(ek1),placement:placementGrid(1),outcomes:outcomes(1),zones:zoneSides(1),id:ek1},
+    away:{name:u.n2,shortName:sn(u.n2),logo:lb+logoId2+'.png',score:u.r2||0,players:aP,gk:aG,totals:tot(aP),gkTotals:gkTot(aG),roster:rosterNames(ek2),placement:placementGrid(2),outcomes:outcomes(2),zones:zoneSides(2),id:ek2},
     time,status,htScore:u.p11!=null?`${u.p11}:${u.p12}`:'',
     venue:u.mn||'',city:u.mm||'',competition:u.nn||'',phase:ro?.faza||'',
-    lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration,
+    lastGoal,goalEvents,runs:computeRuns(),gender,kickoff,officials,duration,liga:u.liga,
     round:u.kolo??null,startISO:(u.pocetak&&u.pocetak!=='1899-12-30T00:00:00')?u.pocetak:null,matchStatus:(u.trenutnistatus??u.status??0)};
 }
 
@@ -436,7 +437,7 @@ initC();try{const sc=JSON.parse(localStorage.getItem('hb_c'));if(sc){colors={...
 const sv=localStorage.getItem('hb_url');if(sv)document.getElementById('mUrl').value=sv;
 
 // ═══ HOTKEYS ═══ fast overlay switching during live production
-const HOTKEYS={'1':'prematchclean','2':'prematch','3':'officials','4':'goalflash','5':'topscorers','6':'shooting','7':'gkduel','8':'h2h','9':'potm','q':'graph','w':'leadgraph','e':'momentum','r':'shotout','t':'shotmap','y':'shotmaphome','u':'shotmapaway','i':'roster1','o':'roster2'};
+const HOTKEYS={'1':'prematchclean','2':'prematch','3':'officials','4':'goalflash','5':'topscorers','6':'shooting','7':'gkduel','8':'h2h','9':'potm','q':'graph','w':'leadgraph','e':'momentum','r':'shotout','t':'shotmap','y':'shotmaphome','u':'shotmapaway','i':'roster1','o':'roster2','v':'comparison'};
 // Show the key on each overlay button
 (function(){const REV={};for(const k in HOTKEYS)REV[HOTKEYS[k]]=k;
   document.querySelectorAll('.ob').forEach(ob=>{const m=(ob.getAttribute('onclick')||'').match(/send\('([^']+)'\)/);if(m&&REV[m[1]]){const b=document.createElement('span');b.className='kb';b.textContent=REV[m[1]].toUpperCase();ob.appendChild(b)}});

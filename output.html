@@ -238,6 +238,36 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 
 .src{text-align:right;padding:4px 20px 6px;font-family:'Barlow';font-size:16px;color:var(--text-muted);opacity:0.5}
 
+/* Team comparison overlay */
+.cmp{padding:26px 60px 34px}
+.cmp-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px;padding:8px 0 30px;border-bottom:1px solid var(--border)}
+.cmp-tm{display:flex;align-items:center;gap:24px}
+.cmp-tm.r{flex-direction:row-reverse;text-align:right}
+.cmp-nm{font-family:'Oswald';font-size:48px;font-weight:700;color:var(--text-primary);text-transform:uppercase;line-height:1.03}
+.cmp-pos{font-family:'Barlow';font-size:27px;color:var(--gold);font-weight:600;margin-top:4px}
+.cmp-vs{font-family:'Oswald';font-size:72px;font-weight:800;color:var(--accent);text-shadow:0 0 28px rgba(204,51,51,.45)}
+.cmp-bars{display:flex;flex-direction:column;gap:20px;padding:30px 0}
+.cmp-br{display:grid;grid-template-columns:96px 1fr auto 1fr 96px;align-items:center;gap:16px}
+.cmp-bv{font-family:'Oswald';font-size:36px;font-weight:700;color:var(--text-primary)}
+.cmp-bl{font-family:'Oswald';font-size:25px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;text-align:center;white-space:nowrap}
+.cmp-bt{height:22px;background:rgba(255,255,255,.07);border-radius:11px;overflow:hidden;display:flex}
+.cmp-br .cmp-bt:first-of-type{justify-content:flex-end}
+.cmp-bfh{height:100%;background:linear-gradient(90deg,var(--bg-header),var(--bg-header-light));border-radius:11px}
+.cmp-bfa{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:11px}
+.cmp-mid{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:10px 0 22px}
+.cmp-col{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:22px 28px}
+.cmp-col.r{text-align:right}
+.cmp-clab{font-family:'Oswald';font-size:24px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.cmp-form{display:flex;gap:8px;margin-bottom:18px}
+.cmp-col.r .cmp-form{justify-content:flex-end}
+.cmp-fp{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Oswald';font-size:24px;font-weight:700;color:#fff}
+.cmp-fp.W{background:var(--green)}.cmp-fp.D{background:var(--gold);color:#1A2D3D}.cmp-fp.L{background:var(--accent)}
+.cmp-kv{font-family:'Barlow';font-size:31px;color:var(--text-primary);margin-bottom:2px}
+.cmp-kv b{color:var(--gold);font-weight:700}
+.cmp-kl{font-size:19px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.cmp-h2h{text-align:center;font-family:'Oswald';font-size:30px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;padding:20px 0 4px;border-top:1px solid var(--border)}
+.cmp-h2h b{color:var(--text-primary)}
+.cmp-msg{padding:90px;text-align:center;color:var(--text-muted);font-size:34px}
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
 #cs.ok{background:rgba(39,174,96,.2);color:#27AE60}
 #cs.w{background:rgba(255,167,38,.2);color:#ffa726}
@@ -331,8 +361,8 @@ function sanitize(o){
 }
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line',cmpTitle:'Team Comparison',pos:'Pos',pts:'Pts',gpm:'Goals / match',formL:'Form',topSc:'Top scorer',watch:'To watch',firstMeet:'First meeting this season',lastMeet:'Last meeting',cmpLoad:'Loading…',cmpNA:'Comparison unavailable'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr',cmpTitle:'Comparație Echipe',pos:'Loc',pts:'Pct',gpm:'Goluri / meci',formL:'Formă',topSc:'Golgheter',watch:'De urmărit',firstMeet:'Prima întâlnire în sezon',lastMeet:'Ultima întâlnire',cmpLoad:'Se încarcă…',cmpNA:'Comparație indisponibilă'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
@@ -484,7 +514,7 @@ function show(type,dur){
   }else{doShow(type,dur)}
 }
 function doShow(type,dur,morph){
-  const fn={prematch:rPre,prematchclean:rPreClean,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,shotout:rShotOut,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,leadgraph:rLeadGraph,momentum:rMomentum,shotmap:rShotMap,shotmaphome:()=>rShotMap1('home'),shotmapaway:()=>rShotMap1('away'),officials:rOfficials};
+  const fn={prematch:rPre,prematchclean:rPreClean,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,shotout:rShotOut,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,leadgraph:rLeadGraph,momentum:rMomentum,shotmap:rShotMap,shotmaphome:()=>rShotMap1('home'),shotmapaway:()=>rShotMap1('away'),officials:rOfficials,comparison:rComparison};
   if(fn[type])fn[type]();
   CUR=type;
   const root=$.firstChild;
@@ -494,7 +524,7 @@ function doShow(type,dur,morph){
     if(type==='goalflash')root.classList.add('sweep');
   }
   const innerDelay=morph?350:700;
-  if(['h2h','shooting','shotout','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials','momentum'].includes(type))animateInner(innerDelay);
+  if(['h2h','shooting','shotout','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials','momentum','comparison'].includes(type))animateInner(innerDelay);
   if(type==='graph'||type==='leadgraph')animateGraph(morph?450:800);
   if(type==='potm')runCounters('.pmsv',900);
   if(type!=='goalflash')runCounters('.ts',morph?250:550);
@@ -942,6 +972,54 @@ if(THUMB||STATS){
   const hs=document.createElement('script');hs.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';document.head.appendChild(hs);
 }
 
+// ═══ TEAM COMPARISON (pre-match insights from handbal-api) ═══
+const CMP_API='https://handbal-api.handbal-api.workers.dev';
+let COMP=null,COMP_KEY='';
+function compKey(){return (M&&M.home&&M.away&&M.home.id&&M.away.id&&M.liga)?(M.home.id+'-'+M.away.id+'-'+M.liga):''}
+async function loadComparison(){
+  const key=compKey(); if(!key||(key===COMP_KEY&&COMP))return;
+  try{
+    const r=await fetch(`${CMP_API}/api/matchup?home=${encodeURIComponent(M.home.id)}&away=${encodeURIComponent(M.away.id)}&liga=${encodeURIComponent(M.liga)}&form=5`);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    COMP=sanitize(await r.json()); COMP_KEY=key;   // sanitize: HTML-escape every string before it can hit the DOM
+    if(CUR==='comparison')rComparison();
+  }catch(e){ if(CUR==='comparison'&&!COMP)compMsg(t('cmpNA')); }
+}
+function compMsg(msg){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('cmpTitle')}</div><div class="spu">${M?(M.competition||''):''}</div></div><div class="cmp-msg">${msg}</div>${srcHtml()}</div>`}
+function rComparison(){
+  if(!M)return;
+  const key=compKey();
+  if(!key){compMsg(t('cmpNA'));return}
+  if(!COMP||COMP_KEY!==key){compMsg(t('cmpLoad'));loadComparison();return}
+  const C=COMP,h=C.home,a=C.away;
+  if((!h||!h.found)&&(!a||!a.found)){compMsg(t('cmpNA'));return}
+  const num=x=>(x==null?'-':x);
+  const bar=(label,hv,av,suf)=>{suf=suf||'';const tot=(+hv||0)+(+av||0),hp=tot?Math.round((+hv||0)/tot*100):50,ap=tot?100-hp:50;
+    return `<div class="cmp-br"><div class="cmp-bv">${num(hv)}${suf}</div><div class="cmp-bt"><div class="cmp-bfh" style="width:${hp}%"></div></div><div class="cmp-bl">${label}</div><div class="cmp-bt"><div class="cmp-bfa" style="width:${ap}%"></div></div><div class="cmp-bv">${num(av)}${suf}</div></div>`;};
+  const posTxt=s=>s?`${t('pos')} ${s.pos}${s.group?' · '+s.group:''}`:'';
+  const pills=f=>((f&&f.length)?f.map(x=>`<div class="cmp-fp ${x.res}">${x.res}</div>`).join(''):'—');
+  const col=(tm,right)=>{const sc=tm.scorers&&tm.scorers[0],w=tm.watch;
+    return `<div class="cmp-col${right?' r':''}"><div class="cmp-clab">${tm.name}</div><div class="cmp-form">${pills(tm.form)}</div>`
+      +(sc?`<div class="cmp-kv"><b>${sc.name}</b> ${sc.g}/${sc.s}</div><div class="cmp-kl">${t('topSc')}</div>`:'')
+      +(w&&(!sc||w.igrac!==sc.igrac)?`<div class="cmp-kv" style="margin-top:8px"><b>${w.name}</b> ${w.val}</div><div class="cmp-kl">${t('watch')} · ${t('rt')}</div>`:'')
+      +`</div>`;};
+  const h2h=C.h2h||{played:0,matches:[]};
+  let h2hTxt;
+  if(h2h.played>0){const last=h2h.matches[h2h.matches.length-1];h2hTxt=`${t('h2h')}: <b>${h.name} ${h2h.homeWins}–${h2h.awayWins} ${a.name}</b>`+(last?` · ${t('lastMeet')} ${last.hs}:${last.as}`:'');}
+  else h2hTxt=t('firstMeet');
+  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('cmpTitle')}</div><div class="spu">${C.ligaName||M.competition||''}</div></div>
+    <div class="cmp">
+      <div class="cmp-head">
+        <div class="cmp-tm">${lg(M.home.logo,88)}<div><div class="cmp-nm">${h.name}</div><div class="cmp-pos">${posTxt(h.standing)}</div></div></div>
+        <div class="cmp-vs">VS</div>
+        <div class="cmp-tm r">${lg(M.away.logo,88)}<div><div class="cmp-nm">${a.name}</div><div class="cmp-pos">${posTxt(a.standing)}</div></div></div>
+      </div>
+      <div class="cmp-bars">${bar(t('pts'),h.standing?h.standing.p:0,a.standing?a.standing.p:0)}${bar(t('gpm'),h.agg.gfpm,a.agg.gfpm)}${bar(t('shotEff'),h.agg.eff,a.agg.eff,'%')}${bar(t('savePct'),h.agg.spct,a.agg.spct,'%')}</div>
+      <div class="cmp-mid">${col(h,false)}${col(a,true)}</div>
+      <div class="cmp-h2h">${h2hTxt}</div>
+    </div>${srcHtml()}</div>`;
+}
+
 // ═══ AUTO CAROUSEL ═══ output-driven rotation through stat overlays (survives control-tab close)
 let carTimer=null,carActive=false;
 function stopCarousel(){carActive=false;if(carTimer){clearTimeout(carTimer);carTimer=null}}
@@ -989,7 +1067,7 @@ if(ref){
     }).catch(e=>thumbStatus('Load error: '+(e&&e.message||e)));
   }else{
     ref.child('command').on('value',s=>{const v=s.val();if(!v)return;stopCarousel();if(v.type==='show')show(v.overlay,v.duration||0);else if(v.type==='clear')clr();else if(v.type==='carousel')startCarousel(v)});
-    ref.child('match').on('value',s=>{const v=s.val();if(v)M=sanitize(v)});
+    ref.child('match').on('value',s=>{const v=s.val();if(v){M=sanitize(v);loadComparison()}});
     ref.child('lang').on('value',s=>{const v=s.val();if(v==='en'||v==='ro')LANG=v});
     ref.child('colors').on('value',s=>{const v=s.val();if(v&&typeof v==='object')apC(v)});
     ref.child('opacity').on('value',s=>{const v=s.val();OPA=v!=null?Math.min(Math.max(v,20),100)/100:1;apO()});
