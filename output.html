@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920">
+<meta name="frh-build" content="crest-unify-1">
 <title>Handball Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -96,7 +97,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .gks{padding:10px 36px 14px}
 .gks-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .gks-col-label{font-family:'Oswald';font-size:28px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.gks-col-label img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
 .gkc2{display:flex;align-items:center;gap:16px;padding:14px 16px;background:var(--bg-panel);border-radius:8px;border:1px solid var(--border);margin-bottom:8px}
 .gkc2-pct{font-family:'Oswald';font-size:48px;font-weight:700;color:var(--green);min-width:90px;text-align:center}
 .gkc2-info{flex:1;min-width:0}
@@ -112,7 +112,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .shg{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:14px 36px 18px}
 .sht{background:var(--bg-panel);border-radius:10px;padding:18px 20px;border:1px solid var(--border)}
 .shtn{font-family:'Oswald';font-size:30px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
-.shtn img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
 .zr{display:grid;grid-template-columns:140px 1fr 140px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .zn{font-family:'Barlow Condensed';font-size:28px;font-weight:600;color:var(--text-secondary)}
 .zb{height:20px;background:var(--row-even);border-radius:4px;overflow:hidden}
@@ -141,8 +140,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .pm-cards{display:grid;grid-template-columns:1fr 1fr;gap:0}
 .pm-card{padding:36px;text-align:center;border-right:1px solid var(--border)}
 .pm-card:last-child{border-right:none}
-.pm-logo{width:50px;height:50px;margin:0 auto 8px}
-.pm-logo img{width:50px;height:50px;object-fit:contain}
+.pm-logo{width:72px;height:72px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
 .pmnr{font-family:'Oswald';font-size:100px;font-weight:700;color:var(--gold);line-height:1}
 .pmn{font-family:'Oswald';font-size:42px;font-weight:700;color:var(--white);margin:10px 0 4px;text-transform:uppercase}
 .pmt{font-family:'Barlow';font-size:24px;color:var(--text-secondary);margin-bottom:22px}
@@ -160,7 +158,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .h2hfa{height:100%;background:linear-gradient(90deg,var(--accent-dark),var(--accent));border-radius:0 5px 5px 0;float:right}
 
 .rost-title{padding:10px 36px 0;display:flex;align-items:center;gap:14px}
-.rost-title img{width:38px;height:38px;object-fit:contain;flex-shrink:0}
 .rost-title span{font-family:'Oswald';font-size:44px;font-weight:700;color:var(--white);text-transform:uppercase}
 .rost{padding:4px 36px 8px;overflow:hidden}
 .rost table{width:100%;border-collapse:collapse}
@@ -183,8 +180,11 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .pre-phase{font-family:'Barlow';font-size:24px;color:rgba(255,255,255,.7);margin-top:4px}
 .pre-vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:30px 60px;gap:40px}
 .pre-team{text-align:center}
-.pre-logo{width:100px;height:100px;margin:0 auto 14px;padding:12px;border-radius:16px;background:linear-gradient(158deg,#fff 0%,#e9eef3 100%);border:1px solid rgba(255,255,255,.55);box-shadow:0 8px 22px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center}
-.pre-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.pre-logo{width:100px;height:100px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+/* ── Shared team-crest component (sized by --cs) ── */
+.crest{width:var(--cs);height:var(--cs);padding:calc(var(--cs)*.12);border-radius:calc(var(--cs)*.16);background:linear-gradient(158deg,#fff 0%,#e9eef3 100%);border:1px solid rgba(255,255,255,.55);box-shadow:0 calc(var(--cs)*.06) calc(var(--cs)*.16) rgba(0,0,0,.4);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-sizing:border-box;overflow:hidden;vertical-align:middle}
+.crest img{max-width:100%;max-height:100%;object-fit:contain}
+.crest .crest-fb{font-size:calc(var(--cs)*.6);line-height:1}
 .pre-tname{font-family:'Oswald';font-size:42px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:1px}
 .pre-vsx{font-family:'Oswald';font-size:80px;font-weight:700;color:var(--accent);text-shadow:0 2px 20px rgba(204,51,51,.3)}
 .pre-rosters{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:2px solid var(--border)}
@@ -228,7 +228,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .off-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0}
 .off-team{margin-bottom:24px}
 .off-team-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.off-team-hdr img{width:32px;height:32px;object-fit:contain}
 .off-team-name{font-family:'Oswald';font-size:28px;font-weight:700;color:var(--text-primary);text-transform:uppercase}
 .off-staff{padding:4px 0 4px 44px}
 .off-staff-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;padding-left:44px}
@@ -320,6 +319,7 @@ const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
 const STATS=new URLSearchParams(location.search).get('stats')==='1';
+console.info('frh-build crest-unify-1');
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -364,10 +364,11 @@ function pmCard(p,logo,teamName){
   }else if(p.g>0){
     stats=`<div class="pmsi"><div class="pmsv">${p.g}/${p.a}</div><div class="pmsl">${t('gl')}</div></div><div class="pmsi"><div class="pmsv">${p.e}%</div><div class="pmsl">${t('eff')}</div></div>`;
   }
-  return`<div class="pm-card"><div class="pm-logo"><img src="${logo}" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'"></div><div class="pmnr">#${p.num}</div><div class="pmn">${p.name}</div><div class="pmt">${teamName}${p.isGK?' · GK':''}</div><div class="pms">${stats}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${p.rating}</div><div class="pmsl">${t('rt')}</div></div></div></div>`;
+  return`<div class="pm-card"><div class="pm-logo">${lg(logo,72)}</div><div class="pmnr">#${p.num}</div><div class="pmn">${p.name}</div><div class="pmt">${teamName}${p.isGK?' · GK':''}</div><div class="pms">${stats}<div class="pmsi"><div class="pmsv" style="color:var(--green)">${p.rating}</div><div class="pmsl">${t('rt')}</div></div></div></div>`;
 }
 function szn(pl){const z={s7m:'s7m',s9m:'s9m',s6m:'s6m',wng:'wing',fb:'fb',brk:'brk'};const r={};for(const[k,lk]of Object.entries(z)){let g=0,a=0;pl.forEach(p=>{if(p[k]){const x=pga(p[k]);g+=x.g;a+=x.a}});r[lk]={g,a,e:a>0?Math.round(g/a*100):0}}return r}
-function lg(url,sz=36){return`<img src="${url}" style="width:${sz}px;height:${sz}px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`}
+function crestFail(img){const p=img.parentElement;if(p)p.innerHTML='<div class="crest-fb">🤾</div>'}
+function lg(url,sz=36){return`<span class="crest" style="--cs:${sz}px"><img src="${url}" onerror="crestFail(this)"></span>`}
 
 const $=document.getElementById('ov');
 // ═══ BROADCAST TRANSITION ENGINE ═══
@@ -413,7 +414,7 @@ function runCounters(sel,delay){
   },delay||0);
 }
 function stL(){if(!M)return'';const d=matchDur();if(M.status==='End')return t('ft');if(M.time===(d/2)+':00')return t('ht');return M.time||t('live')}
-function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,40)}<div class="tn">${M.home.shortName}</div></div><div class="ts spop">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,40)}</div></div>`}
+function tbHtml(){return`<div class="tb"><div class="tside">${lg(M.home.logo,52)}<div class="tn">${M.home.shortName}</div></div><div class="ts spop">${M.home.score} : ${M.away.score}</div><div class="tside r"><div class="tn">${M.away.shortName}</div>${lg(M.away.logo,52)}</div></div>`}
 
 function animateInner(delay){
   delay=delay||700;
@@ -501,20 +502,20 @@ function doShow(type,dur,morph){
   if(dur&&dur>0){cT=setTimeout(()=>{clr()},dur)}
 }
 
-function rPre(){const h=M.home,a=M.away,hR=h.roster||[],aR=a.roster||[];const rL=l=>l.map(p=>`<div class="pre-pl"><span class="pre-pn">${p.num}</span><span>${p.starter?'<span class="pre-pst">★</span>':''}${p.name}${p.isGK?'<span class="pre-pgk"> GK</span>':''}</span></div>`).join('');$.innerHTML=`<div class="pre ac"><div class="pre-top"><div class="pre-comp">${M.competition||''}</div>${M.phase?`<div class="pre-phase">${M.phase}</div>`:''}</div><div class="pre-vs"><div class="pre-team"><div class="pre-logo"><img src="${h.logo}" onerror="this.parentElement.innerHTML='<div style=\\'font-size:60px;color:var(--bg-header-light)\\'>🤾</div>'"></div><div class="pre-tname">${h.name}</div></div><div class="pre-vsx">VS</div><div class="pre-team"><div class="pre-logo"><img src="${a.logo}" onerror="this.parentElement.innerHTML='<div style=\\'font-size:60px;color:var(--accent)\\'>🤾</div>'"></div><div class="pre-tname">${a.name}</div></div></div><div class="pre-rosters"><div class="pre-rcol"><div class="pre-rhead">${h.shortName}</div><div class="pre-rlist">${rL(hR)}</div></div><div class="pre-rcol"><div class="pre-rhead">${a.shortName}</div><div class="pre-rlist">${rL(aR)}</div></div></div><div class="pre-foot">${M.venue?`<div class="pre-fi"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${M.venue}${M.city?', '+M.city:''}</div>`:''} ${M.kickoff?`<div class="pre-fi"><div class="pre-kick">🕐 ${t('kickoff')}: ${M.kickoff}</div></div>`:''}</div>${srcHtml()}</div>`}
+function rPre(){const h=M.home,a=M.away,hR=h.roster||[],aR=a.roster||[];const rL=l=>l.map(p=>`<div class="pre-pl"><span class="pre-pn">${p.num}</span><span>${p.starter?'<span class="pre-pst">★</span>':''}${p.name}${p.isGK?'<span class="pre-pgk"> GK</span>':''}</span></div>`).join('');$.innerHTML=`<div class="pre ac"><div class="pre-top"><div class="pre-comp">${M.competition||''}</div>${M.phase?`<div class="pre-phase">${M.phase}</div>`:''}</div><div class="pre-vs"><div class="pre-team"><div class="pre-logo">${lg(h.logo,100)}</div><div class="pre-tname">${h.name}</div></div><div class="pre-vsx">VS</div><div class="pre-team"><div class="pre-logo">${lg(a.logo,100)}</div><div class="pre-tname">${a.name}</div></div></div><div class="pre-rosters"><div class="pre-rcol"><div class="pre-rhead">${h.shortName}</div><div class="pre-rlist">${rL(hR)}</div></div><div class="pre-rcol"><div class="pre-rhead">${a.shortName}</div><div class="pre-rlist">${rL(aR)}</div></div></div><div class="pre-foot">${M.venue?`<div class="pre-fi"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${M.venue}${M.city?', '+M.city:''}</div>`:''} ${M.kickoff?`<div class="pre-fi"><div class="pre-kick">🕐 ${t('kickoff')}: ${M.kickoff}</div></div>`:''}</div>${srcHtml()}</div>`}
 
 function rPreClean(){
   const h=M.home,a=M.away;
-  $.innerHTML=`<div class="pre ac"><div class="pre-top"><div class="pre-comp">${M.competition||''}</div>${M.phase?`<div class="pre-phase">${M.phase}</div>`:''}</div><div class="pre-vs" style="padding:70px 60px 60px"><div class="pre-team"><div class="pre-logo" style="width:150px;height:150px"><img src="${h.logo}" onerror="this.parentElement.innerHTML='<div style=\\'font-size:90px;color:var(--bg-header-light)\\'>🤾</div>'"></div><div class="pre-tname" style="font-size:54px;margin-top:8px">${h.name}</div></div><div class="pre-vsx" style="font-size:100px">VS</div><div class="pre-team"><div class="pre-logo" style="width:150px;height:150px"><img src="${a.logo}" onerror="this.parentElement.innerHTML='<div style=\\'font-size:90px;color:var(--accent)\\'>🤾</div>'"></div><div class="pre-tname" style="font-size:54px;margin-top:8px">${a.name}</div></div></div><div class="pre-foot">${M.venue?`<div class="pre-fi"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${M.venue}${M.city?', '+M.city:''}</div>`:''} ${M.kickoff?`<div class="pre-fi"><div class="pre-kick">🕐 ${t('kickoff')}: ${M.kickoff}</div></div>`:''}</div>${srcHtml()}</div>`;
+  $.innerHTML=`<div class="pre ac"><div class="pre-top"><div class="pre-comp">${M.competition||''}</div>${M.phase?`<div class="pre-phase">${M.phase}</div>`:''}</div><div class="pre-vs" style="padding:70px 60px 60px"><div class="pre-team"><div class="pre-logo" style="width:150px;height:150px">${lg(h.logo,150)}</div><div class="pre-tname" style="font-size:54px;margin-top:8px">${h.name}</div></div><div class="pre-vsx" style="font-size:100px">VS</div><div class="pre-team"><div class="pre-logo" style="width:150px;height:150px">${lg(a.logo,150)}</div><div class="pre-tname" style="font-size:54px;margin-top:8px">${a.name}</div></div></div><div class="pre-foot">${M.venue?`<div class="pre-fi"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${M.venue}${M.city?', '+M.city:''}</div>`:''} ${M.kickoff?`<div class="pre-fi"><div class="pre-kick">🕐 ${t('kickoff')}: ${M.kickoff}</div></div>`:''}</div>${srcHtml()}</div>`;
 }
 
-function rGF(){const lg2=M.lastGoal;if(!lg2){$.innerHTML=`<div class="gf au"><div class="gft">${t('goal')}</div><div class="gfp"><div class="gfnm" style="color:var(--text-muted)">No goals yet</div></div></div>`;return}$.innerHTML=`<div class="gf au"><div class="gft">${t('goal')}</div><div class="gfp"><div class="gfn">#${lg2.num}</div><div><div class="gfnm">${lg2.name}</div><div class="gfd">${lg2.team} · ${lg2.time}</div></div></div><div class="gfsc">${lg2.r1} : ${lg2.r2}</div></div>`}
+function rGF(){const lg2=M.lastGoal;if(!lg2){$.innerHTML=`<div class="gf au"><div class="gft">${t('goal')}</div><div class="gfp"><div class="gfnm" style="color:var(--text-muted)">No goals yet</div></div></div>`;return}$.innerHTML=`<div class="gf au"><div class="gft">${t('goal')}</div><div class="gfp">${lg(lg2.teamNum===2?M.away.logo:M.home.logo,64)}<div class="gfn">#${lg2.num}</div><div><div class="gfnm">${lg2.name}</div><div class="gfd">${lg2.team} · ${lg2.time}</div></div></div><div class="gfsc">${lg2.r1} : ${lg2.r2}</div></div>`}
 
-function rTS(){const hT=topS(M.home.players),aT=topS(M.away.players);const rows=arr=>arr.map(p=>`<div class="scr"><div class="scn">#${p.num}</div><div class="scnm">${p.name}</div><div class="scg">${p.g}/${p.a}</div><div class="sce">${p.e}%</div></div>`).join('');$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('topScorers')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="scs"><div class="scl">${lg(M.home.logo,28)}${M.home.shortName}</div>${rows(hT)}<div class="scl" style="margin-top:8px">${lg(M.away.logo,28)}${M.away.shortName}</div>${rows(aT)}</div>${srcHtml()}</div>`}
+function rTS(){const hT=topS(M.home.players),aT=topS(M.away.players);const rows=arr=>arr.map(p=>`<div class="scr"><div class="scn">#${p.num}</div><div class="scnm">${p.name}</div><div class="scg">${p.g}/${p.a}</div><div class="sce">${p.e}%</div></div>`).join('');$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('topScorers')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="scs"><div class="scl">${lg(M.home.logo,40)}${M.home.shortName}</div>${rows(hT)}<div class="scl" style="margin-top:8px">${lg(M.away.logo,40)}${M.away.shortName}</div>${rows(aT)}</div>${srcHtml()}</div>`}
 
-function rGKD(){function gkCard(gk,side){if(!gk)return'';const sv=pga(gk.sav);const pct=sv.a>0?Math.round(sv.g/sv.a*100):0;const zones=[{k:'gs7m',l:'7m'},{k:'gs9m',l:'9m'},{k:'gs6m',l:'6m'},{k:'gwng',l:'Wng'},{k:'gfb',l:'FB'}];const az=zones.filter(z=>gk[z.k]);return`<div class="gkc2"><div class="gkc2-pct">${sv.a>0?pct+'%':'-'}</div><div class="gkc2-info"><div class="gkc2-name">#${gk.num} ${gk.name}</div><div class="gkc2-det">${sv.a>0?sv.g+'/'+sv.a+' '+t('sv'):'0 '+t('sh')}${gk.min?' · '+gk.min+"'":''}</div></div>${az.length?`<div class="gkc2-bars">${az.map(z=>{const d=pga(gk[z.k]);const w=d.a>0?Math.round(d.g/d.a*100):0;return`<div class="gkb2"><div class="gkb2-l">${z.l}</div><div class="gkb2-track"><div class="gkb2-fill ${side}" style="width:${w}%"></div></div><div class="gkb2-v">${d.g}/${d.a}</div></div>`}).join('')}</div>`:''}</div>`}$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('gkDuel')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="gks"><div class="gks-grid"><div><div class="gks-col-label">${lg(M.home.logo,28)}${M.home.shortName}</div>${M.home.gk.map(g=>gkCard(g,'h')).join('')||'<div style="color:var(--text-muted);font-size:24px;padding:10px">N/A</div>'}</div><div><div class="gks-col-label">${lg(M.away.logo,28)}${M.away.shortName}</div>${M.away.gk.map(g=>gkCard(g,'a')).join('')||'<div style="color:var(--text-muted);font-size:24px;padding:10px">N/A</div>'}</div></div></div>${srcHtml()}</div>`}
+function rGKD(){function gkCard(gk,side){if(!gk)return'';const sv=pga(gk.sav);const pct=sv.a>0?Math.round(sv.g/sv.a*100):0;const zones=[{k:'gs7m',l:'7m'},{k:'gs9m',l:'9m'},{k:'gs6m',l:'6m'},{k:'gwng',l:'Wng'},{k:'gfb',l:'FB'}];const az=zones.filter(z=>gk[z.k]);return`<div class="gkc2"><div class="gkc2-pct">${sv.a>0?pct+'%':'-'}</div><div class="gkc2-info"><div class="gkc2-name">#${gk.num} ${gk.name}</div><div class="gkc2-det">${sv.a>0?sv.g+'/'+sv.a+' '+t('sv'):'0 '+t('sh')}${gk.min?' · '+gk.min+"'":''}</div></div>${az.length?`<div class="gkc2-bars">${az.map(z=>{const d=pga(gk[z.k]);const w=d.a>0?Math.round(d.g/d.a*100):0;return`<div class="gkb2"><div class="gkb2-l">${z.l}</div><div class="gkb2-track"><div class="gkb2-fill ${side}" style="width:${w}%"></div></div><div class="gkb2-v">${d.g}/${d.a}</div></div>`}).join('')}</div>`:''}</div>`}$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('gkDuel')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="gks"><div class="gks-grid"><div><div class="gks-col-label">${lg(M.home.logo,40)}${M.home.shortName}</div>${M.home.gk.map(g=>gkCard(g,'h')).join('')||'<div style="color:var(--text-muted);font-size:24px;padding:10px">N/A</div>'}</div><div><div class="gks-col-label">${lg(M.away.logo,40)}${M.away.shortName}</div>${M.away.gk.map(g=>gkCard(g,'a')).join('')||'<div style="color:var(--text-muted);font-size:24px;padding:10px">N/A</div>'}</div></div></div>${srcHtml()}</div>`}
 
-function rSH(){const hZ=szn(M.home.players),aZ=szn(M.away.players);const zKeys=['s7m','s9m','s6m','wing','fb','brk'];const zR=(zones,side)=>zKeys.map(k=>{const d=zones[k]||{g:0,a:0,e:0};return`<div class="zr"><div class="zn">${t(k)}</div><div class="zb"><div class="zf ${side}" style="width:${d.e}%"></div></div><div class="zv">${d.g}/${d.a} · ${d.e}%</div></div>`}).join('');$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shooting')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="shg"><div class="sht"><div class="shtn">${lg(M.home.logo,28)}${M.home.shortName}</div>${zR(hZ,'h')}</div><div class="sht"><div class="shtn">${lg(M.away.logo,28)}${M.away.shortName}</div>${zR(aZ,'a')}</div></div>${srcHtml()}</div>`}
+function rSH(){const hZ=szn(M.home.players),aZ=szn(M.away.players);const zKeys=['s7m','s9m','s6m','wing','fb','brk'];const zR=(zones,side)=>zKeys.map(k=>{const d=zones[k]||{g:0,a:0,e:0};return`<div class="zr"><div class="zn">${t(k)}</div><div class="zb"><div class="zf ${side}" style="width:${d.e}%"></div></div><div class="zv">${d.g}/${d.a} · ${d.e}%</div></div>`}).join('');$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shooting')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="shg"><div class="sht"><div class="shtn">${lg(M.home.logo,40)}${M.home.shortName}</div>${zR(hZ,'h')}</div><div class="sht"><div class="shtn">${lg(M.away.logo,40)}${M.away.shortName}</div>${zR(aZ,'a')}</div></div>${srcHtml()}</div>`}
 
 // ═══ NEW: Shot outcomes overlay (Goals / Saved / Missed / Post / Blocked) ═══
 function rShotOut(){
@@ -527,7 +528,7 @@ function rShotOut(){
       const p=o.total?Math.round(v/o.total*100):0;
       return`<div class="zr out"><div class="zn"><span class="out-dot" style="background:${c}"></span>${t(k)}</div><div class="zb"><div class="zf" style="width:${p}%;background:${c}"></div></div><div class="zv">${v} · ${p}%</div></div>`;
     }).join('');
-    return`<div class="sht"><div class="shtn">${lg(team.logo,28)}${team.shortName}</div><div class="out-total">${o.total} ${t('totShots')}</div><div class="out-stack">${stack}</div>${rows}</div>`;
+    return`<div class="sht"><div class="shtn">${lg(team.logo,40)}${team.shortName}</div><div class="out-total">${o.total} ${t('totShots')}</div><div class="out-stack">${stack}</div>${rows}</div>`;
   };
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shotout')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="shg">${card(M.home)}${card(M.away)}</div>${srcHtml()}</div>`;
 }
@@ -538,7 +539,7 @@ function rMomentum(){
   const mm=sk=>Math.max(1,Math.round(sk/60))+"'";
   const runCard=(team,run)=>{
     const has=run&&run.n>=2;
-    return`<div class="mo-card"><div class="mo-team">${lg(team.logo,32)}${team.shortName}</div><div class="mo-lbl">${t('biggestRun')}</div><div class="mo-run">${has?run.n+':0':'—'}</div>${has?`<div class="mo-time">${mm(run.fromSk)} – ${mm(run.toSk)}</div>`:`<div class="mo-time">&nbsp;</div>`}</div>`;
+    return`<div class="mo-card"><div class="mo-team">${lg(team.logo,44)}${team.shortName}</div><div class="mo-lbl">${t('biggestRun')}</div><div class="mo-run">${has?run.n+':0':'—'}</div>${has?`<div class="mo-time">${mm(run.fromSk)} – ${mm(run.toSk)}</div>`:`<div class="mo-time">&nbsp;</div>`}</div>`;
   };
   const cur=r.current||{};
   const curTeam=cur.team===1?M.home:cur.team===2?M.away:null;
@@ -554,7 +555,7 @@ function rPM(){
 
 function rH2H(){const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};function row(label,hv,av,suffix=''){if(hv===0&&av===0)return`<div class="h2hr"><div class="h2hv">0${suffix}</div><div class="h2hbar"></div><div class="h2hl">${label}</div><div class="h2hbar"></div><div class="h2hv">0${suffix}</div></div>`;const total=hv+av;const hp=Math.round(hv/total*100),ap=100-hp;return`<div class="h2hr"><div class="h2hv">${hv}${suffix}</div><div class="h2hbar"><div class="h2hfh" style="width:${hp}%"></div></div><div class="h2hl">${label}</div><div class="h2hbar"><div class="h2hfa" style="width:${ap}%"></div></div><div class="h2hv">${av}${suffix}</div></div>`}$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('h2h')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="h2h">${row(t('gl'),h.score||0,a.score||0)}${row(t('shotEff'),ht.eff||0,at.eff||0,'%')}${row(t('savePct'),hg.pct||0,ag.pct||0,'%')}${row(t('ast'),ht.ast||0,at.ast||0)}${row(t('blocks'),ht.blk||0,at.blk||0)}${row(t('trn'),ht.trn||0,at.trn||0)}${row(t('stl'),ht.stl||0,at.stl||0)}${row(t('sus'),ht.sus||0,at.sus||0)}</div>${srcHtml()}</div>`}
 
-function rRoster(side){const team=side==='home'?M.home:M.away;const allP=[...team.players,...team.gk].sort((a,b)=>a.num-b.num);$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('roster')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="rost-title">${lg(team.logo,38)}<span>${team.name}</span></div><div class="rost"><table><thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>Blk</th><th>2m</th><th>Min</th><th>Val</th></tr></thead><tbody>${allP.map(p=>{const isGK=p.sav&&p.sav!=='';const ga=isGK?p.sav:p.ga;const val=isGK?p.gval:p.val;const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}${p.starter?' <span class="st-dot">●</span>':''}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.blk||''}</td><td>${isGK?'':p.sus||''}</td><td>${p.min||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`}).join('')}</tbody></table></div>${srcHtml()}</div>`}
+function rRoster(side){const team=side==='home'?M.home:M.away;const allP=[...team.players,...team.gk].sort((a,b)=>a.num-b.num);$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('roster')}</div><div class="spu">${stL()}</div></div>${tbHtml()}<div class="rost-title">${lg(team.logo,52)}<span>${team.name}</span></div><div class="rost"><table><thead><tr><th>#</th><th>Player</th><th>G/A</th><th>7m</th><th>9m</th><th>6m</th><th>Wing</th><th>FB</th><th>Ast</th><th>Blk</th><th>2m</th><th>Min</th><th>Val</th></tr></thead><tbody>${allP.map(p=>{const isGK=p.sav&&p.sav!=='';const ga=isGK?p.sav:p.ga;const val=isGK?p.gval:p.val;const vc=val!==''&&val!=null?(parseFloat(val)>=0?'vp':'vn'):'';return`<tr><td>${p.num}${p.starter?' <span class="st-dot">●</span>':''}</td><td>${p.name}${isGK?' <span class="gk-tag">GK</span>':''}</td><td class="bold">${ga}</td><td>${isGK?p.gs7m:p.s7m}</td><td>${isGK?p.gs9m:p.s9m}</td><td>${isGK?p.gs6m:p.s6m}</td><td>${isGK?p.gwng:p.wng}</td><td>${isGK?p.gfb:p.fb}</td><td>${isGK?'':p.ast||''}</td><td>${isGK?'':p.blk||''}</td><td>${isGK?'':p.sus||''}</td><td>${p.min||''}</td><td class="${vc}">${val!==''&&val!=null?val:''}</td></tr>`}).join('')}</tbody></table></div>${srcHtml()}</div>`}
 
 // ═══ Side-aware half-court (ps/ss event data) ═══
 function courtSVG2(z,tot,teamName,color){
@@ -684,7 +685,7 @@ function rShotMap1(side){
   const savesCells=(pl.saves||[]).map(c=>({n:c.s,t:c.t}));
   $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('shotmap1')} — ${team.shortName}</div><div class="spu">${stL()}</div></div>${tbHtml()}
     <div class="gp2-wrap">
-      <div class="gp-box"><div class="gp-title">${lg(team.logo,32)}${t('gpShots')}</div>${gpNet(shotsCells,false)}</div>
+      <div class="gp-box"><div class="gp-title">${lg(team.logo,44)}${t('gpShots')}</div>${gpNet(shotsCells,false)}</div>
       <div class="gp-box"><div class="gp-title">🧤 ${t('gpSaves')}</div>${gpNet(savesCells,false)}</div>
     </div>${srcHtml()}</div>`;
 }
@@ -775,13 +776,13 @@ function rOfficials(){
     ${o.observer?`<div class="off-role">${t('observer')}</div><div class="off-name"><span class="off-dot"></span>${o.observer}</div>`:''}
     ${o.delegat?`<div class="off-role">${t('delegate')}</div><div class="off-name"><span class="off-dot"></span>${o.delegat}</div>`:''}
   </div><div class="off-right">
-    <div class="off-team"><div class="off-team-hdr">${lg(M.home.logo,32)}<div class="off-team-name">${M.home.shortName}</div></div>
+    <div class="off-team"><div class="off-team-hdr">${lg(M.home.logo,44)}<div class="off-team-name">${M.home.shortName}</div></div>
       <div class="off-staff-grid">
       ${o.homeCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.homeCoach}</div></div>`:''}
       ${o.homeC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeC}</div></div>`:''}
       ${o.homeAsst?`<div class="off-staff"><div class="off-staff-role">${t('asstCoach')}</div><div class="off-staff-name">${o.homeAsst}</div></div>`:''}
       ${o.homeD?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.homeD}</div></div>`:''}</div></div>
-    <div class="off-team"><div class="off-team-hdr">${lg(M.away.logo,32)}<div class="off-team-name">${M.away.shortName}</div></div>
+    <div class="off-team"><div class="off-team-hdr">${lg(M.away.logo,44)}<div class="off-team-name">${M.away.shortName}</div></div>
       <div class="off-staff-grid">
       ${o.awayCoach?`<div class="off-staff"><div class="off-staff-role">${t('headCoach')}</div><div class="off-staff-name">${o.awayCoach}</div></div>`:''}
       ${o.awayC?`<div class="off-staff"><div class="off-staff-role">${t('official')}</div><div class="off-staff-name">${o.awayC}</div></div>`:''}
