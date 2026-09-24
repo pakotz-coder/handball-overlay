@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920">
-<meta name="frh-build" content="standings-1">
+<meta name="frh-build" content="standings-2">
 <title>Handball Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -290,6 +290,9 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .stand-pts{font-family:'Oswald';font-size:32px;font-weight:800;color:var(--gold);text-align:right}
 .stand-row.hl-h{background:rgba(78,128,152,.18);border-left-color:var(--bg-header-light)}
 .stand-row.hl-a{background:rgba(204,51,51,.18);border-left-color:var(--accent)}
+.stand-sub{background:var(--gold);color:#16283A;font-weight:800;padding:3px 18px;border-radius:8px;font-size:26px;letter-spacing:1px;box-shadow:0 3px 14px rgba(240,192,64,.35)}
+@keyframes roundPulse{0%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}35%{transform:scale(1.14);box-shadow:0 4px 26px rgba(240,192,64,.75)}100%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}}
+.stand-sub.pulse{animation:roundPulse .6s ease}
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
 #cs.ok{background:rgba(39,174,96,.2);color:#27AE60}
 #cs.w{background:rgba(255,167,38,.2);color:#ffa726}
@@ -371,7 +374,7 @@ const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
 const STATS=new URLSearchParams(location.search).get('stats')==='1';
-console.info('frh-build standings-1');
+console.info('frh-build standings-2');
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -1062,7 +1065,7 @@ function rAnimStandings(){
   const nm=id=>{const ti=teams[id]||teams[String(id)]||{};return ti.shortName||ti.name||('#'+id)};
   const lo=id=>{const ti=teams[id]||teams[String(id)]||{};return ti.logo||''};
   const rowHTML=id=>`<div class="stand-row${id===hiH?' hl-h':''}${id===hiA?' hl-a':''}" data-team="${id}"><div class="stand-rank"></div><div class="stand-logo">${lg(lo(id),40)}</div><div class="stand-name">${nm(id)}</div><div class="stand-mv"></div><div class="stand-pts"></div></div>`;
-  $.innerHTML=`<div class="sp ac" style="width:1180px"><div class="sph"><div class="spt">${t('standTitle')}</div><div class="spu" id="standSub"></div></div>`
+  $.innerHTML=`<div class="sp ac" style="width:1180px"><div class="sph"><div class="spt">${t('standTitle')}</div><div class="spu stand-sub" id="standSub"></div></div>`
     +`<div class="stand-mh">${lg(M.home.logo,40)}<span>${M.home.shortName}</span><b>VS</b><span>${M.away.shortName}</span>${lg(M.away.logo,40)}</div>`
     +`<div class="stand-list" id="standList">${allIds.map(rowHTML).join('')}</div>${srcHtml()}</div>`;
   const list=document.getElementById('standList'), sub=document.getElementById('standSub');
@@ -1089,14 +1092,15 @@ function rAnimStandings(){
     // LAST + INVERT + PLAY (FLIP)
     for(const id in rowEls){ const el=rowEls[id]; if(el.style.display==='none')continue;
       const f=first[id];
-      if(f!=null){ const dy=f-el.getBoundingClientRect().top; if(dy){ el.style.transition='none'; el.style.transform='translateY('+dy+'px)'; requestAnimationFrame(()=>{el.style.transition='transform .6s cubic-bezier(.2,.8,.2,1)';el.style.transform='';}); } }
-      else { el.style.transition='none'; el.style.opacity='0'; requestAnimationFrame(()=>{el.style.transition='opacity .5s';el.style.opacity='1';}); }
+      if(f!=null){ const dy=f-el.getBoundingClientRect().top; if(dy){ el.style.transition='none'; el.style.transform='translateY('+dy+'px)'; requestAnimationFrame(()=>{el.style.transition='transform 1.2s cubic-bezier(.22,.9,.25,1)';el.style.transform='';}); } }
+      else { el.style.transition='none'; el.style.opacity='0'; requestAnimationFrame(()=>{el.style.transition='opacity .8s';el.style.opacity='1';}); }
     }
     sub.textContent=`${t('roundW')} ${r+1} / ${maxR}`;
+    sub.classList.remove('pulse'); void sub.offsetWidth; sub.classList.add('pulse');   // flash the round indicator on each change
     prev=info;
   }
   applyRound(0);
-  if(maxR>1){ let step=0; animStandTimer=setInterval(()=>{ step++; if(step>=maxR){stopAnimStand();return} applyRound(step); }, 1100); }
+  if(maxR>1){ let step=0; animStandTimer=setInterval(()=>{ step++; if(step>=maxR){stopAnimStand();return} applyRound(step); }, 2100); }
 }
 
 // ═══ AUTO CAROUSEL ═══ output-driven rotation through stat overlays (survives control-tab close)
