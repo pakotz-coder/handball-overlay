@@ -77,6 +77,7 @@ input:focus{border-color:var(--blue)}
       <div class="ob pre" onclick="send('prematchclean')"><div class="oi">🎬</div><div class="ol">Pre-Match Clean</div></div>
       <div class="ob pre" onclick="send('prematch')"><div class="oi">🏟️</div><div class="ol">Pre-Match</div></div>
       <div class="ob pre" onclick="send('comparison')"><div class="oi">🆚</div><div class="ol">Team Comparison</div></div>
+      <div class="ob pre" onclick="openAnimStandings()"><div class="oi">📊</div><div class="ol">Clasament Animat</div></div>
       <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
       <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
@@ -346,6 +347,87 @@ function send(t){if(!checkAuth())return;if(!M){ss('No data!','err');return};ref.
 function sendClear(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('→ Cleared','ok')}
 function openThumb(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&thumb=1','_blank');ss('→ Opening thumbnail exporter…','ok')}
 function openStats(){if(!M){ss('Scrape a match first','err');return}const u=document.getElementById('outUrl').dataset.url;if(!u){ss('Output URL not ready','err');return}window.open(u+'&stats=1','_blank');ss('→ Opening stats exporter…','ok')}
+
+// ═══ CLASAMENT ANIMAT (date direct de la sursă, independent de Worker) ═══
+const SIC_BASE='https://www.sportinfocentar2.com/coman/';
+// parser tolerant (portat din handbal-api/loose.js) — fișierele sursă au chei ne-ghilimelate,
+// numere cu 0 în față, TAB brut în string-uri. Fără eval.
+function _escCtl(s){return s.replace(/[\u0000-\u001F]/g,ch=>JSON.stringify(ch).slice(1,-1))}
+function _fixSeg(seg){return seg.replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g,'$1"$2"$3').replace(/([:\[,]\s*)0+(\d)/g,'$1$2').replace(/,(\s*[}\]])/g,'$1')}
+function _looseFix(text){let out='',seg='',i=0;const n=text.length;while(i<n){const c=text[i];if(c==='"'||c==="'"){out+=_fixSeg(seg);seg='';const q=c;let str='';i++;while(i<n){const ch=text[i];if(ch.charCodeAt(0)===92){str+=ch+(text[i+1]??'');i+=2;continue}if(ch===q){i++;break}str+=ch;i++}out+=(q==='"')?('"'+_escCtl(str)+'"'):JSON.stringify(_escCtl(str));continue}seg+=c;i++}out+=_fixSeg(seg);return out}
+function looseParse(text,varName){let body=text;if(varName){const idx=text.indexOf(varName);if(idx>=0){const eq=text.indexOf('=',idx);if(eq>=0)body=text.slice(eq+1)}}body=body.trim().replace(/;\s*$/,'').trim();try{return JSON.parse(body)}catch(_){}return JSON.parse(_looseFix(body))}
+async function _sicGet(url,varName){const r=await fetch(url+'?'+Date.now());if(!r.ok)throw new Error('HTTP '+r.status);return looseParse(await r.text(),varName)}
+// caches pe durata sesiunii
+let _catCache=null; const _calCache={}; const _sbrCache={};
+const _norm=s=>String(s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+async function _getCatalog(){if(_catCache)return _catCache;_catCache=await _sicGet(SIC_BASE+'natjecanja13.js','natjecanja');return _catCache}
+async function _getCalendar(natId){if(_calCache[natId])return _calCache[natId];_calCache[natId]=await _sicGet(SIC_BASE+'natjecanje'+natId+'.js','natjecanjeobjekt');return _calCache[natId]}
+// competiția (natjecanje) din numele meciului (u.nn); dezambiguizare pe seria u.liga dacă e cazul
+async function _resolveNatId(name,seriesBroj){
+  const cat=await _getCatalog();
+  const cands=cat.filter(c=>c&&c.broj!=null&&_norm(c.naziv)===_norm(name));
+  if(!cands.length)return null;
+  if(cands.length===1)return cands[0].broj;
+  for(const c of cands){try{const N=await _getCalendar(c.broj);if((N.lige||[]).some(l=>l.broj===seriesBroj))return c.broj}catch(_){}}
+  return cands[0].broj;
+}
+const _sn=name=>{const w=String(name||'').split(' ');return w.length>3?w.slice(-2).join(' '):String(name||'')};
+// clasament progresiv per etapă — ACEEAȘI departajare ca standings() (pct, golaveraj, goluri date)
+function _computeSBR(N,seriesBroj){
+  const series=N.lige||[];
+  const lg=series.find(l=>l.broj===seriesBroj)||series[0];
+  if(!lg)return null;
+  const lb=SIC_BASE+'logo/', ekName={}; (N.ekipe||[]).forEach(e=>ekName[e.ekipa]=e.naziv);
+  const played=(lg.utakmice||[]).filter(u=>u.r1!=null&&u.r2!=null&&!(u.r1===0&&u.r2===0)&&u.kolo!=null);
+  if(!played.length)return null;
+  const teams={};
+  played.forEach(u=>{
+    if(!teams[u.br1])teams[u.br1]={name:u.e1||ekName[u.br1]||('#'+u.br1),logo:u.k1?lb+u.k1+'.png':''};
+    if(!teams[u.br2])teams[u.br2]={name:u.e2||ekName[u.br2]||('#'+u.br2),logo:u.k2?lb+u.k2+'.png':''};
+  });
+  for(const id in teams)teams[id].shortName=_sn(teams[id].name);
+  const maxR=Math.max(...played.map(u=>u.kolo));
+  const rounds=[];
+  for(let R=1;R<=maxR;R++){
+    const T={}, row=id=>(T[id]=T[id]||{teamId:+id,gf:0,ga:0,p:0});
+    played.filter(u=>u.kolo<=R).forEach(u=>{
+      const h=row(u.br1),a=row(u.br2);
+      h.gf+=u.r1;h.ga+=u.r2;a.gf+=u.r2;a.ga+=u.r1;
+      if(u.r1>u.r2){h.p+=2}else if(u.r1<u.r2){a.p+=2}else{h.p++;a.p++}
+    });
+    rounds.push(Object.values(T).sort((x,y)=>y.p-x.p||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf)
+      .map(t=>({teamId:t.teamId,points:t.p,gf:t.gf,ga:t.ga})));
+  }
+  return {liga:seriesBroj,maxRound:maxR,teams,rounds};
+}
+async function openAnimStandings(){
+  if(!checkAuth())return;
+  if(!M){ss('Scrape a match first','err');return}
+  const seriesBroj=M.liga;
+  if(!seriesBroj){ss('Lipsă ID competiție — re-scrape meciul','err');return}
+  // deja calculat pentru această competiție?
+  if(M.standingsByRound&&M.standingsByRound.liga===seriesBroj){
+    ref.child('command').set({type:'show',overlay:'animstand',duration:0,ts:Date.now()});
+    ss('▶ Clasament Animat','ok');return;
+  }
+  const ck=seriesBroj;
+  try{
+    ss('Se încarcă clasamentul…','ld');
+    let sbr=_sbrCache[ck];
+    if(!sbr){
+      const natId=await _resolveNatId(M.competition,seriesBroj);
+      if(!natId)throw new Error('competiție negăsită în catalog');
+      const N=await _getCalendar(natId);
+      sbr=_computeSBR(N,seriesBroj);
+      if(sbr)_sbrCache[ck]=sbr;
+    }
+    if(!sbr||sbr.maxRound<2){ss('Date insuficiente pentru clasament animat','err');return}
+    ref.child('match/standingsByRound').set(sbr);
+    M.standingsByRound=sbr;
+    ref.child('command').set({type:'show',overlay:'animstand',duration:0,ts:Date.now()});
+    ss(`▶ Clasament Animat · ${sbr.maxRound} etape`,'ok');
+  }catch(e){ss('Eroare clasament: '+(e.message||e),'err')}
+}
 
 // ═══ YOUTUBE TITLE + DESCRIPTION GENERATOR ═══
 const YT_DIA={'Bucuresti':'București','Brasov':'Brașov','Timisoara':'Timișoara','Constanta':'Constanța','Valcea':'Vâlcea','Ramnicu':'Râmnicu','Targoviste':'Târgoviște','Focsani':'Focșani','Resita':'Reșița','Zalau':'Zalău','Ploiesti':'Ploiești','Galati':'Galați','Bacau':'Bacău','Iasi':'Iași','Neamt':'Neamț','Maramures':'Maramureș','Dambovita':'Dâmbovița','Polivalenta':'Polivalentă','Sportiva':'Sportivă','Universitatii':'Universității'};
