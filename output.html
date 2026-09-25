@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920">
-<meta name="frh-build" content="standings-2">
+<meta name="frh-build" content="discipline-1">
 <title>Handball Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -293,6 +293,22 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .stand-sub{background:var(--gold);color:#16283A;font-weight:800;padding:3px 18px;border-radius:8px;font-size:26px;letter-spacing:1px;box-shadow:0 3px 14px rgba(240,192,64,.35)}
 @keyframes roundPulse{0%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}35%{transform:scale(1.14);box-shadow:0 4px 26px rgba(240,192,64,.75)}100%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}}
 .stand-sub.pulse{animation:roundPulse .6s ease}
+/* Discipline comparison overlay */
+.disc{padding:20px 60px 28px}
+.disc-rows{display:flex;flex-direction:column;gap:6px;padding-top:22px}
+.disc-row{display:grid;grid-template-columns:1fr 300px 1fr;align-items:center;gap:20px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.disc-row:last-child{border-bottom:none}
+.disc-v{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.disc-v .dn{font-family:'Oswald';font-size:58px;font-weight:800;color:var(--text-secondary);line-height:1;display:flex;align-items:center;gap:8px}
+.disc-v.win .dn{color:var(--green)}
+.disc-v .disc-pg{font-family:'Barlow';font-size:19px;color:var(--text-muted);margin-top:6px}
+.disc-mid{text-align:center}
+.disc-ico{display:flex;justify-content:center;align-items:flex-end;gap:8px;height:48px;margin-bottom:8px}
+.disc-lbl{font-family:'Oswald';font-size:24px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:2px;white-space:nowrap}
+.dcard{display:inline-block;width:30px;height:44px;border-radius:5px;box-shadow:0 3px 9px rgba(0,0,0,.55)}
+.dcard.y{background:#F0C040}.dcard.r{background:#CC3333}
+.d2m{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:44px;padding:0 8px;border-radius:9px;background:#0E1E2A;border:2px solid var(--text-secondary);font-family:'Oswald';font-size:24px;font-weight:800;color:var(--text-primary)}
+.dfoul{font-size:40px;line-height:1}
 #cs{position:fixed;top:4px;right:4px;font-size:10px;padding:3px 8px;border-radius:3px;z-index:9999}
 #cs.ok{background:rgba(39,174,96,.2);color:#27AE60}
 #cs.w{background:rgba(255,167,38,.2);color:#ffa726}
@@ -374,7 +390,7 @@ const rawRoom=new URLSearchParams(location.search).get('room')||'default';
 const ROOM=rawRoom.toLowerCase().replace(/[^a-z0-9\-]/g,'').substring(0,30)||'default';
 const THUMB=new URLSearchParams(location.search).get('thumb')==='1';
 const STATS=new URLSearchParams(location.search).get('stats')==='1';
-console.info('frh-build standings-2');
+console.info('frh-build discipline-1');
 let db,ref,M=null,LANG='en',cT=null,OPA=1;
 try{firebase.initializeApp(FC);db=firebase.database();ref=db.ref('rooms/'+ROOM);document.getElementById('cs').textContent='Connected ✓';document.getElementById('cs').className='ok';setTimeout(()=>document.getElementById('cs').style.display='none',3000)}catch(e){document.getElementById('cs').textContent=e.message}
 
@@ -386,8 +402,8 @@ function sanitize(o){
 }
 
 const T={
-  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line',cmpTitle:'Team Comparison',pos:'Pos',pts:'Pts',gpm:'Goals / match',formL:'Form',topSc:'Top scorer',watch:'To watch',firstMeet:'First meeting this season',lastMeet:'Last meeting',cmpLoad:'Loading…',cmpNA:'Comparison unavailable',conc:'Conceded / game',standTitle:'Standings',roundW:'Round'},
-  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr',cmpTitle:'Comparație Echipe',pos:'Loc',pts:'Pct',gpm:'Goluri / meci',formL:'Formă',topSc:'Golgheter',watch:'De urmărit',firstMeet:'Prima întâlnire în sezon',lastMeet:'Ultima întâlnire',cmpLoad:'Se încarcă…',cmpNA:'Comparație indisponibilă',conc:'Primite / meci',standTitle:'Clasament',roundW:'Etapa'}
+  en:{goal:'Goal',topScorers:'Top Scorers',gkDuel:'Goalkeeper Duel',shooting:'Shooting Breakdown',potm_m:'Player of the Match',potm_f:'Player of the Match',h2h:'Head to Head',roster:'Team Roster',graph:'Score Progression',leadgraph:'Score Difference',shotout:'Shot Outcomes',momentum:'Momentum',prematch:'Coming Up Next',shotmap:'Shot Map',shotmap1:'Shot Map',gpShots:'Shots on Goal',gpSaves:'Goalkeeper Saves',officials:'Match Officials',ht:'Halftime',ft:'Full Time',live:'Live',end:'End',sr:'Save Rate',sv:'saves',sh:'shots',eff:'Efficiency',gl:'Goals',rt:'Rating',s7m:'7m Penalty',s9m:'9m Backcourt',s6m:'6m Line',wing:'Wing',fb:'Fast Break',brk:'Breakthrough',ast:'Assists',trn:'Turnovers',stl:'Steals',sus:'2min Cards',savePct:'Save %',shotEff:'Shot Efficiency',kickoff:'Kickoff',referee:'Referee',observer:'Observer',headCoach:'Head Coach',asstCoach:'Assistant Coach',official:'Official',delegate:'FRH Delegate',source:'Source',outSave:'Saved',outMiss:'Missed',outPost:'Post',outBlk:'Blocked',biggestRun:'Biggest Run',currentRun:'Current Run',unanswered:'unanswered',blocks:'Blk',minutes:'Min',totShots:'total shots',wingL:'L Wing',wingR:'R Wing',backL:'L Back',backC:'C Back',backR:'R Back',lineL:'L Line',lineC:'Line 6m',lineR:'R Line',cmpTitle:'Team Comparison',pos:'Pos',pts:'Pts',gpm:'Goals / match',formL:'Form',topSc:'Top scorer',watch:'To watch',firstMeet:'First meeting this season',lastMeet:'Last meeting',cmpLoad:'Loading…',cmpNA:'Comparison unavailable',conc:'Conceded / game',standTitle:'Standings',roundW:'Round',discTitle:'Discipline',dYellow:'Yellow',dRed:'Red',d2min:'2-min susp.',dFouls:'Fouls',perGame:'game'},
+  ro:{goal:'Gol',topScorers:'Golgheteri',gkDuel:'Duelul Portarilor',shooting:'Aruncări pe Zone',potm_m:'Jucătorul Meciului',potm_f:'Jucătoarea Meciului',h2h:'Față în Față',roster:'Componența Echipei',graph:'Evoluția Scorului',leadgraph:'Diferența de Scor',shotout:'Finalizarea Aruncărilor',momentum:'Momentum',prematch:'Urmează',shotmap:'Harta Aruncărilor',shotmap1:'Harta Aruncărilor',gpShots:'Aruncări pe Poartă',gpSaves:'Parade Portar',officials:'Oficialii Meciului',ht:'Pauză',ft:'Final',live:'Live',end:'Final',sr:'Procent Parade',sv:'parade',sh:'aruncări',eff:'Eficiență',gl:'Goluri',rt:'Rating',s7m:'7m Penalti',s9m:'9m',s6m:'6m',wing:'Extremă',fb:'Contraatac',brk:'Pătrundere',ast:'Pase Decisive',trn:'Pierderi',stl:'Recuperări',sus:'Eliminări 2min',savePct:'Procent Parade',shotEff:'Eficiență Aruncări',kickoff:'Start',referee:'Arbitru',observer:'Observator',headCoach:'Antrenor',asstCoach:'Antrenor Secund',official:'Oficial',delegate:'Delegat FRH',source:'Sursa',outSave:'Apărate',outMiss:'Ratate',outPost:'Bară',outBlk:'Blocate',biggestRun:'Cea Mai Mare Serie',currentRun:'Seria Curentă',unanswered:'fără răspuns',blocks:'Blk',minutes:'Min',totShots:'aruncări în total',wingL:'Extremă Stg',wingR:'Extremă Dr',backL:'9m Stânga',backC:'9m Centru',backR:'9m Dreapta',lineL:'6m Stg',lineC:'6m Centru',lineR:'6m Dr',cmpTitle:'Comparație Echipe',pos:'Loc',pts:'Pct',gpm:'Goluri / meci',formL:'Formă',topSc:'Golgheter',watch:'De urmărit',firstMeet:'Prima întâlnire în sezon',lastMeet:'Ultima întâlnire',cmpLoad:'Se încarcă…',cmpNA:'Comparație indisponibilă',conc:'Primite / meci',standTitle:'Clasament',roundW:'Etapa',discTitle:'Disciplină',dYellow:'Galbene',dRed:'Roșii',d2min:'Eliminări 2′',dFouls:'Faulturi',perGame:'meci'}
 };
 function t(k){return T[LANG]?.[k]||T.en[k]||k}
 function tPotm(){return t('potm_'+(M?.gender||'m'))}
@@ -541,7 +557,7 @@ function show(type,dur){
   }else{doShow(type,dur)}
 }
 function doShow(type,dur,morph){
-  const fn={prematch:rPre,prematchclean:rPreClean,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,shotout:rShotOut,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,leadgraph:rLeadGraph,momentum:rMomentum,shotmap:rShotMap,shotmaphome:()=>rShotMap1('home'),shotmapaway:()=>rShotMap1('away'),officials:rOfficials,comparison:rComparison,animstand:rAnimStandings};
+  const fn={prematch:rPre,prematchclean:rPreClean,h2h:rH2H,goalflash:rGF,topscorers:rTS,gkduel:rGKD,shooting:rSH,shotout:rShotOut,potm:rPM,roster1:()=>rRoster('home'),roster2:()=>rRoster('away'),graph:rGraph,leadgraph:rLeadGraph,momentum:rMomentum,shotmap:rShotMap,shotmaphome:()=>rShotMap1('home'),shotmapaway:()=>rShotMap1('away'),officials:rOfficials,comparison:rComparison,discipline:rDiscipline,animstand:rAnimStandings};
   if(fn[type])fn[type]();
   CUR=type;
   const root=$.firstChild;
@@ -551,7 +567,7 @@ function doShow(type,dur,morph){
     if(type==='goalflash')root.classList.add('sweep');
   }
   const innerDelay=morph?350:700;
-  if(['h2h','shooting','shotout','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials','momentum','comparison'].includes(type))animateInner(innerDelay);
+  if(['h2h','shooting','shotout','gkduel','topscorers','roster1','roster2','prematch','prematchclean','shotmap','shotmaphome','shotmapaway','officials','momentum','comparison','discipline'].includes(type))animateInner(innerDelay);
   if(type==='graph'||type==='leadgraph')animateGraph(morph?450:800);
   if(type==='potm')runCounters('.pmsv',900);
   if(type!=='goalflash')runCounters('.ts',morph?250:550);
@@ -1009,8 +1025,8 @@ async function loadComparison(){
     const r=await fetch(`${CMP_API}/api/matchup?home=${encodeURIComponent(M.home.id)}&away=${encodeURIComponent(M.away.id)}&liga=${encodeURIComponent(M.liga)}&form=5`);
     if(!r.ok)throw new Error('HTTP '+r.status);
     COMP=sanitize(await r.json()); COMP_KEY=key;   // sanitize: HTML-escape every string before it can hit the DOM
-    if(CUR==='comparison')rComparison();
-  }catch(e){ if(CUR==='comparison'&&!COMP)compMsg(t('cmpNA')); }
+    if(CUR==='comparison')rComparison(); else if(CUR==='discipline')rDiscipline();
+  }catch(e){ if((CUR==='comparison'||CUR==='discipline')&&!COMP)compMsg(t('cmpNA')); }
 }
 function compMsg(msg){$.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('cmpTitle')}</div><div class="spu">${M?(M.competition||''):''}</div></div><div class="cmp-msg">${msg}</div>${srcHtml()}</div>`}
 function rComparison(){
@@ -1049,6 +1065,41 @@ function rComparison(){
       </div>
       <div class="cmp-stars"><div class="cmp-slab">${t('topSc')}</div>${star(h,false)}<div class="cmp-star-vs">⭐</div>${star(a,true)}</div>
       <div class="cmp-h2h">${h2hTxt}</div>
+    </div>${srcHtml()}</div>`;
+}
+
+// ═══ DISCIPLINE COMPARISON (cards / 2-min / fouls, from handbal-api) ═══
+function rDiscipline(){
+  if(!M)return;
+  const key=compKey();
+  if(!key){compMsg(t('cmpNA'));return}
+  if(!COMP||COMP_KEY!==key){compMsg(t('cmpLoad'));loadComparison();return}
+  const C=COMP,h=C.home,a=C.away;
+  if((!h||!h.found)&&(!a||!a.found)){compMsg(t('cmpNA'));return}
+  const hd=h.disc||{},ad=a.disc||{}, gh=(h.agg&&h.agg.m)||0, ga=(a.agg&&a.agg.m)||0;
+  const fmt=x=>Number.isInteger(x)?String(x):x.toFixed(1);
+  const drow=(label,icon,hv,av)=>{
+    hv=+hv||0;av=+av||0; const hpg=gh?hv/gh:0, apg=ga?av/ga:0;
+    const hw=hpg<apg, aw=apg<hpg;   // mai puține (pe meci) = mai disciplinat = câștigător
+    return `<div class="disc-row">`
+      +`<div class="disc-v${hw?' win':''}"><div class="dn">${hw?'<span class="cmp-ar">▲</span> ':''}${hv}</div><div class="disc-pg">${fmt(hpg)}/${t('perGame')}</div></div>`
+      +`<div class="disc-mid"><div class="disc-ico">${icon}</div><div class="disc-lbl">${label}</div></div>`
+      +`<div class="disc-v r${aw?' win':''}"><div class="dn">${av}${aw?' <span class="cmp-ar">▲</span>':''}</div><div class="disc-pg">${fmt(apg)}/${t('perGame')}</div></div>`
+      +`</div>`;
+  };
+  $.innerHTML=`<div class="sp ac"><div class="sph"><div class="spt">${t('discTitle')}</div><div class="spu">${C.ligaName||M.competition||''}</div></div>
+    <div class="disc">
+      <div class="cmp-head">
+        <div class="cmp-tm">${lg(M.home.logo,84)}<div class="cmp-ti"><div class="cmp-nm">${h.name}</div></div></div>
+        <div class="cmp-vs">VS</div>
+        <div class="cmp-tm r">${lg(M.away.logo,84)}<div class="cmp-ti"><div class="cmp-nm">${a.name}</div></div></div>
+      </div>
+      <div class="disc-rows">
+        ${drow(t('dYellow'),'<span class="dcard y"></span>',hd.yel,ad.yel)}
+        ${drow(t('dRed'),'<span class="dcard r"></span>',hd.red,ad.red)}
+        ${drow(t('d2min'),'<span class="d2m">2′</span>',hd.sus,ad.sus)}
+        ${drow(t('dFouls'),'<span class="dfoul">✋</span>',hd.fouls,ad.fouls)}
+      </div>
     </div>${srcHtml()}</div>`;
 }
 
