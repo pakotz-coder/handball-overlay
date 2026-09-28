@@ -373,7 +373,26 @@ async function _resolveNatId(name,seriesBroj){
   return cands[0].broj;
 }
 const _sn=name=>{const w=String(name||'').split(' ');return w.length>3?w.slice(-2).join(' '):String(name||'')};
-// clasament progresiv per etapă — ACEEAȘI departajare ca standings() (pct, golaveraj, goluri date)
+// departajare oficiala FRH (sportinfocentar). COPIE IDENTICA a orderStandings din
+// handbal-api/src/lib/agg.js si din handbal.html (legacy). Modifici -> in toate trei, la fel.
+// Ordine: puncte -> H2H puncte -> H2H golaveraj -> H2H goluri date -> golaveraj general -> goluri date.
+// H2H = mini-tabel calculat O SINGURA DATA intre echipele egale la puncte, din meciurile DINTRE ele.
+function orderStandings(rows,games){
+  const gd=r=>r.gf-r.ga;
+  const groups={}; rows.forEach(r=>(groups[r.p]=groups[r.p]||[]).push(r));
+  const out=[];
+  Object.keys(groups).map(Number).sort((a,b)=>b-a).forEach(pts=>{
+    const g=groups[pts];
+    if(g.length===1){out.push(g[0]);return}
+    const ids=new Set(g.map(r=>r.id));
+    const mini={}; g.forEach(r=>mini[r.id]={p:0,gf:0,ga:0});
+    games.forEach(m=>{ if(ids.has(m.h)&&ids.has(m.a)){ const H=mini[m.h],A=mini[m.a]; H.gf+=m.hs;H.ga+=m.as;A.gf+=m.as;A.ga+=m.hs; if(m.hs>m.as)H.p+=2;else if(m.hs<m.as)A.p+=2;else{H.p++;A.p++} } });
+    g.sort((x,y)=>{ const mx=mini[x.id],my=mini[y.id]; return (my.p-mx.p)||((my.gf-my.ga)-(mx.gf-mx.ga))||(my.gf-mx.gf)||(gd(y)-gd(x))||(y.gf-x.gf); });
+    out.push(...g);
+  });
+  return out;
+}
+// clasament progresiv per etapă — foloseste orderStandings (aceeasi regula ca standings() din Worker), per etapa
 function _computeSBR(N,seriesBroj){
   const series=N.lige||[];
   const lg=series.find(l=>l.broj===seriesBroj)||series[0];
@@ -390,14 +409,15 @@ function _computeSBR(N,seriesBroj){
   const maxR=Math.max(...played.map(u=>u.kolo));
   const rounds=[];
   for(let R=1;R<=maxR;R++){
-    const T={}, row=id=>(T[id]=T[id]||{teamId:+id,gf:0,ga:0,p:0});
-    played.filter(u=>u.kolo<=R).forEach(u=>{
+    const rg=played.filter(u=>u.kolo<=R);   // doar meciurile jucate pana la etapa R (H2H se schimba pe parcurs)
+    const T={}, row=id=>(T[id]=T[id]||{id:+id,gf:0,ga:0,p:0});
+    rg.forEach(u=>{
       const h=row(u.br1),a=row(u.br2);
       h.gf+=u.r1;h.ga+=u.r2;a.gf+=u.r2;a.ga+=u.r1;
       if(u.r1>u.r2){h.p+=2}else if(u.r1<u.r2){a.p+=2}else{h.p++;a.p++}
     });
-    rounds.push(Object.values(T).sort((x,y)=>y.p-x.p||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf)
-      .map(t=>({teamId:t.teamId,points:t.p,gf:t.gf,ga:t.ga})));
+    const ordered=orderStandings(Object.values(T), rg.map(u=>({h:u.br1,a:u.br2,hs:u.r1,as:u.r2})));
+    rounds.push(ordered.map(t=>({teamId:t.id,points:t.p,gf:t.gf,ga:t.ga})));
   }
   return {liga:seriesBroj,maxRound:maxR,teams,rounds};
 }
