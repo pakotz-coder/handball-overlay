@@ -21,6 +21,8 @@
           "interval": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 600000" },
           "cycles": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50" },
           "skipEmpty": { ".validate": "newData.isBoolean()" },
+          "loop": { ".validate": "newData.isBoolean()" },
+          "hold": { ".validate": "newData.isBoolean()" },
           "overlays": {
             ".validate": "newData.hasChildren()",
             "$i": { ".validate": "newData.isString() && newData.val().length <= 40" }
