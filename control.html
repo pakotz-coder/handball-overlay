@@ -34,9 +34,13 @@ input:focus{border-color:var(--blue)}
 .ob:hover{border-color:var(--red);background:#1A2C3C}
 .ob{position:relative}
 .kb{position:absolute;top:3px;right:3px;min-width:15px;height:15px;line-height:14px;text-align:center;font-family:'Oswald';font-size:9px;font-weight:700;color:var(--muted);background:#0D1520;border:1px solid var(--bdr);border-radius:3px;padding:0 3px}
-.car-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px}
+.car-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,auto);grid-auto-flow:column;gap:3px 10px}
 .car-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt);text-transform:none;letter-spacing:0;margin:0;cursor:pointer}
 .car-item input{width:auto;height:auto;margin:0;accent-color:var(--red)}
+.car-n{margin-left:auto;font-family:'Oswald';font-size:10px;color:var(--red);min-width:14px;text-align:right}
+.car-pre{display:flex;gap:4px;margin-bottom:8px}.car-pre .btn{flex:1;padding-left:4px;padding-right:4px}
+.car-pre .btn.on{outline:2px solid var(--red)}
+.dr .car-item input{width:auto}
 .ob .oi{font-size:20px;margin-bottom:2px}.ob .ol{font-family:'Oswald';font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .ob.pre{border-color:var(--gold);background:rgba(240,192,64,.06)}
 .ob.pre:hover{background:rgba(240,192,64,.12)}
@@ -78,12 +82,14 @@ input:focus{border-color:var(--blue)}
       <div class="ob pre" onclick="send('prematch')"><div class="oi">🏟️</div><div class="ol">Pre-Match</div></div>
       <div class="ob pre" onclick="send('comparison')"><div class="oi">🆚</div><div class="ol">Team Comparison</div></div>
       <div class="ob pre" onclick="openAnimStandings()"><div class="oi">📊</div><div class="ol">Clasament Animat</div></div>
-      <div class="ob pre" onclick="send('discipline')"><div class="oi">🟨</div><div class="ol">Disciplină</div></div>
-      <div class="ob" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
+      <div class="ob pre" onclick="send('officials')"><div class="oi">👔</div><div class="ol">Officials</div></div>
+      <div class="ob pre" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
+      <div class="ob pre" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
       <div class="ob" onclick="send('goalflash')"><div class="oi">⚽</div><div class="ol">Last Goal</div></div>
       <div class="ob" onclick="send('graph')"><div class="oi">📈</div><div class="ol">Score Graph</div></div>
       <div class="ob" onclick="send('leadgraph')"><div class="oi">📉</div><div class="ol">Lead Graph</div></div>
       <div class="ob" onclick="send('momentum')"><div class="oi">🔥</div><div class="ol">Momentum</div></div>
+      <div class="ob" onclick="send('h2h')"><div class="oi">⚔️</div><div class="ol">Head to Head</div></div>
       <div class="ob" onclick="send('topscorers')"><div class="oi">🏆</div><div class="ol">Top Scorers</div></div>
       <div class="ob" onclick="send('shooting')"><div class="oi">🎯</div><div class="ol">Shooting</div></div>
       <div class="ob" onclick="send('shotout')"><div class="oi">🧮</div><div class="ol">Shot Outcomes</div></div>
@@ -91,9 +97,7 @@ input:focus{border-color:var(--blue)}
       <div class="ob" onclick="send('shotmap')"><div class="oi">🥅</div><div class="ol">Shot Map</div></div>
       <div class="ob" onclick="send('shotmaphome')"><div class="oi">🎯</div><div class="ol">Shot Map Home</div></div>
       <div class="ob" onclick="send('shotmapaway')"><div class="oi">🎯</div><div class="ol">Shot Map Away</div></div>
-      <div class="ob" onclick="send('h2h')"><div class="oi">⚔️</div><div class="ol">Head to Head</div></div>
-      <div class="ob" onclick="send('roster1')"><div class="oi">📋</div><div class="ol">Roster Home</div></div>
-      <div class="ob" onclick="send('roster2')"><div class="oi">📋</div><div class="ol">Roster Away</div></div>
+      <div class="ob" onclick="send('discipline')"><div class="oi">🟨</div><div class="ol">Disciplină</div></div>
       <div class="ob" onclick="send('potm')"><div class="oi">⭐</div><div class="ol">Best Player</div></div>
     </div>
     <button class="btn btn-d btn-f" style="margin-top:6px" onclick="sendClear()">✕ Clear</button>
@@ -102,8 +106,10 @@ input:focus{border-color:var(--blue)}
     <button class="btn btn-r btn-f" style="margin-top:6px" onclick="ytGen()">📋 Generate YouTube Text</button>
   </div>
   <div class="sec"><div class="sec-t">Auto Carousel</div>
+    <div class="car-pre"><button class="btn btn-b btn-s" data-preset="pre" onclick="applyPreset('pre')">1 · Pre-meci</button><button class="btn btn-b btn-s" data-preset="ht" onclick="applyPreset('ht')">2 · Pauză</button><button class="btn btn-b btn-s" data-preset="ft" onclick="applyPreset('ft')">3 · Final</button></div>
     <div id="carList" class="car-grid"></div>
     <div class="dr" style="margin-top:8px"><label>Sec/overlay:</label><input type="number" id="carSec" value="12" min="3" max="60"><label style="margin-left:10px">Cycles:</label><input type="number" id="carCyc" value="2" min="1" max="10"></div>
+    <div class="dr"><label class="car-item"><input type="checkbox" id="carLoop">Buclă (până la Stop)</label><label class="car-item" style="margin-left:10px"><input type="checkbox" id="carHold">Rămâne pe ultimul</label></div>
     <div class="row"><button class="btn btn-r btn-s btn-f" onclick="startCarousel()">▶ Start</button><button class="btn btn-d btn-s" onclick="stopCarousel()">■ Stop</button></div>
   </div>
   <div class="sec"><div class="sec-t">Overlay Opacity</div><div class="opa-row"><input type="range" id="opaSlider" min="20" max="100" value="100" oninput="sendOpacity(this.value)"><div class="opa-val" id="opaVal">100%</div></div></div>
@@ -421,30 +427,30 @@ function _computeSBR(N,seriesBroj){
   }
   return {liga:seriesBroj,maxRound:maxR,teams,rounds};
 }
+// încarcă clasamentul pe etape în match/standingsByRound (o dată per competiție); întoarce sbr sau aruncă eroare
+async function ensureStandings(){
+  const seriesBroj=M.liga;
+  if(!seriesBroj)throw new Error('Lipsă ID competiție — re-scrape meciul');
+  if(M.standingsByRound&&M.standingsByRound.liga===seriesBroj)return M.standingsByRound;
+  let sbr=_sbrCache[seriesBroj];
+  if(!sbr){
+    const natId=await _resolveNatId(M.competition,seriesBroj);
+    if(!natId)throw new Error('competiție negăsită în catalog');
+    const N=await _getCalendar(natId);
+    sbr=_computeSBR(N,seriesBroj);
+    if(sbr)_sbrCache[seriesBroj]=sbr;
+  }
+  if(!sbr||sbr.maxRound<2)throw new Error('Date insuficiente pentru clasament animat');
+  await ref.child('match/standingsByRound').set(sbr);
+  M.standingsByRound=sbr;
+  return sbr;
+}
 async function openAnimStandings(){
   if(!checkAuth())return;
   if(!M){ss('Scrape a match first','err');return}
-  const seriesBroj=M.liga;
-  if(!seriesBroj){ss('Lipsă ID competiție — re-scrape meciul','err');return}
-  // deja calculat pentru această competiție?
-  if(M.standingsByRound&&M.standingsByRound.liga===seriesBroj){
-    ref.child('command').set({type:'show',overlay:'animstand',duration:0,ts:Date.now()});
-    ss('▶ Clasament Animat','ok');return;
-  }
-  const ck=seriesBroj;
   try{
     ss('Se încarcă clasamentul…','ld');
-    let sbr=_sbrCache[ck];
-    if(!sbr){
-      const natId=await _resolveNatId(M.competition,seriesBroj);
-      if(!natId)throw new Error('competiție negăsită în catalog');
-      const N=await _getCalendar(natId);
-      sbr=_computeSBR(N,seriesBroj);
-      if(sbr)_sbrCache[ck]=sbr;
-    }
-    if(!sbr||sbr.maxRound<2){ss('Date insuficiente pentru clasament animat','err');return}
-    ref.child('match/standingsByRound').set(sbr);
-    M.standingsByRound=sbr;
+    const sbr=await ensureStandings();
     ref.child('command').set({type:'show',overlay:'animstand',duration:0,ts:Date.now()});
     ss(`▶ Clasament Animat · ${sbr.maxRound} etape`,'ok');
   }catch(e){ss('Eroare clasament: '+(e.message||e),'err')}
@@ -540,31 +546,73 @@ initC();try{const sc=JSON.parse(localStorage.getItem('hb_c'));if(sc){colors={...
 const sv=localStorage.getItem('hb_url');if(sv)document.getElementById('mUrl').value=sv;
 
 // ═══ HOTKEYS ═══ fast overlay switching during live production
-const HOTKEYS={'1':'prematchclean','2':'prematch','3':'officials','4':'goalflash','5':'topscorers','6':'shooting','7':'gkduel','8':'h2h','9':'potm','q':'graph','w':'leadgraph','e':'momentum','r':'shotout','t':'shotmap','y':'shotmaphome','u':'shotmapaway','i':'roster1','o':'roster2','v':'comparison'};
+// rândul de cifre = pre-meci, Q–P = în meci, A–F = detalii / final (aceeași ordine ca butoanele)
+const HOTKEYS={'1':'prematchclean','2':'prematch','3':'comparison','4':'animstand','5':'officials','6':'roster1','7':'roster2',
+  'q':'goalflash','w':'graph','e':'leadgraph','r':'momentum','t':'h2h','y':'topscorers','u':'shooting','i':'shotout','o':'gkduel','p':'shotmap',
+  'a':'shotmaphome','s':'shotmapaway','d':'discipline','f':'potm'};
+function hotSend(o){if(o==='animstand')openAnimStandings();else send(o)}
 // Show the key on each overlay button
 (function(){const REV={};for(const k in HOTKEYS)REV[HOTKEYS[k]]=k;
-  document.querySelectorAll('.ob').forEach(ob=>{const m=(ob.getAttribute('onclick')||'').match(/send\('([^']+)'\)/);if(m&&REV[m[1]]){const b=document.createElement('span');b.className='kb';b.textContent=REV[m[1]].toUpperCase();ob.appendChild(b)}});
+  document.querySelectorAll('.ob').forEach(ob=>{const oc=ob.getAttribute('onclick')||'';const m=oc.match(/send\('([^']+)'\)/);const o=m?m[1]:(oc.includes('openAnimStandings')?'animstand':null);if(o&&REV[o]){const b=document.createElement('span');b.className='kb';b.textContent=REV[o].toUpperCase();ob.appendChild(b)}});
 })();
 document.addEventListener('keydown',e=>{
   const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return; // don't hijack typing
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   const k=e.key.toLowerCase();
   if(k==='0'||k==='c'||k==='escape'){sendClear();e.preventDefault();return}
-  if(HOTKEYS[k]){send(HOTKEYS[k]);e.preventDefault()}
+  if(HOTKEYS[k]){hotSend(HOTKEYS[k]);e.preventDefault()}
 });
 
-// ═══ AUTO CAROUSEL ═══
-const CAR_OPTS=[['topscorers','Top Scorers'],['shooting','Shooting'],['gkduel','GK Duel'],['h2h','Head to Head'],['shotout','Shot Outcomes'],['momentum','Momentum'],['graph','Score Graph'],['leadgraph','Lead Graph'],['shotmap','Shot Map'],['shotmaphome','Shot Map Home'],['shotmapaway','Shot Map Away']];
+// ═══ AUTO CAROUSEL ═══ ordinea de rulare = ordinea din listă; presetele bifează și reordonează
+const CAR_OPTS=[['prematchclean','Pre-Match Clean'],['prematch','Pre-Match'],['comparison','Team Comparison'],['animstand','Clasament Animat'],['officials','Officials'],['roster1','Roster Home'],['roster2','Roster Away'],
+  ['graph','Score Graph'],['leadgraph','Lead Graph'],['momentum','Momentum'],['h2h','Head to Head'],['topscorers','Top Scorers'],['shooting','Shooting'],['shotout','Shot Outcomes'],['gkduel','GK Duel'],
+  ['shotmap','Shot Map'],['shotmaphome','Shot Map Home'],['shotmapaway','Shot Map Away'],['discipline','Disciplină'],['potm','Best Player']];
 const CAR_DEFAULT=['topscorers','shooting','gkduel','h2h','shotout','momentum','graph','shotmap'];
-document.getElementById('carList').innerHTML=CAR_OPTS.map(([v,l])=>`<label class="car-item"><input type="checkbox" class="car-chk" value="${v}" ${CAR_DEFAULT.includes(v)?'checked':''}>${l}</label>`).join('');
-function startCarousel(){
+const CAR_PRESETS={
+  pre:{list:['prematchclean','comparison','animstand','prematch','officials'],loop:true,hold:false,cycles:1},
+  ht:{list:['h2h','graph','momentum','topscorers','gkduel','shooting','shotmap','discipline'],loop:false,hold:false,cycles:2},
+  ft:{list:['graph','leadgraph','h2h','topscorers','gkduel','shotmaphome','shotmapaway','discipline','potm','animstand'],loop:false,hold:true,cycles:1}
+};
+const carLabel=v=>(CAR_OPTS.find(o=>o[0]===v)||[v,v])[1];
+function renderCarList(order,checked){
+  document.getElementById('carList').innerHTML=order.map(v=>`<label class="car-item"><input type="checkbox" class="car-chk" value="${v}" ${checked.includes(v)?'checked':''} onchange="carNumber()">${carLabel(v)}<span class="car-n"></span></label>`).join('');
+  carNumber();
+}
+// numerotează bifele în ordinea în care vor rula
+function carNumber(){let n=0;document.querySelectorAll('#carList .car-item').forEach(l=>{const c=l.querySelector('.car-chk');l.querySelector('.car-n').textContent=c.checked?++n:''})}
+function applyPreset(id){
+  const P=CAR_PRESETS[id];if(!P)return;
+  renderCarList(P.list.concat(CAR_OPTS.map(o=>o[0]).filter(v=>!P.list.includes(v))),P.list);
+  document.getElementById('carCyc').value=P.cycles;
+  document.getElementById('carLoop').checked=P.loop;
+  document.getElementById('carHold').checked=P.hold;
+  document.querySelectorAll('.car-pre .btn').forEach(b=>b.classList.toggle('on',b.dataset.preset===id));
+  ss('Preset: '+document.querySelector(`.car-pre [data-preset="${id}"]`).textContent,'ok');
+}
+renderCarList(CAR_OPTS.map(o=>o[0]),CAR_DEFAULT);
+async function startCarousel(){
   if(!checkAuth())return;if(!M){ss('No data!','err');return}
-  const overlays=[...document.querySelectorAll('.car-chk:checked')].map(c=>c.value);
+  let overlays=[...document.querySelectorAll('.car-chk:checked')].map(c=>c.value);
   if(!overlays.length){ss('Pick at least one overlay for the carousel','err');return}
+  // clasamentul vine din altă sursă: îl încărcăm înainte de start, altfel îl sărim
+  let note='';
+  if(overlays.includes('animstand')){
+    try{ss('Se încarcă clasamentul…','ld');await ensureStandings()}
+    catch(e){overlays=overlays.filter(o=>o!=='animstand');note=' · clasament sărit: '+(e.message||e);if(!overlays.length){ss('Carousel gol'+note,'err');return}}
+  }
   const interval=(parseInt(document.getElementById('carSec').value)||12)*1000;
   const cycles=parseInt(document.getElementById('carCyc').value)||2;
-  ref.child('command').set({type:'carousel',overlays,interval,cycles,skipEmpty:true,ts:Date.now()});
-  ss('▶ Carousel started — '+overlays.length+' overlays × '+cycles+' cycles','ok');
+  const loop=document.getElementById('carLoop').checked,hold=document.getElementById('carHold').checked;
+  const cmd={type:'carousel',overlays,interval,cycles,skipEmpty:true,ts:Date.now()};
+  if(loop)cmd.loop=true;if(hold)cmd.hold=true;
+  try{await ref.child('command').set(cmd)}
+  catch(e){
+    // regulile Firebase vechi nu acceptă loop/hold — rulăm fără ele și anunțăm
+    delete cmd.loop;delete cmd.hold;cmd.ts=Date.now();
+    await ref.child('command').set(cmd);
+    ss('▶ Carousel pornit FĂRĂ buclă/rămâne — publică database.rules.json în Firebase','err');return;
+  }
+  ss('▶ Carousel started — '+overlays.length+' overlays × '+(loop?'∞':cycles+' cycles')+note,note?'err':'ok');
 }
 function stopCarousel(){if(!checkAuth())return;ref.child('command').set({type:'clear',ts:Date.now()});ss('■ Carousel stopped','ok')}
 </script>

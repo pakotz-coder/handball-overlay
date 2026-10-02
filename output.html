@@ -1167,8 +1167,16 @@ function carHasData(type){
     case 'gkduel':return ((M.home.gkTotals&&M.home.gkTotals.faced)||0)+((M.away.gkTotals&&M.away.gkTotals.faced)||0)>0;
     case 'shooting':case 'shotout':case 'shotmap':case 'shotmaphome':case 'shotmapaway':return shots;
     case 'potm':return !!(bestPTeam(M.home)||bestPTeam(M.away));
+    case 'animstand':return !!(M.standingsByRound&&M.standingsByRound.rounds&&M.standingsByRound.rounds.length);
+    case 'comparison':return !!compKey();
     default:return true;
   }
+}
+// overlay-urile animate / de vârf primesc mai mult timp decât intervalul standard
+function carDur(type,interval){
+  if(type==='animstand'){const n=(M.standingsByRound&&M.standingsByRound.rounds&&M.standingsByRound.rounds.length)||1;return Math.max(interval,n*2100+4000)}
+  if(type==='potm')return Math.max(interval,20000);
+  return interval;
 }
 function startCarousel(v){
   stopCarousel();
@@ -1181,10 +1189,13 @@ function startCarousel(v){
   carActive=true;let idx=0,pass=0;
   (function step(){
     if(!carActive)return;
-    show(list[idx],0);
+    const type=list[idx],dur=carDur(type,interval);
+    show(type,0);
     idx++;
-    if(idx>=list.length){idx=0;pass++;if(pass>=cycles){carTimer=setTimeout(()=>{if(carActive){clr();stopCarousel()}},interval);return}}
-    carTimer=setTimeout(step,interval);
+    if(idx>=list.length){idx=0;pass++;
+      // loop: rulează până la Stop · hold: la final rămâne pe ultimul overlay în loc de ecran gol
+      if(!v.loop&&pass>=cycles){carTimer=setTimeout(()=>{if(carActive){if(!v.hold)clr();stopCarousel()}},dur);return}}
+    carTimer=setTimeout(step,dur);
   })();
 }
 
