@@ -288,8 +288,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .stand-mv{font-size:22px;text-align:center;font-weight:700;color:var(--text-muted)}
 .stand-mv.mv-u{color:var(--green)}.stand-mv.mv-d{color:var(--accent)}
 .stand-pts{font-family:'Oswald';font-size:32px;font-weight:800;color:var(--gold);text-align:right}
-.stand-row.hl-h{background:rgba(78,128,152,.18);border-left-color:var(--bg-header-light)}
-.stand-row.hl-a{background:rgba(204,51,51,.18);border-left-color:var(--accent)}
+.stand-row.hl-h{background:rgba(78,128,152,.42);border-left-color:#7FB8DA;box-shadow:inset 0 0 22px rgba(78,128,152,.30)}
+.stand-row.hl-a{background:rgba(204,51,51,.42);border-left-color:#FF5A5A;box-shadow:inset 0 0 22px rgba(204,51,51,.30)}
+.stand-row.hl-h .stand-name,.stand-row.hl-a .stand-name{color:#fff;font-weight:700}
+.stand-row.hl-h .stand-rank,.stand-row.hl-a .stand-rank{color:var(--text-primary)}
 .stand-sub{background:var(--gold);color:#16283A;font-weight:800;padding:3px 18px;border-radius:8px;font-size:26px;letter-spacing:1px;box-shadow:0 3px 14px rgba(240,192,64,.35)}
 @keyframes roundPulse{0%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}35%{transform:scale(1.14);box-shadow:0 4px 26px rgba(240,192,64,.75)}100%{transform:scale(1);box-shadow:0 3px 14px rgba(240,192,64,.35)}}
 .stand-sub.pulse{animation:roundPulse .6s ease}
