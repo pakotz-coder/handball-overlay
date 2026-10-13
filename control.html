@@ -569,9 +569,9 @@ const CAR_OPTS=[['prematchclean','Pre-Match Clean'],['prematch','Pre-Match'],['c
   ['shotmap','Shot Map'],['shotmaphome','Shot Map Home'],['shotmapaway','Shot Map Away'],['discipline','Disciplină'],['potm','Best Player']];
 const CAR_DEFAULT=['topscorers','shooting','gkduel','h2h','shotout','momentum','graph','shotmap'];
 const CAR_PRESETS={
-  pre:{list:['prematchclean','comparison','animstand','prematch','officials'],loop:true,hold:false,cycles:1},
-  ht:{list:['h2h','graph','momentum','topscorers','gkduel','shooting','shotmap','discipline'],loop:false,hold:false,cycles:2},
-  ft:{list:['graph','leadgraph','h2h','topscorers','gkduel','shotmaphome','shotmapaway','discipline','potm','animstand'],loop:false,hold:true,cycles:1}
+  pre:{list:['prematchclean','animstand','comparison','prematch','officials'],loop:true,hold:false,cycles:1},
+  ht:{list:['h2h','graph','momentum','topscorers','gkduel','shooting','shotmap','shotout','shotmaphome','shotmapaway'],loop:false,hold:false,cycles:2},
+  ft:{list:['graph','leadgraph','h2h','topscorers','gkduel','shotmaphome','shotmapaway','momentum','shooting','shotout','shotmap'],loop:false,hold:true,cycles:1}
 };
 const carLabel=v=>(CAR_OPTS.find(o=>o[0]===v)||[v,v])[1];
 function renderCarList(order,checked){
