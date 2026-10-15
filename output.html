@@ -1117,11 +1117,11 @@ function rAnimStandings(){
   const rounds=sbr.rounds, teams=sbr.teams||{}, maxR=rounds.length;
   const hiH=M.home&&M.home.id, hiA=M.away&&M.away.id;
   const allIds=[...new Set([].concat(...rounds.map(rd=>rd.map(r=>r.teamId))))];
-  const nm=id=>{const ti=teams[id]||teams[String(id)]||{};return ti.shortName||ti.name||('#'+id)};
+  const nm=id=>{const ti=teams[id]||teams[String(id)]||{};return ti.name||ti.shortName||('#'+id)};
   const lo=id=>{const ti=teams[id]||teams[String(id)]||{};return ti.logo||''};
   const rowHTML=id=>`<div class="stand-row${id===hiH?' hl-h':''}${id===hiA?' hl-a':''}" data-team="${id}"><div class="stand-rank"></div><div class="stand-logo">${lg(lo(id),40)}</div><div class="stand-name">${nm(id)}</div><div class="stand-mv"></div><div class="stand-pts"></div></div>`;
   $.innerHTML=`<div class="sp ac" style="width:1180px"><div class="sph"><div class="spt">${t('standTitle')}</div><div class="spu stand-sub" id="standSub"></div></div>`
-    +`<div class="stand-mh">${lg(M.home.logo,40)}<span>${M.home.shortName}</span><b>VS</b><span>${M.away.shortName}</span>${lg(M.away.logo,40)}</div>`
+    +`<div class="stand-mh">${lg(M.home.logo,40)}<span>${M.home.name||M.home.shortName}</span><b>VS</b><span>${M.away.name||M.away.shortName}</span>${lg(M.away.logo,40)}</div>`
     +`<div class="stand-list" id="standList">${allIds.map(rowHTML).join('')}</div>${srcHtml()}</div>`;
   const list=document.getElementById('standList'), sub=document.getElementById('standSub');
   const rowEls={}; [...list.children].forEach(el=>rowEls[el.dataset.team]=el);
