@@ -27,3 +27,6 @@ a phone. Match data comes from sportinfocentar2.com (the feed behind frhlive2.co
   third-party data (see `SECURITY.md`).
 - Test locally by opening the HTML files through any static server (e.g. `npx serve .`) and a test room.
 - Commit messages: Romanian or English, explain why.
+- Animated standings (`_computeSBR` in `control.html`): the last round must equal the source table.
+  Tie-breaks = `orderStandings` (identical copy of handbal-api `src/lib/agg.js`); federation penalties
+  (`dod` in the source table) are added as a constant offset from the team's first round.

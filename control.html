@@ -403,6 +403,10 @@ function _computeSBR(N,seriesBroj){
   const series=N.lige||[];
   const lg=series.find(l=>l.broj===seriesBroj)||series[0];
   if(!lg)return null;
+  // puncte hotarate de federatie (penalizari/bonusuri): "dod" din tabelul sursei, nu reies din rezultate
+  // (bod = puncte din rezultate + dod). Sursa nu spune din ce etapa se aplica: le punem ca offset constant
+  // din prima etapa a echipei (cazul tipic: neprezentare 0-10), ca ultima etapa = tabelul oficial.
+  const adj={}; (lg.tablica||[]).forEach(r=>{if(r&&r.e&&r.dod)adj[r.e]=r.dod});
   const lb=SIC_BASE+'logo/', ekName={}; (N.ekipe||[]).forEach(e=>ekName[e.ekipa]=e.naziv);
   const played=(lg.utakmice||[]).filter(u=>u.r1!=null&&u.r2!=null&&!(u.r1===0&&u.r2===0)&&u.kolo!=null);
   if(!played.length)return null;
@@ -422,6 +426,7 @@ function _computeSBR(N,seriesBroj){
       h.gf+=u.r1;h.ga+=u.r2;a.gf+=u.r2;a.ga+=u.r1;
       if(u.r1>u.r2){h.p+=2}else if(u.r1<u.r2){a.p+=2}else{h.p++;a.p++}
     });
+    for(const id in T){if(adj[id])T[id].p+=adj[id]}   // penalizarea intra in punctaj INAINTE de ordonare
     const ordered=orderStandings(Object.values(T), rg.map(u=>({h:u.br1,a:u.br2,hs:u.r1,as:u.r2})));
     rounds.push(ordered.map(t=>({teamId:t.id,points:t.p,gf:t.gf,ga:t.ga})));
   }
