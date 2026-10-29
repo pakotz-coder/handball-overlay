@@ -40,6 +40,26 @@ input:focus{border-color:var(--blue)}
 .car-n{margin-left:auto;font-family:'Oswald';font-size:10px;color:var(--red);min-width:14px;text-align:right}
 .car-pre{display:flex;gap:4px;margin-bottom:8px}.car-pre .btn{flex:1;padding-left:4px;padding-right:4px}
 .car-pre .btn.on{outline:2px solid var(--red)}
+/* Meciurile de azi (Today's Games) — lista de selectie a meciului */
+.td-top{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.td-f{display:flex;gap:4px;flex:1}
+.td-f .btn{flex:1}
+.td-f .btn.on{background:var(--red)}
+.td-c{float:right;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none}
+.td-list{max-height:300px;overflow-y:auto;border:1px solid var(--bdr);border-radius:4px;background:#0D1520}
+.td-g{padding:4px 8px;background:#13202C;border-bottom:1px solid var(--bdr);font-family:'Oswald';font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:center;position:sticky;top:0;z-index:1}
+.td-g b{color:var(--txt);font-weight:600}
+.td-m{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:6px;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;font-size:11px;color:var(--txt)}
+.td-m:hover{background:rgba(204,51,51,.12)}
+.td-m.sel{background:rgba(204,51,51,.22);box-shadow:inset 3px 0 0 var(--red)}
+.td-k{font-family:'Oswald';font-size:10px;color:var(--muted);text-align:center}
+.td-k.lv{color:var(--red);font-weight:700}
+.td-n{display:flex;flex-direction:column;gap:1px;min-width:0}
+.td-n span{display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-n img{width:14px;height:14px;object-fit:contain;flex:0 0 14px}
+.td-s{font-family:'Oswald';font-size:12px;font-weight:700;color:var(--gold);text-align:right;min-width:34px}
+.td-e{padding:10px;text-align:center;color:var(--muted);font-size:11px}
+.td-u{margin-top:4px;font-size:10px;color:var(--muted);text-align:right}
 .dr .car-item input{width:auto}
 .ob .oi{font-size:20px;margin-bottom:2px}.ob .ol{font-family:'Oswald';font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .ob.pre{border-color:var(--gold);background:rgba(240,192,64,.06)}
@@ -75,6 +95,10 @@ input:focus{border-color:var(--blue)}
   <div class="logo">🤾 Handball Overlay</div>
   <div class="sec"><div class="sec-t">Connection</div><div class="cb w" id="connB">Connecting...</div><label>Output URL (paste into Yolobox):</label><div class="ou" id="outUrl" onclick="navigator.clipboard.writeText(this.dataset.url).then(()=>ss('Copied!','ok'))">Loading...</div></div>
   <div class="sec"><div class="sec-t">Match Data</div><label>Match ID or frhlive2.com URL</label><input type="text" id="mUrl" placeholder="1651098 or full URL"><button class="btn btn-r btn-f" onclick="scrape()">Scrape Match</button></div>
+  <div class="sec"><div class="sec-t">Today's Games <span class="td-c" id="tdCount"></span></div>
+    <div class="td-top"><div class="td-f" id="tdF"><button class="btn btn-b btn-s on" data-f="all" onclick="tdFilter('all')">All</button><button class="btn btn-b btn-s" data-f="m" onclick="tdFilter('m')">Men</button><button class="btn btn-b btn-s" data-f="f" onclick="tdFilter('f')">Women</button></div><button class="btn btn-b btn-s" onclick="loadToday(true)" title="Refresh">&#8635;</button></div>
+    <div class="td-list" id="tdList"><div class="td-e">Loading&hellip;</div></div>
+    <div class="td-u">updated <span id="tdUpd">&mdash;</span></div></div>
   <div class="sec"><div class="sec-t">Language</div><div class="lt"><button class="lb active" data-lang="en" onclick="setLang('en')">English</button><button class="lb" data-lang="ro" onclick="setLang('ro')">Română</button></div></div>
   <div class="sec"><div class="sec-t">Show Overlay</div><div class="dr"><label>Duration (0=stay):</label><input type="number" id="dur" value="0" min="0" max="60"><span style="color:var(--muted);font-size:11px">s</span></div>
     <div class="og">
@@ -369,6 +393,80 @@ let _catCache=null; const _calCache={}; const _sbrCache={};
 const _norm=s=>String(s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
 async function _getCatalog(){if(_catCache)return _catCache;_catCache=await _sicGet(SIC_BASE+'natjecanja13.js','natjecanja');return _catCache}
 async function _getCalendar(natId){if(_calCache[natId])return _calCache[natId];_calCache[natId]=await _sicGet(SIC_BASE+'natjecanje'+natId+'.js','natjecanjeobjekt');return _calCache[natId]}
+// ═══ MECIURILE DE AZI (Today's Games) ═══ aceleași fișiere ca livescore-ul sursei (ca pe frhlive2.com).
+// Port după handbal-api/src/lib/today.js (todayGames). Blând cu sursa: baza la 5 min, scorurile live la
+// 20 s, doar la deschiderea panoului sau la ↻ — fără polling în fundal.
+const _TD_BASE_TTL=5*60*1000,_TD_LIVE_TTL=20*1000;
+const _td={base:null,baseAt:0,lv:[],lvAt:0,filter:'all'};
+const _esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ts: 0 neînceput, 1 în joc, 2 pauză, 3 terminat, 4 amânat (nu se afișează), 5 întrerupt, 6/7 anulat
+const _TD_ST={0:'scheduled',1:'live',2:'break',3:'ended',5:'interrupted',6:'cancelled',7:'cancelled'};
+function _tdISO(now=new Date()){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Bucharest',year:'numeric',month:'2-digit',day:'2-digit'}).format(now)}
+function _tdMin(u){if(u.mn==null)return null;const mn=u.mn+(u.sk>0?1:0);return mn===0?1:mn}
+function _tdGame(u){
+  const state=u.st===6?'postponed':u.st===8?'cancelled':(_TD_ST[u.ts]||'scheduled');
+  const played=state!=='scheduled'&&state!=='postponed';
+  return{id:u.broj,time:String(u.pc||'').slice(11,16),home:u.e1||'',away:u.e2||'',logo1:u.k1||null,logo2:u.k2||null,
+    hs:played?(u.r1??0):null,as:played?(u.r2??0):null,state,minute:state==='live'?_tdMin(u):null};
+}
+function _tdGroups(S,lv,day){
+  const byId=new Map(S.ut.map(u=>[u.broj,u])),series=new Set(S.lg.map(l=>l.broj));
+  (lv||[]).forEach(u=>{if(byId.has(u.broj)||series.has(u.liga))byId.set(u.broj,u)});
+  const all=[...byId.values()].filter(u=>u.ts!==4&&String(u.pc||'').slice(0,10)===day);
+  const out=[];
+  for(const l of S.lg){
+    const ms=all.filter(u=>u.liga===l.broj).sort((a,b)=>String(a.pc).localeCompare(String(b.pc))||a.broj-b.broj).map(_tdGame);
+    if(ms.length)out.push({name:l.nn||l.ln||'',serie:l.brliga>1?(l.ln||null):null,gender:l.sp===1?'f':(l.sp===0?'m':''),matches:ms});
+  }
+  return out;
+}
+async function _tdFetch(force){
+  const now=Date.now();
+  if(force||!_td.base||now-_td.baseAt>_TD_BASE_TTL){
+    try{_td.base=await _sicGet(SIC_BASE+'licenca13.js','sveut');_td.baseAt=now}catch(e){if(!_td.base)throw e}
+  }
+  if(force||now-_td.lvAt>_TD_LIVE_TTL){
+    try{const lv=await _sicGet(SIC_BASE+'lv13.js','lv');_td.lv=Array.isArray(lv)?lv:[]}catch(e){/* păstrăm ultimele scoruri */}
+    _td.lvAt=now;
+  }
+}
+function _tdRender(){
+  const el=document.getElementById('tdList');if(!el||!_td.base)return;
+  const day=_tdISO();
+  let groups=_tdGroups(_td.base,_td.lv,day);
+  if(_td.filter!=='all')groups=groups.filter(g=>g.gender===_td.filter);
+  const n=groups.reduce((a,g)=>a+g.matches.length,0);
+  document.getElementById('tdCount').textContent=n?n+(n===1?' match':' matches'):'';
+  if(!n){el.innerHTML='<div class="td-e">No games today ('+_esc(day)+')</div>';return}
+  const lb='https://www.sportinfocentar2.com/coman/logo/';
+  const cur=exId(document.getElementById('mUrl').value||'');
+  const crest=id=>id?'<img src="'+lb+encodeURIComponent(id)+'.png" alt="" onerror="this.style.visibility=\'hidden\'">':'';
+  el.innerHTML=groups.map(g=>
+    '<div class="td-g"><b>'+_esc(g.name)+'</b>'+(g.serie?'<span>'+_esc(g.serie)+'</span>':'')
+      +'<span style="margin-left:auto">'+g.matches.length+'</span></div>'
+    +g.matches.map(m=>{
+      const live=m.state==='live'||m.state==='break';
+      const k=m.state==='break'?'HT':m.state==='live'?(m.minute!=null?m.minute+"'":'LIVE')
+        :m.state==='ended'?'FT':m.state==='postponed'?'—':m.state==='cancelled'?'✕':m.time;
+      return '<div class="td-m'+(String(m.id)===String(cur)?' sel':'')+'" onclick="pickToday('+Number(m.id)+')" title="ID '+Number(m.id)+'">'
+        +'<div class="td-k'+(live?' lv':'')+'">'+_esc(k)+'</div>'
+        +'<div class="td-n"><span>'+crest(m.logo1)+_esc(m.home)+'</span><span>'+crest(m.logo2)+_esc(m.away)+'</span></div>'
+        +'<div class="td-s">'+(m.hs==null?'–':_esc(m.hs+'-'+m.as))+'</div></div>';
+    }).join('')
+  ).join('');
+}
+async function loadToday(force){
+  const el=document.getElementById('tdList');if(!el)return;
+  el.innerHTML='<div class="td-e">Loading…</div>';
+  try{
+    await _tdFetch(force);_tdRender();
+    document.getElementById('tdUpd').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  }catch(e){el.innerHTML='<div class="td-e">Could not load today\u2019s games</div>'}
+}
+function tdFilter(f){_td.filter=f;document.querySelectorAll('#tdF .btn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));_tdRender()}
+// click pe un meci = îl pune în câmpul Match ID și pornește scrape-ul existent
+function pickToday(id){document.getElementById('mUrl').value=String(id);_tdRender();scrape()}
+loadToday();
 // competiția (natjecanje) din numele meciului (u.nn); dezambiguizare pe seria u.liga dacă e cazul
 async function _resolveNatId(name,seriesBroj){
   const cat=await _getCatalog();
