@@ -9,8 +9,11 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0F1923;--card:#162331;--bdr:#1E3448;--red:#CC3333;--blue:#2B5876;--txt:#D4E0ED;--muted:#6A8090;--green:#27AE60;--gold:#F0C040}
 body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;font-size:14px}
-.app{display:grid;grid-template-columns:520px 1fr;min-height:100vh}
-@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{max-height:none}.og{grid-template-columns:repeat(3,1fr)}}
+.app{display:grid;grid-template-columns:var(--sb,520px) 5px 1fr;min-height:100vh}
+/* bara de redimensionare a panoului */
+.rsz{background:var(--bdr);cursor:col-resize;touch-action:none;transition:background .15s}
+.rsz:hover,.rsz.on{background:var(--red)}
+@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{max-height:none}.rsz{display:none}}
 .sidebar{background:var(--card);border-right:1px solid var(--bdr);padding:16px;overflow-y:auto;max-height:100vh}
 .main{padding:20px;overflow-y:auto;max-height:100vh}
 .logo{font-family:'Oswald';font-size:18px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid var(--red);margin-bottom:14px}
@@ -29,7 +32,7 @@ input:focus{border-color:var(--blue)}
 .lt{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--bdr)}
 .lb{flex:1;padding:7px;text-align:center;cursor:pointer;font-family:'Oswald';font-size:12px;font-weight:600;text-transform:uppercase;background:#0D1520;color:var(--muted);transition:all .2s;border:none}
 .lb.active{background:var(--red);color:#fff}
-.og{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px}
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:5px;margin-top:6px}
 .ob{padding:10px 8px;border:1px solid var(--bdr);border-radius:4px;background:var(--card);cursor:pointer;transition:all .2s;text-align:center}
 .ob:hover{border-color:var(--red);background:#1A2C3C}
 .ob{position:relative}
@@ -146,6 +149,7 @@ input:focus{border-color:var(--blue)}
   <div class="sec"><div class="sec-t">Overlay Opacity</div><div class="opa-row"><input type="range" id="opaSlider" min="20" max="100" value="100" oninput="sendOpacity(this.value)"><div class="opa-val" id="opaVal">100%</div></div></div>
   <div class="sec"><div class="sec-t">Colors</div><div id="cc" style="max-height:240px;overflow-y:auto;padding-right:4px"></div><div class="row" style="margin-top:6px"><button class="btn btn-b btn-s btn-f" onclick="sendColors()">Apply</button><button class="btn btn-d btn-s" onclick="resetC()">Reset</button></div></div>
 </div>
+<div class="rsz" id="rsz" title="Drag to resize · double-click to reset"></div>
 <div class="main">
   <div id="sBar" class="sb"></div>
   <div id="prev" style="display:none"><div class="mh" id="mHead"></div>
@@ -473,6 +477,28 @@ async function loadToday(force){
 function tdFilter(f){_td.filter=f;document.querySelectorAll('#tdF .btn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));_tdRender()}
 // click pe un meci = îl pune în câmpul Match ID și pornește scrape-ul existent
 function pickToday(id){document.getElementById('mUrl').value=String(id);_tdRender();scrape()}
+// ═══ LĂȚIME PANOU REGLABILĂ ═══ trage de bara dintre panou și previzualizare; dublu-click = implicit.
+// Numărul de iconițe pe rând nu e fixat: grid-ul e auto-fill, deci se potrivește singur cu lățimea.
+const SB_MIN=280,SB_MAX=900,SB_DEF=520;
+function setSidebar(px,save){
+  const w=Math.min(SB_MAX,Math.max(SB_MIN,Math.round(Number(px)||SB_DEF)));
+  document.documentElement.style.setProperty('--sb',w+'px');
+  if(save){try{localStorage.setItem('hb_sb',w)}catch(e){}}
+  return w;
+}
+(function(){
+  try{const s=parseInt(localStorage.getItem('hb_sb'),10);if(s)setSidebar(s)}catch(e){}
+  const r=document.getElementById('rsz');if(!r)return;
+  let drag=false,last=0;
+  const move=e=>{if(drag){last=setSidebar(e.clientX);e.preventDefault()}};
+  const up=()=>{if(drag){drag=false;r.classList.remove('on');document.body.style.userSelect='';if(last)setSidebar(last,true)}};
+  r.addEventListener('pointerdown',e=>{drag=true;last=0;r.classList.add('on');document.body.style.userSelect='none';
+    try{r.setPointerCapture(e.pointerId)}catch(_){ }e.preventDefault()});
+  r.addEventListener('pointermove',move);
+  r.addEventListener('pointerup',up);
+  r.addEventListener('pointercancel',up);
+  r.addEventListener('dblclick',()=>setSidebar(SB_DEF,true));
+})();
 // ═══ AUTO SCRAPE ═══ reîmprospătează periodic meciul din câmpul Match ID (min 30 s, max 5 min).
 // Blând cu sursa: un singur fișier de meci per ciclu, pornit și oprit manual de operator (regula
 // din AGENTS.md: se trage doar cât timp meciul e pe post). Intervalul se ține minte în localStorage.
