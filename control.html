@@ -502,9 +502,21 @@ function setSidebar(px,save){
 // ═══ AUTO SCRAPE ═══ reîmprospătează periodic meciul din câmpul Match ID (min 30 s, max 5 min).
 // Blând cu sursa: un singur fișier de meci per ciclu, pornit și oprit manual de operator (regula
 // din AGENTS.md: se trage doar cât timp meciul e pe post). Intervalul se ține minte în localStorage.
-const AS_MIN=30,AS_MAX=300;
-const _as={timer:null,sec:30};
+const AS_MIN=30,AS_MAX=300,AS_CAP=3*3600e3;
+const _as={timer:null,sec:30,since:0};
 function _asClamp(n){n=Math.round(Number(n));if(!isFinite(n)||!n)n=AS_MIN;return Math.min(AS_MAX,Math.max(AS_MIN,n))}
+// un ciclu de auto scrape: nu cere nimic cât timp fereastra e ascunsă (telefon blocat, altă aplicație,
+// alt tab) — la fel ca Auto 30s din handbal-api: cronometrul merge, dar ciclul sare peste.
+function _asTick(){if(document.hidden)return;if(!exId(document.getElementById('mUrl').value))return;Promise.resolve(scrape()).then(_asCheck,()=>{})}
+function _asArm(){if(_as.timer)clearInterval(_as.timer);_as.timer=setInterval(_asTick,_as.sec*1000);return _as.timer}
+// opriri automate, ca în handbal-api: la finalul meciului și după 3 ore (sursa poate rămâne "Live"
+// la nesfârșit dacă statisticianul nu închide meciul) — ca să nu tragem degeaba toată noaptea.
+function _asStop(msg){if(!_as.timer)return;clearInterval(_as.timer);_as.timer=null;_as.since=0;_asPaint();ss(msg,'ok')}
+function _asCheck(){
+  if(!_as.timer||!M)return;
+  if(M.status==='End')_asStop('■ Auto scrape oprit — meci terminat');
+  else if(_as.since&&Date.now()-_as.since>AS_CAP)_asStop('■ Auto scrape oprit — limita de 3 ore');
+}
 function _asPaint(){
   const b=document.getElementById('asBtn'),i=document.getElementById('asSec');
   if(i&&document.activeElement!==i)i.value=_as.sec;
@@ -512,20 +524,24 @@ function _asPaint(){
 }
 function asSec(v){
   _as.sec=_asClamp(v);try{localStorage.setItem('hb_as_sec',_as.sec)}catch(e){}
-  if(_as.timer){clearInterval(_as.timer);_as.timer=setInterval(scrape,_as.sec*1000)}
+  if(_as.timer)_asArm();
   _asPaint();
 }
 function toggleAuto(){
-  if(_as.timer){clearInterval(_as.timer);_as.timer=null;_asPaint();ss('■ Auto scrape oprit','ok');return}
+  if(_as.timer){_asStop('■ Auto scrape oprit');return}
   if(!exId(document.getElementById('mUrl').value)){ss('Alege întâi un meci','err');return}
   _as.sec=_asClamp(document.getElementById('asSec').value);
   try{localStorage.setItem('hb_as_sec',_as.sec)}catch(e){}
-  _as.timer=setInterval(scrape,_as.sec*1000);
-  _asPaint();scrape();
+  _as.since=Date.now();
+  _asArm();
+  _asPaint();Promise.resolve(scrape()).then(_asCheck,()=>{});
   ss('▶ Auto scrape la '+_as.sec+' s','ok');
 }
 try{_as.sec=_asClamp(localStorage.getItem('hb_as_sec'))}catch(e){}
 _asPaint();
+// revenire în fereastră: o singură citire imediată, apoi cronometrul pornește de la zero, ca să nu
+// iasă două cereri lipite (singura diferență față de handbal-api — mai blândă cu sursa).
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&_as.timer){_asArm();_asTick()}});
 loadToday();
 // competiția (natjecanje) din numele meciului (u.nn); dezambiguizare pe seria u.liga dacă e cazul
 async function _resolveNatId(name,seriesBroj){
