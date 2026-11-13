@@ -414,22 +414,29 @@ function phaseTxt(p){const s=String(p||'');const m=s.match(/^\s*(\d+)\s*\.?\s*(?
 function matchDur(){return M?.duration||60}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
+// Jucatoarea/Jucatorul meciului: scor propriu, NU nota bruta a sursei (valigrac/valgolman). Aceeasi
+// formula ca handbal-api (pomAll in public/index.html): goluri + pase*0.7 + 7m obtinute*0.5 -
+// pierderi*0.5, iar la portari parade*0.7. Nota sursei da rezultate care nu se sustin pe teren:
+// in meciul 1678173, 12/12 a primit 2.5 iar 5/7 a primit 10.
+function _pomScore(p){return p.isGK?(p.svG||0)*0.7:((p.g||0)+(p.ast||0)*0.7+(p.e7||0)*0.5-(p.trn||0)*0.5)}
+// nota afisata = scorul, rotunjit la o zecimala (7 nu 7.0)
+function _pomFmt(s){const r=Math.round(s*10)/10;return Number.isInteger(r)?String(r):r.toFixed(1)}
 function bestPTeam(team){
   const all=[];
-  team.players.forEach(p=>{
-    const rating=parseFloat(p.val);
-    if(isNaN(rating))return;
+  (team.players||[]).forEach(p=>{
     const ga=pga(p.ga);
-    all.push({num:p.num,name:p.name,rating,tiebreak:ga.g,isGK:false,ga:p.ga,g:ga.g,a:ga.a,e:ga.e});
+    all.push({num:p.num,name:p.name,isGK:false,ga:p.ga,g:ga.g,a:ga.a,e:ga.e,
+      ast:+p.ast||0,e7:+p.e7||0,trn:+p.trn||0,tiebreak:ga.g});
   });
-  team.gk.forEach(p=>{
-    const rating=parseFloat(p.gval);
-    if(isNaN(rating))return;
+  (team.gk||[]).forEach(p=>{
     const sv=pga(p.sav);
-    all.push({num:p.num,name:p.name,rating,tiebreak:sv.g,isGK:true,sav:p.sav,svG:sv.g,svA:sv.a,svE:sv.a>0?Math.round(sv.g/sv.a*100):0});
+    all.push({num:p.num,name:p.name,isGK:true,sav:p.sav,svG:sv.g,svA:sv.a,
+      svE:sv.a>0?Math.round(sv.g/sv.a*100):0,tiebreak:sv.g});
   });
-  all.sort((a,b)=>b.rating-a.rating||(b.tiebreak-a.tiebreak));
-  return all[0]||null;
+  all.forEach(p=>{p.score=_pomScore(p);p.rating=_pomFmt(p.score)});
+  // doar cine a facut ceva: altfel am alege o rezerva ramasa pe banca
+  const pick=all.filter(p=>p.score>0).sort((a,b)=>b.score-a.score||(b.tiebreak-a.tiebreak));
+  return pick[0]||null;
 }
 function pmCard(p,logo,teamName){
   if(!p)return`<div class="pm-card"><div style="color:var(--text-muted);font-size:28px;padding:60px">N/A</div></div>`;
@@ -970,7 +977,7 @@ function rStatsFull(){
   const h=M.home,a=M.away,ht=h.totals||{},at=a.totals||{},hg=h.gkTotals||{},ag=a.gkTotals||{};
   const hS=topS(h.players,3),aS=topS(a.players,3),hB=bestPTeam(h),aB=bestPTeam(a);
   let best=null,bestTeam='';
-  if(hB&&aB){const hw=hB.rating>=aB.rating;best=hw?hB:aB;bestTeam=hw?h.shortName:a.shortName;}
+  if(hB&&aB){const hw=hB.score>=aB.score;best=hw?hB:aB;bestTeam=hw?h.shortName:a.shortName;}
   else if(hB){best=hB;bestTeam=h.shortName;} else if(aB){best=aB;bestTeam=a.shortName;}
   function bar(label,hv,av,suf){suf=suf||'';const tot=hv+av,hp=tot?Math.round(hv/tot*100):0,ap=tot?100-hp:0;
     return `<div class="stf-br"><div class="stf-bv">${hv}${suf}</div><div class="stf-btrack"><div class="stf-bfh" style="width:${hp}%"></div></div><div class="stf-bl">${label}</div><div class="stf-btrack"><div class="stf-bfa" style="width:${ap}%"></div></div><div class="stf-bv">${av}${suf}</div></div>`;}
