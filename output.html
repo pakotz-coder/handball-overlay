@@ -414,11 +414,14 @@ function phaseTxt(p){const s=String(p||'');const m=s.match(/^\s*(\d+)\s*\.?\s*(?
 function matchDur(){return M?.duration||60}
 function pga(s){if(!s)return{g:0,a:0,e:0};const p=s.split('/');const g=parseInt(p[0])||0,a=parseInt(p[1])||0;return{g,a,e:a>0?Math.round(g/a*100):0}}
 function topS(pl,n=3){return pl.map(p=>({...p,...pga(p.ga)})).filter(p=>p.g>0).sort((a,b)=>b.g-a.g||b.e-a.e).slice(0,n)}
-// Jucatoarea/Jucatorul meciului: scor propriu, NU nota bruta a sursei (valigrac/valgolman). Aceeasi
-// formula ca handbal-api (pomAll in public/index.html): goluri + pase*0.7 + 7m obtinute*0.5 -
-// pierderi*0.5, iar la portari parade*0.7. Nota sursei da rezultate care nu se sustin pe teren:
-// in meciul 1678173, 12/12 a primit 2.5 iar 5/7 a primit 10.
-function _pomScore(p){return p.isGK?(p.svG||0)*0.7:((p.g||0)+(p.ast||0)*0.7+(p.e7||0)*0.5-(p.trn||0)*0.5)}
+// Jucatoarea/Jucatorul meciului: scor propriu, NU nota bruta a sursei (valigrac/valgolman) si NICI
+// numai golurile. Punctam GOLURI MINUS RATARI (2*goluri - aruncari), ca sa conteze si volumul, si
+// precizia: 12/12 face 12, dar 9/15 face doar 3. Plus pase*0.7 si 7m obtinute*0.5, minus pierderi*0.5.
+// Portari: parade*0.6 - destul cat un portar mare sa poata castiga (17 parade bat un marcator de 12
+// goluri, ca in regula din skill-ul fb-handball-post), dar nu atat cat 8/24 sa ia trofeul.
+// Reper: 1678173 -> Stoleru 12/12 (nu Bologa 5/7), 1678178 -> Popescu 5/5 (nu Artenie 9/15).
+// Nota sursei nu se sustine pe teren: in 1678173 un 12/12 a primit 2.5, iar un 5/7 a primit 10.
+function _pomScore(p){return p.isGK?(p.svG||0)*0.6:((2*(p.g||0)-(p.a||0))+(p.ast||0)*0.7+(p.e7||0)*0.5-(p.trn||0)*0.5)}
 // nota afisata = scorul, rotunjit la o zecimala (7 nu 7.0)
 function _pomFmt(s){const r=Math.round(s*10)/10;return Number.isInteger(r)?String(r):r.toFixed(1)}
 function bestPTeam(team){
